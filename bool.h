@@ -1,0 +1,12 @@
+#ifndef _BOOL_H
+#define _BOOL_H 1
+
+#include "lake.h"
+
+LakeSym *bool_from_int(int b);
+int is_true(LakeVal *val);
+int is_false(LakeVal *val);
+int is_truthy(LakeVal *val);
+int is_falsy(LakeVal *val);
+
+#endif
