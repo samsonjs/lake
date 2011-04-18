@@ -18,6 +18,20 @@ void str_free(LakeStr *str)
     free(str);
 }
 
+NILP str_set(LakeStr *str, char *s)
+{
+    str->n = strlen(s);
+    str->s = strdup(s);
+    return NIL;
+}
+
+LakeStr *str_from_c(char *s)
+{
+    LakeStr *str = str_alloc();
+    str_set(str, s);
+    return str;
+}
+
 LakeStr *str_make(void)
 {
     return str_from_c("");
@@ -33,23 +47,9 @@ LakeStr *str_copy(LakeStr *str)
     return str_from_c(str->s);
 }
 
-LakeStr *str_from_c(char *s)
-{
-    LakeStr *str = str_alloc();
-    str_set(str, s);
-    return str;
-}
-
 char *str_val(LakeStr *str)
 {
     return strdup(str->s);
-}
-
-NILP str_set(LakeStr *str, char *s)
-{
-    str->n = strlen(s);
-    str->s = strdup(s);
-    return NIL;
 }
 
 #define MIN(a, b) (a < b ? a : b)

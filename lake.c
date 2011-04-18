@@ -16,6 +16,7 @@
 #include "env.h"
 #include "lake.h"
 #include "parse.h"
+#include "string.h"
 
 static LakeVal _NIL = { TYPE_NIL, sizeof(LakeVal) };
 LakeVal *NIL = &_NIL;
