@@ -1,5 +1,5 @@
-#ifndef _LAKE_H
-#define _LAKE_H 1
+#ifndef _LAKE_LAKE_H
+#define _LAKE_LAKE_H 1
 
 #include <stdlib.h>
 
@@ -30,8 +30,8 @@ typedef struct lake_val LakeVal;
 LakeVal *NIL;
 typedef LakeVal *NILP;
 
-#define VAL_SIZE(x) (x != NULL ? x->size : NIL->size)
-#define VAL_OR_NIL(x) (x != NULL ? (LakeVal *)x : NIL)
+#define VAL_SIZE(x) (x != NULL ? VAL(x)->size : NIL->size)
+#define VAL_OR_NIL(x) (x != NULL ? VAL(x) : NIL)
 
 struct lake_sym {
     LakeVal base;

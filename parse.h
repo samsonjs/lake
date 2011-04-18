@@ -1,5 +1,5 @@
-#ifndef _PARSE_H
-#define _PARSE_H 1
+#ifndef _LAKE_PARSE_H
+#define _LAKE_PARSE_H 1
 
 #include <stdlib.h>
 #include "lake.h"

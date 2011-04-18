@@ -18,7 +18,7 @@ LakeVal *parse_expr(char *s, size_t n)
     Ctx ctx = { s, n, 0 };
     LakeVal *result = _parse_expr(&ctx);
     if (ctx.i < ctx.n) {
-        printf("ignoring %lu trailing chars: %s\n", ctx.n - ctx.i - 1, ctx.s + ctx.i);
+        printf("ignoring %Zu trailing chars: %s\n", ctx.n - ctx.i - 1, ctx.s + ctx.i);
     }
     return result;
 }
@@ -121,7 +121,7 @@ static char *parse_while(Ctx *ctx, int (*is_valid)(char))
     return s;
 }
 
-static LakeInt *parse_int(Ctx *ctx)
+static LakeVal *parse_int(Ctx *ctx)
 {
     int n = 0;
     char c = peek(ctx);
@@ -134,7 +134,7 @@ static LakeInt *parse_int(Ctx *ctx)
         n += c - '0';
         consume1(ctx);
     }
-    return int_from_c(sign * n);
+    return VAL(int_from_c(sign * n));
 }
 
 static int is_sym_char(char c)
@@ -142,7 +142,7 @@ static int is_sym_char(char c)
     return is_letter(c) || is_symbol(c) || is_digit(c);
 }
 
-static LakeSym *parse_sym(Ctx *ctx)
+static LakeVal *parse_sym(Ctx *ctx)
 {
     static int size = 1024;
     char s[size];
@@ -154,7 +154,7 @@ static LakeSym *parse_sym(Ctx *ctx)
     }
     s[i] = 0;
     /* TODO: check for #t and #f and return true boolean values (LakeBool *) */
-    return sym_intern(s);
+    return VAL(sym_intern(s));
 }
 
 static char escape_char(char c)
@@ -181,7 +181,7 @@ static char escape_char(char c)
     return c;
 }
 
-static LakeStr *parse_str(Ctx *ctx)
+static LakeVal *parse_str(Ctx *ctx)
 {
     size_t n = 8;
     size_t i = 0;
@@ -209,10 +209,10 @@ static LakeStr *parse_str(Ctx *ctx)
     ch(ctx, '"');
     LakeStr *str = str_from_c(s);
     free(s);
-    return str;
+    return VAL(str);
 }
 
-static LakeList* parse_list(Ctx *ctx)
+static LakeVal* parse_list(Ctx *ctx)
 {
     LakeList *list = list_make();
     ch(ctx, '(');
@@ -225,7 +225,7 @@ static LakeList* parse_list(Ctx *ctx)
         list_append(list, _parse_expr(ctx));
     }
     ch(ctx, ')');
-    return list;
+    return VAL(list);
 }
 
 static int is_not_newline(char c)
@@ -244,26 +244,26 @@ static LakeVal *_parse_expr(Ctx *ctx)
     char c = peek(ctx);
     /*char d =*/ peek2(ctx);
     if (c >= '0' && c <= '9') {
-        result = (LakeVal *)parse_int(ctx);
+        result = VAL(parse_int(ctx));
     }
     /* TODO: chars
     else if (c == '#' && d == '\\') {
-        result = (LakeVal *)parse_char(ctx);
+        result = parse_char(ctx);
     }
     */
     else if (is_letter(c) || is_symbol(c)) {
-        result = (LakeVal *)parse_sym(ctx);
+        result = parse_sym(ctx);
     }
     else if (c == '"') {
-        result = (LakeVal *)parse_str(ctx);
+        result = parse_str(ctx);
     }
     /* TODO: quote
     else if (c == '\'') {
-        result = (LakeVal *)parse_quoted(ctx);
+        result = parse_quoted(ctx);
     }
     */
     else if (c == '(') {
-        result = (LakeVal *)parse_list(ctx);
+        result = parse_list(ctx);
     }
     else if (c == ';') {
         parse_comment(ctx);

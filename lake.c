@@ -150,7 +150,7 @@ char *repr(LakeVal *expr)
         break;
         
     default:
-        printf("unrecognized value, type %d, size %lu bytes", expr->type, expr->size);
+        printf("unrecognized value, type %d, size %Zu bytes", expr->type, expr->size);
         s = strdup("unrecognized value");
     }
     

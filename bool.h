@@ -1,5 +1,5 @@
-#ifndef _BOOL_H
-#define _BOOL_H 1
+#ifndef _LAKE_BOOL_H
+#define _LAKE_BOOL_H 1
 
 #include "lake.h"
 

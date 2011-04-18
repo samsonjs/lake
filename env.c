@@ -100,7 +100,7 @@ LakeVal *env_eval(Env *env, LakeVal *expr)
         break;
         
     default:
-        printf("unrecognized value, type %d, size %lu bytes", expr->type, expr->size);
+        printf("unrecognized value, type %d, size %Zu bytes", expr->type, expr->size);
         die("we don't eval that around here!");
     }
     

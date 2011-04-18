@@ -1,5 +1,5 @@
-#ifndef _INT_H
-#define _INT_H 1
+#ifndef _LAKE_INT_H
+#define _LAKE_INT_H 1
 
 #include "lake.h"
 

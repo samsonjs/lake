@@ -1,5 +1,5 @@
-#ifndef _LIST_H
-#define _LIST_H 1
+#ifndef _LAKE_LIST_H
+#define _LAKE_LIST_H 1
 
 #include <stdlib.h>
 #include "lake.h"

@@ -1,5 +1,5 @@
-#ifndef _SYM_H
-#define _SYM_H 1
+#ifndef _LAKE_SYM_H
+#define _LAKE_SYM_H 1
 
 #include "lake.h"
 

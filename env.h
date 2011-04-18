@@ -1,5 +1,5 @@
-#ifndef _ENV_H
-#define _ENV_H 1
+#ifndef _LAKE_ENV_H
+#define _LAKE_ENV_H 1
 
 #include "hashtab.h"
 

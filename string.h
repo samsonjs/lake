@@ -1,5 +1,5 @@
-#ifndef _STRING_H
-#define _STRING_H 1
+#ifndef _LAKE_STRING_H
+#define _LAKE_STRING_H 1
 
 #include "lake.h"
 
