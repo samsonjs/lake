@@ -27,7 +27,7 @@ LakeSym *sym_intern(char *s)
         sym->n = n;
         sym->s = strdup(s);
         sym->hash = ht_hash(s, n, symbols->size);
-        ht_put(symbols, sym->s, sym->n, sym, sizeof(LakeSym));
+        ht_put(symbols, sym->s, sym->n, sym, VAL_SIZE(sym));
 	}
     return sym;
 }

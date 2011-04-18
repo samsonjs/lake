@@ -5,7 +5,7 @@
   * Copyright 2011 Sami Samhuri
   * MIT License
   *
-  * A quick and dirty scheme written in C for fun and to use while
+  * A quick and dirty scheme written in C, for fun and to use while
   * reading The Little Schemer.
   *
   */

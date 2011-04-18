@@ -1,4 +1,4 @@
-CC=gcc -Wall -ansi -G
+CC=gcc -Wall -g
 
 all: lake
 
