@@ -1,3 +1,12 @@
+/** 
+  * list.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_LIST_H
 #define _LAKE_LIST_H 1
 
@@ -16,5 +25,6 @@ LakeVal *list_get(LakeList *list, LakeInt *li);
 LakeInt *list_cmp(LakeList *a, LakeList *b);
 LakeSym *list_eq(LakeList *a, LakeList *b);
 LakeStr *list_to_str(LakeList *list);
+char *list_repr(LakeList *list);
 
 #endif

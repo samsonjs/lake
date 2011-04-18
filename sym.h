@@ -1,3 +1,12 @@
+/** 
+  * sym.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_SYM_H
 #define _LAKE_SYM_H 1
 

@@ -1,3 +1,12 @@
+/** 
+  * list.c
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #include <stdlib.h>
 #include "int.h"
 #include "lake.h"
@@ -104,6 +113,29 @@ LakeSym *list_eq(LakeList *a, LakeList *b)
 
 LakeStr *list_to_str(LakeList *list)
 {
-    /* TODO */
-    return str_from_c("[TODO]");
+	char *s = list_repr(list);
+	LakeStr *str = str_from_c(s);
+	free(s);
+    return str;
+}
+
+char *list_repr(LakeList *list)
+{
+	char s[1024];
+	size_t n = 0;
+	s[n++] = '(';
+    int i;
+	char *s2;
+	size_t len;
+    for (i = 0; i < LIST_N(list); ++i) {
+		s2 = repr(LIST_VAL(list, i));
+		len = strlen(s2);
+        memcpy(s + n, s2, len);
+		n += len;
+		free(s2);
+        if (i != LIST_N(list) - 1) s[n++] = ' ';
+    }
+    s[n++] = ')';
+	s[n] = 0;
+	return strdup(s);
 }

@@ -1,3 +1,12 @@
+/** 
+  * int.c
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "bool.h"

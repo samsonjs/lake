@@ -1,3 +1,12 @@
+/** 
+  * bool.c
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #include "bool.h"
 #include "lake.h"
 #include "sym.h"

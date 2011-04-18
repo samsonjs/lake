@@ -1,3 +1,12 @@
+/** 
+  * string.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_STRING_H
 #define _LAKE_STRING_H 1
 

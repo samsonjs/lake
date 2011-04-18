@@ -15,6 +15,7 @@
 #include <string.h>
 #include "env.h"
 #include "lake.h"
+#include "list.h"
 #include "parse.h"
 #include "string.h"
 
@@ -90,27 +91,6 @@ void run_one_then_repl(int argc, char const *args[])
     /* eval (load args[0]) in env */
     
     run_repl_with_env(env);
-}
-
-static char *list_repr(LakeList *list)
-{
-	char s[1024];
-	size_t n = 0;
-	s[n++] = '(';
-    int i;
-	char *s2;
-	size_t len;
-    for (i = 0; i < LIST_N(list); ++i) {
-		s2 = repr(LIST_VAL(list, i));
-		len = strlen(s2);
-        memcpy(s + n, s2, len);
-		n += len;
-		free(s2);
-        if (i != LIST_N(list) - 1) s[n++] = ' ';
-    }
-    s[n++] = ')';
-	s[n] = 0;
-	return strdup(s);
 }
 
 char *repr(LakeVal *expr)

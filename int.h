@@ -1,3 +1,12 @@
+/** 
+  * int.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_INT_H
 #define _LAKE_INT_H 1
 

@@ -1,3 +1,12 @@
+/** 
+  * env.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_ENV_H
 #define _LAKE_ENV_H 1
 

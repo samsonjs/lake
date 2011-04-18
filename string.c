@@ -1,3 +1,12 @@
+/** 
+  * string.c
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #include <stdlib.h>
 #include <string.h>
 #include "int.h"

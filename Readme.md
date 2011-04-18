@@ -20,11 +20,11 @@ Hooray! It parses (reads), evaluates, and then prints things back.
 
 Lake needs:
 
-  * booleans
-  * chars
+  * dotted lists
   * functions
   * flesh out eval, write apply
-  * dotted lists
+  * booleans
+  * chars
   * primitives (especially define)
     * define and friends
     * branching
@@ -41,3 +41,15 @@ Lake needs:
   * sugar such as '... -> (quote ...)
 
 I don't think I'll need any other numeric types, but they are easy to implement anyway when performance is no concern and they're all boxed.
+
+Contributors
+============
+
+None of them want any credit.
+
+License
+=======
+
+Copyright 2011 Sami Samhuri
+
+MIT License, see included [LICENSE](blob/master/LICENSE) file

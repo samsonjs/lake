@@ -1,3 +1,12 @@
+/** 
+  * parse.h
+  * Lake Scheme
+  *
+  * Copyright 2011 Sami Samhuri
+  * MIT License
+  *
+  */
+
 #ifndef _LAKE_PARSE_H
 #define _LAKE_PARSE_H 1
 
