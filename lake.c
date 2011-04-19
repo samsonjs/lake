@@ -10,6 +10,7 @@
   *
   */
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,7 +104,7 @@ char *repr(LakeVal *expr)
     switch (expr->type) {
 
     case TYPE_NIL:
-        s = strdup("nil");
+        s = g_strdup("nil");
         break;
 
     case TYPE_SYM:
@@ -112,7 +113,7 @@ char *repr(LakeVal *expr)
 
     case TYPE_BOOL:
         printf("%s:%d TODO: repr for bools", __FILE__, __LINE__);
-        s = strdup("[bool]");
+        s = g_strdup("[bool]");
         break;
 
     case TYPE_INT:
@@ -122,9 +123,7 @@ char *repr(LakeVal *expr)
         break;
 
     case TYPE_STR:
-        str = STR(expr);
-        s = malloc(STR_N(str) + 3);
-        sprintf(s, "\"%s\"", STR_S(str));
+        s = g_strdup_printf("\"%s\"", STR_S(STR(expr)));
         break;
 
     case TYPE_LIST:
@@ -133,7 +132,7 @@ char *repr(LakeVal *expr)
         
     default:
         printf("unrecognized value, type %d, size %Zu bytes", expr->type, expr->size);
-        s = strdup("unrecognized value");
+        s = g_strdup("unrecognized value");
     }
     
     return s;

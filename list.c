@@ -7,6 +7,7 @@
   *
   */
 
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include "int.h"
@@ -18,7 +19,7 @@
 
 static LakeList *list_alloc(void)
 {
-    LakeList *list = malloc(sizeof(LakeList));
+    LakeList *list = g_malloc(sizeof(LakeList));
     list->base.type = TYPE_LIST;
     list->base.size = sizeof(LakeList);
     return list;
@@ -39,7 +40,7 @@ LakeList *list_make_with_cap(size_t cap)
     LakeList *list = list_alloc();
     list->cap = cap;
     list->n = 0;
-    list->vals = malloc(cap * sizeof(LakeVal *));
+    list->vals = g_malloc(cap * sizeof(LakeVal *));
     return list;
 }
 
@@ -62,12 +63,12 @@ NILP list_grow(LakeList *list)
 {
     list->cap *= 2;
     LakeVal **new_vals;
-    new_vals = malloc(list->cap * sizeof(LakeVal *));
+    new_vals = g_malloc(list->cap * sizeof(LakeVal *));
     int i;
     for (i = 0; i < list->n; ++i) {
         new_vals[i] = list->vals[i];
     }
-    free(list->vals);
+    g_free(list->vals);
     list->vals = new_vals;
     return NIL;
 }
@@ -116,7 +117,7 @@ LakeStr *list_to_str(LakeList *list)
 {
 	char *s = list_repr(list);
 	LakeStr *str = str_from_c(s);
-	free(s);
+	g_free(s);
     return str;
 }
 
@@ -133,10 +134,10 @@ char *list_repr(LakeList *list)
 		len = strlen(s2);
         memcpy(s + n, s2, len);
 		n += len;
-		free(s2);
+		g_free(s2);
         if (i != LIST_N(list) - 1) s[n++] = ' ';
     }
     s[n++] = ')';
 	s[n] = '\0';
-	return strdup(s);
+	return g_strdup(s);
 }

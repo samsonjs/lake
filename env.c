@@ -31,9 +31,7 @@ Env *shared_env(void)
 
 Env *env_make(Env *parent)
 {
-    Env *env;
-    env = malloc(sizeof(Env));
-    if (!env) oom();
+    Env *env = g_malloc(sizeof(Env));
     env->parent = parent;
     env->bindings = g_hash_table_new(g_str_hash, g_str_equal);
     env->symbols = g_hash_table_new(g_str_hash, g_str_equal);

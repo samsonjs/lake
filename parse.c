@@ -7,6 +7,7 @@
   *
   */
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,7 +69,7 @@ static char ch(Ctx *ctx, char expected)
         consume1(ctx);
         return c;
     }
-    char *msg = malloc(64);
+    char *msg = g_malloc(64);
     sprintf(msg, "parse error, expected '%c' got '%c'", expected, c);
     die(msg);
     return 0; /* placate the compiler */
@@ -113,7 +114,7 @@ static char *parse_while(Ctx *ctx, int (*is_valid)(char))
 {
     size_t n = 8;
     size_t i = 0;
-    char *s = malloc(n);
+    char *s = g_malloc(n);
     char c;
     while ((c = peek(ctx)) != PARSE_EOF && is_valid(c)) {
         s[i++] = c;
@@ -121,7 +122,7 @@ static char *parse_while(Ctx *ctx, int (*is_valid)(char))
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            char *t = realloc(s, n);
+            char *t = g_realloc(s, n);
             if (!t) oom();
             s = t;
         }
@@ -194,7 +195,7 @@ static LakeVal *parse_str(Ctx *ctx)
 {
     size_t n = 8;
     size_t i = 0;
-    char *s = malloc(n);
+    char *s = g_malloc(n);
     char c;
     ch(ctx, '"');
     while ((c = peek(ctx)) != PARSE_EOF && c != '"') {
@@ -209,7 +210,7 @@ static LakeVal *parse_str(Ctx *ctx)
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            char *t = realloc(s, n);
+            char *t = g_realloc(s, n);
             if (!t) oom();
             s = t;
         }
@@ -217,7 +218,7 @@ static LakeVal *parse_str(Ctx *ctx)
     s[i] = '\0';
     ch(ctx, '"');
     LakeStr *str = str_from_c(s);
-    free(s);
+    g_free(s);
     return VAL(str);
 }
 
@@ -244,7 +245,7 @@ static int is_not_newline(char c)
 
 static void parse_comment(Ctx *ctx)
 {
-    free(parse_while(ctx, is_not_newline));
+    g_free(parse_while(ctx, is_not_newline));
 }
 
 static LakeVal *_parse_expr(Ctx *ctx)

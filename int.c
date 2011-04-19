@@ -7,6 +7,7 @@
   *
   */
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "bool.h"
@@ -14,7 +15,7 @@
 
 static LakeInt *int_alloc(void)
 {
-    LakeInt *i = malloc(sizeof(LakeInt));
+    LakeInt *i = g_malloc(sizeof(LakeInt));
     i->base.type = TYPE_INT;
     i->base.size = sizeof(LakeInt);
     return i;

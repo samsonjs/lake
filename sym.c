@@ -20,7 +20,7 @@
 
 static LakeSym *sym_alloc(void)
 {
-    LakeSym *sym = malloc(sizeof(LakeSym));
+    LakeSym *sym = g_malloc(sizeof(LakeSym));
     sym->base.type = TYPE_SYM;
     sym->base.size = sizeof(LakeSym);
     return sym;
@@ -33,7 +33,7 @@ LakeSym *sym_intern(char *s)
     if (!sym) {
         sym = sym_alloc();
         sym->n = strlen(s);
-        sym->s = strdup(s);
+        sym->s = g_strdup(s);
         sym->hash = g_str_hash(s);
         g_hash_table_insert(symbols, sym->s, sym);
 	}
@@ -52,7 +52,7 @@ LakeSym *sym_from_str(LakeStr *str)
 
 char *sym_repr(LakeSym *sym)
 {
-    return strdup(sym->s);
+    return g_strdup(sym->s);
 }
 
 unsigned long sym_val(LakeSym *sym)
@@ -62,5 +62,5 @@ unsigned long sym_val(LakeSym *sym)
 
 LakeSym *sym_eq(LakeSym *a, LakeSym *b)
 {
-    return bool_from_int(strncmp(a->s, b->s, MIN(a->n, b->n)) == 0);
+    return bool_from_int(g_strcmp0(a->s, b->s) == 0);
 }
