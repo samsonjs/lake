@@ -7,6 +7,7 @@
   *
   */
 
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include "int.h"
@@ -60,8 +61,6 @@ char *str_val(LakeStr *str)
 {
     return strdup(str->s);
 }
-
-#define MIN(a, b) (a < b ? a : b)
 
 LakeInt *str_cmp(LakeStr *a, LakeStr *b)
 {

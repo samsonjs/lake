@@ -10,12 +10,12 @@
 #ifndef _LAKE_ENV_H
 #define _LAKE_ENV_H 1
 
-#include "hashtab.h"
+#include <glib.h>
 
 struct env {
     struct env *parent;
-    hashtab_t *bindings;
-    hashtab_t *symbols;
+    GHashTable *bindings;
+    GHashTable *symbols;
 };
 typedef struct env Env;
 

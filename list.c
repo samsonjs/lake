@@ -8,6 +8,7 @@
   */
 
 #include <stdlib.h>
+#include <string.h>
 #include "int.h"
 #include "lake.h"
 #include "list.h"

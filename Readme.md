@@ -6,7 +6,9 @@ A quick and dirty scheme written in C, for fun and to use while reading The Litt
 Compiling & Running
 ===================
 
-Portable C, no deps, nothing to configure, no documentation!
+Portable C, only dep is glib, nothing to configure, no documentation!
+
+Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`.
 
     $ make
     $ ./lake

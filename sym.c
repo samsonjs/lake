@@ -7,12 +7,12 @@
   *
   */
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "env.h"
 #include "lake.h"
-#include "hashtab.h"
 #include "string.h"
 #include "sym.h"
 
@@ -28,15 +28,14 @@ static LakeSym *sym_alloc(void)
 
 LakeSym *sym_intern(char *s)
 {
-    size_t n = strlen(s);
-    hashtab_t *symbols = shared_env()->symbols;
-    LakeSym *sym = ht_get(symbols, s, n);
+    GHashTable *symbols = shared_env()->symbols;
+    LakeSym *sym = g_hash_table_lookup(symbols, s);
     if (!sym) {
         sym = sym_alloc();
-        sym->n = n;
+        sym->n = strlen(s);
         sym->s = strdup(s);
-        sym->hash = ht_hash(s, n, symbols->size);
-        ht_put(symbols, sym->s, sym->n, sym, VAL_SIZE(sym));
+        sym->hash = g_str_hash(s);
+        g_hash_table_insert(symbols, sym->s, sym);
 	}
     return sym;
 }
@@ -60,8 +59,6 @@ unsigned long sym_val(LakeSym *sym)
 {
     return sym->hash;
 }
-
-#define MIN(a, b) (a < b ? a : b)
 
 LakeSym *sym_eq(LakeSym *a, LakeSym *b)
 {

@@ -7,15 +7,12 @@
   *
   */
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lake.h"
 #include "env.h"
-#include "hashtab.h"
-
-#define ENV_TABLE_SIZE 64
-#define SYM_TABLE_SIZE 1024
 
 static Env *_shared = NULL;
 
@@ -38,37 +35,39 @@ Env *env_make(Env *parent)
     env = malloc(sizeof(Env));
     if (!env) oom();
     env->parent = parent;
-    env->bindings = ht_init(ENV_TABLE_SIZE, NULL);
-    env->symbols = ht_init(SYM_TABLE_SIZE, NULL);
+    env->bindings = g_hash_table_new(g_str_hash, g_str_equal);
+    env->symbols = g_hash_table_new(g_str_hash, g_str_equal);
     return env;
 }
 
 LakeVal *env_define(Env *env, char *key, LakeVal *val)
 {
-    size_t keylen = strlen(key);
-    if (ht_get(env->bindings, key, keylen) != NULL)
+    if (g_hash_table_lookup(env->bindings, key) != NULL)
         return NULL;
     
-    return VAL_OR_NIL(ht_put(env->bindings, key, keylen, val, VAL_SIZE(val)));
+	val = VAL_OR_NIL(val);
+	g_hash_table_insert(env->bindings, key, val);
+    return val;
 }
 
 LakeVal *env_set(Env *env, char *key, LakeVal *val)
 {
-    size_t keylen = strlen(key);
-    if (ht_get(env->bindings, key, keylen) == NULL)
+    if (g_hash_table_lookup(env->bindings, key) == NULL)
         return NULL;
 
-    return VAL_OR_NIL(ht_put(env->bindings, key, keylen, val, VAL_SIZE(val)));
+	val = VAL_OR_NIL(val);
+	g_hash_table_insert(env->bindings, key, val);
+    return val;
 }
 
 LakeVal *env_get(Env *env, char *key)
 {
-    return VAL_OR_NIL(ht_get(env->bindings, key, strlen(key)));
+    return VAL_OR_NIL(g_hash_table_lookup(env->bindings, key));
 }
 
 int env_is_bound(Env *env, char *key)
 {
-    return (ht_get(env->bindings, key, strlen(key)) != NULL);
+    return g_hash_table_lookup(env->bindings, key) != NULL;
 }
 
 /*
