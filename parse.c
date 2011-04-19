@@ -126,7 +126,7 @@ static char *parse_while(Ctx *ctx, int (*is_valid)(char))
             s = t;
         }
     }
-    s[i] = 0;
+    s[i] = '\0';
     return s;
 }
 
@@ -161,7 +161,7 @@ static LakeVal *parse_sym(Ctx *ctx)
         s[i++] = c;
         consume1(ctx);
     }
-    s[i] = 0;
+    s[i] = '\0';
     /* TODO: check for #t and #f and return true boolean values (LakeBool *) */
     return VAL(sym_intern(s));
 }
@@ -214,7 +214,7 @@ static LakeVal *parse_str(Ctx *ctx)
             s = t;
         }
     }
-    s[i] = 0;
+    s[i] = '\0';
     ch(ctx, '"');
     LakeStr *str = str_from_c(s);
     free(s);

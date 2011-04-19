@@ -56,6 +56,8 @@ LakeVal *prompt_read(char *prompt)
         }
         return NULL;
     }
+	/* trim the newline if any */
+	buf[strcspn(buf, "\n")] = '\0';
     return parse_expr(buf, strlen(buf));
 }
 

@@ -136,6 +136,6 @@ char *list_repr(LakeList *list)
         if (i != LIST_N(list) - 1) s[n++] = ' ';
     }
     s[n++] = ')';
-	s[n] = 0;
+	s[n] = '\0';
 	return strdup(s);
 }
