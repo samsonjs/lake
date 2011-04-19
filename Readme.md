@@ -6,7 +6,7 @@ A quick and dirty scheme written in C, for fun and to use while reading The Litt
 Compiling & Running
 ===================
 
-Portable ANSI C, no deps, nothing to configure, no documentation!
+Portable C, no deps, nothing to configure, no documentation!
 
     $ make
     $ ./lake
