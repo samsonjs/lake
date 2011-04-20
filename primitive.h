@@ -10,6 +10,11 @@
 #ifndef _LAKE_PRIMITIVE_H
 #define _LAKE_PRIMITIVE_H 1
 
+#include "env.h"
+#include "lake.h"
+
 LakePrimitive *prim_make(char *name, int arity, lake_fn fn);
+char *prim_repr(LakePrimitive *prim);
+Env *primitive_bindings(void);
 
 #endif

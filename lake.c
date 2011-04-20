@@ -27,143 +27,19 @@ static LakeBool _F = { { TYPE_BOOL, sizeof(LakeBool) }, FALSE };
 LakeBool *T = &_T;
 LakeBool *F = &_F;
 
-static LakeVal *prim_nullP(LakeList *args)
+char *type_name(LakeVal *expr)
 {
-    LakeVal *val = list_shift(args);
-    LakeBool *is_null = IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0 ? T : F;
-    return VAL(is_null);
+    static char *type_names[9] = { "nil", "symbol", "boolean", "integer", "string", "list",
+                                   "dotted-list", "primitive", "function"
+                                 };
+
+    return type_names[expr->type];
 }
 
-static LakeVal *prim_pairP(LakeList *args)
+void print(LakeVal *expr)
 {
-    LakeVal *val = list_shift(args);
-    LakeBool *is_pair = IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0 ? T : F;
-    return VAL(is_pair);
-}
-
-static LakeVal *prim_not(LakeList *args)
-{
-    LakeVal *val = list_shift(args);
-    LakeBool *not = IS_FALSE(val) ? T : F;
-    return VAL(not);
-}
-
-static LakeVal *prim_add(LakeList *args)
-{
-    int result = 0;
-    size_t n = LIST_N(args);
-    size_t i;
-    for (i = 0; i < n; ++i) {
-        LakeVal *v = LIST_VAL(args, i);
-        if (!IS(TYPE_INT, v)) {
-            ERR("argument %zu is not an integer: %s", i, repr(v));
-            return NULL;
-        }
-        result += INT_VAL(INT(v));
-    }
-    return VAL(int_from_c(result));
-}
-
-static LakeVal *prim_sub(LakeList *args)
-{
-    size_t n = LIST_N(args);
-    
-    if (n < 1) {
-        ERR("- requires at least one argument");
-        return NULL;
-    }
-    
-    int result = 0;
-    size_t i;
-    for (i = 0; i < n; ++i) {
-        LakeVal *v = LIST_VAL(args, i);
-        if (!IS(TYPE_INT, v)) {
-            ERR("argument %zu is not an integer: %s", i, repr(v));
-            return NULL;
-        }
-        result -= INT_VAL(INT(v));
-    }
-    return VAL(int_from_c(result));
-}
-
-static LakeVal *prim_mul(LakeList *args)
-{
-    int result = 1;
-    size_t n = LIST_N(args);
-    size_t i;
-    for (i = 0; i < n; ++i) {
-        LakeVal *v = LIST_VAL(args, i);
-        if (!IS(TYPE_INT, v)) {
-            ERR("argument %zu is not an integer: %s", i, repr(v));
-            return NULL;
-        }
-        result *= INT_VAL(INT(v));
-    }
-    return VAL(int_from_c(result));
-}
-
-#define DIVIDE_BY_ZERO() ERR("divide by zero")
-
-static LakeVal *prim_div(LakeList *args)
-{
-    size_t n = LIST_N(args);
-    
-    if (n < 1) {
-        ERR("/ requires at least one argument");
-        return NULL;
-    }
-    
-    LakeVal *v = LIST_VAL(args, 0);
-    if (!IS(TYPE_INT, v)) {
-        ERR("argument 0 is not an integer: %s", repr(v));
-        return NULL;
-    }
-    int result = INT_VAL(INT(v));
-
-    if (n == 1) {
-        if (result == 0) {
-            DIVIDE_BY_ZERO();
-            return NULL;
-        }
-        result = 1 / result;
-    }
-    else {
-        size_t i;
-        for (i = 1; i < n; ++i) {
-            v = LIST_VAL(args, i);
-            if (!IS(TYPE_INT, v)) {
-                ERR("argument %zu is not an integer: %s", i, repr(v));
-                return NULL;
-            }
-            int val = INT_VAL(INT(v));
-            if (val == 0) {
-                DIVIDE_BY_ZERO();
-                return NULL;
-            }
-            result /= val;
-        }
-    }
-    return VAL(int_from_c(result));
-}
-
-static Env *primitive_bindings(void)
-{
-    #define DEFINE(name, fn, arity) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
-    
-    Env *env = env_toplevel();
-    DEFINE("null?", prim_nullP, 1);
-    DEFINE("pair?", prim_pairP, 1);
-    DEFINE("not", prim_not, 1);
-    DEFINE("+", prim_add, ARITY_VARARGS);
-    DEFINE("-", prim_sub, ARITY_VARARGS);
-    DEFINE("*", prim_mul, ARITY_VARARGS);
-    DEFINE("/", prim_div, ARITY_VARARGS);
-    return env;
-}
-
-void print(LakeVal *val)
-{
-    puts(repr(val));
+    /* printf("[%s]\n", type_name(expr)); */
+    printf("%s\n", repr(expr));
 }
 
 static LakeVal *prompt_read(char *prompt)
@@ -260,6 +136,10 @@ char *repr(LakeVal *expr)
         s = dlist_repr(DLIST(expr));
         break;
     
+    case TYPE_PRIM:
+        s = prim_repr(PRIM(expr));
+        break;
+    
     case TYPE_FN:
         s = fn_repr(FN(expr));
         break;
@@ -276,7 +156,8 @@ int main (int argc, char const *argv[])
 {
     if (argc == 1) {
         run_repl();
-    } else {
+    }
+    else {
         run_one_then_repl(argc, argv);
     }
     return 0;

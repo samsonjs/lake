@@ -23,6 +23,7 @@ struct context {
     char *s;
     size_t n;
     size_t i;
+    size_t mark;
 };
 typedef struct context Ctx;
 
@@ -30,7 +31,7 @@ static LakeVal *_parse_expr(Ctx *ctx);
 
 LakeVal *parse_expr(char *s, size_t n)
 {
-    Ctx ctx = { s, n, 0 };
+    Ctx ctx = { s, n, 0, 0 };
     LakeVal *result = _parse_expr(&ctx);
     if (ctx.i < ctx.n) {
         char *trailing = ctx.s + ctx.i;
@@ -70,26 +71,21 @@ static char ch(Ctx *ctx, char expected)
     DIE("parse error, expected '%c' got '%c'", expected, c);
 }
 
-static int maybe_spaces(Ctx *ctx)
+static void mark(Ctx *ctx)
 {
-    char *p;
-    while ((p = strchr(" \r\n\t", peek(ctx))) != NULL) {
-        consume1(ctx);
-    }
-    return 1;
+    ctx->mark = ctx->i;
 }
-/*
-static int whitespace(Ctx *ctx)
+
+static void backtrack(Ctx *ctx)
 {
-    int result = 0;
-    char *p;
-    while ((p = strchr(" \r\n\t", peek(ctx))) != NULL) {
-        consume1(ctx);
-        result = 1;
-    }
-    return result;
+    ctx->i = ctx->mark;
 }
-*/
+
+static gboolean is_space(c)
+{
+    return strchr(" \r\n\t", c) != NULL;
+}
+
 static gboolean is_letter(char c)
 {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -103,6 +99,16 @@ static gboolean is_symbol(char c)
 static gboolean is_digit(char c)
 {
     return c >= '0' && c <= '9';
+}
+
+static gboolean is_sym_char(char c)
+{
+    return is_letter(c) || is_symbol(c) || is_digit(c);
+}
+
+static gboolean is_newline(char c)
+{
+    return c == '\n' || c == '\r';
 }
 
 static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
@@ -126,25 +132,39 @@ static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
     return s;
 }
 
+static int maybe_spaces(Ctx *ctx)
+{
+    while (is_space(peek(ctx))) {
+        consume1(ctx);
+    }
+    return 1;
+}
+
 static LakeVal *parse_int(Ctx *ctx)
 {
+    mark(ctx);
     int n = 0;
     char c = peek(ctx);
     char sign = c == '-' ? -1 : 1;
     if (c == '-' || c == '+') {
         consume1(ctx);
+        /* if not followed by a digit it's a symbol */
+        if (!is_digit(peek(ctx))) {
+            backtrack(ctx);
+            return NULL;
+        }
     }
     while (is_digit(c = peek(ctx))) {
         n *= 10;
         n += c - '0';
         consume1(ctx);
     }
+    /* if we're looking at a symbol character bail, it's not a number */
+    if (is_sym_char(peek(ctx))) {
+        backtrack(ctx);
+        return NULL;
+    }
     return VAL(int_from_c(sign * n));
-}
-
-static gboolean is_sym_char(char c)
-{
-    return is_letter(c) || is_symbol(c) || is_digit(c);
 }
 
 static LakeVal *parse_sym(Ctx *ctx)
@@ -161,9 +181,11 @@ static LakeVal *parse_sym(Ctx *ctx)
     s[i] = '\0';
 	if (g_strcmp0(s, "#t") == 0) {
 		val = VAL(T);
-	} else if (g_strcmp0(s, "#f") == 0) {
+	}
+	else if (g_strcmp0(s, "#f") == 0) {
 		val = VAL(F);
-	} else {
+	}
+	else {
 		val = VAL(sym_intern(s));
 	}
     return val;
@@ -231,7 +253,7 @@ static LakeVal* parse_list(Ctx *ctx)
     char c;
     while ((c = peek(ctx)) != ')') {
         if (c == PARSE_EOF) {
-            printf("error: end of input while parsing list");
+            ERR("end of input while parsing list");
             list_free(list);
             ctx-> i = ctx->n;
             return NULL;
@@ -263,9 +285,18 @@ static LakeVal* parse_list(Ctx *ctx)
     return VAL(list);
 }
 
+static LakeVal *parse_quoted(Ctx *ctx)
+{
+    ch(ctx, '\'');
+    LakeList *list = list_make();
+    list_append(list, VAL(sym_intern("quote")));
+    list_append(list, _parse_expr(ctx));
+    return VAL(list);
+}
+
 static gboolean is_not_newline(char c)
 {
-    return !(c == '\n' || c == '\r');
+    return !is_newline(c);
 }
 
 static void parse_comment(Ctx *ctx)
@@ -277,8 +308,12 @@ static LakeVal *_parse_expr(Ctx *ctx)
 {
     LakeVal *result = NULL;
     char c = peek(ctx);
-    if (c >= '0' && c <= '9') {
+    /* try to parse a number, if that fails parse a symbol */
+    if ((c >= '0' && c <= '9') || c == '-' || c == '+') {
         result = VAL(parse_int(ctx));
+        if (result == NULL) {
+            result = parse_sym(ctx);
+        }
     }
     else if (is_letter(c) || is_symbol(c)) {
         result = parse_sym(ctx);
@@ -286,11 +321,9 @@ static LakeVal *_parse_expr(Ctx *ctx)
     else if (c == '"') {
         result = parse_str(ctx);
     }
-    /* TODO: quote
     else if (c == '\'') {
         result = parse_quoted(ctx);
     }
-    */
     else if (c == '(') {
         result = parse_list(ctx);
     }
