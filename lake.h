@@ -77,6 +77,8 @@ struct lake_int {
 };
 typedef struct lake_int LakeInt;
 
+#define INT_VAL(x) (x->val)
+
 struct lake_str {
     LakeVal base;
     size_t n;

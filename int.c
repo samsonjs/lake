@@ -40,11 +40,6 @@ LakeInt *int_from_c(int n)
     return i;
 }
 
-int int_val(LakeInt *i)
-{
-    return i->val;
-}
-
 LakeInt *int_cmp(LakeInt *a, LakeInt *b)
 {
     int aN = a->val, bN = b->val;

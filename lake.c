@@ -48,14 +48,116 @@ static LakeVal *prim_not(LakeList *args)
     return VAL(not);
 }
 
+static LakeVal *prim_add(LakeList *args)
+{
+    int result = 0;
+    size_t n = LIST_N(args);
+    size_t i;
+    for (i = 0; i < n; ++i) {
+        LakeVal *v = LIST_VAL(args, i);
+        if (!IS(TYPE_INT, v)) {
+            ERR("argument %zu is not an integer: %s", i, repr(v));
+            return NULL;
+        }
+        result += INT_VAL(INT(v));
+    }
+    return VAL(int_from_c(result));
+}
+
+static LakeVal *prim_sub(LakeList *args)
+{
+    size_t n = LIST_N(args);
+    
+    if (n < 1) {
+        ERR("- requires at least one argument");
+        return NULL;
+    }
+    
+    int result = 0;
+    size_t i;
+    for (i = 0; i < n; ++i) {
+        LakeVal *v = LIST_VAL(args, i);
+        if (!IS(TYPE_INT, v)) {
+            ERR("argument %zu is not an integer: %s", i, repr(v));
+            return NULL;
+        }
+        result -= INT_VAL(INT(v));
+    }
+    return VAL(int_from_c(result));
+}
+
+static LakeVal *prim_mul(LakeList *args)
+{
+    int result = 1;
+    size_t n = LIST_N(args);
+    size_t i;
+    for (i = 0; i < n; ++i) {
+        LakeVal *v = LIST_VAL(args, i);
+        if (!IS(TYPE_INT, v)) {
+            ERR("argument %zu is not an integer: %s", i, repr(v));
+            return NULL;
+        }
+        result *= INT_VAL(INT(v));
+    }
+    return VAL(int_from_c(result));
+}
+
+#define DIVIDE_BY_ZERO() ERR("divide by zero")
+
+static LakeVal *prim_div(LakeList *args)
+{
+    size_t n = LIST_N(args);
+    
+    if (n < 1) {
+        ERR("/ requires at least one argument");
+        return NULL;
+    }
+    
+    LakeVal *v = LIST_VAL(args, 0);
+    if (!IS(TYPE_INT, v)) {
+        ERR("argument 0 is not an integer: %s", repr(v));
+        return NULL;
+    }
+    int result = INT_VAL(INT(v));
+
+    if (n == 1) {
+        if (result == 0) {
+            DIVIDE_BY_ZERO();
+            return NULL;
+        }
+        result = 1 / result;
+    }
+    else {
+        size_t i;
+        for (i = 1; i < n; ++i) {
+            v = LIST_VAL(args, i);
+            if (!IS(TYPE_INT, v)) {
+                ERR("argument %zu is not an integer: %s", i, repr(v));
+                return NULL;
+            }
+            int val = INT_VAL(INT(v));
+            if (val == 0) {
+                DIVIDE_BY_ZERO();
+                return NULL;
+            }
+            result /= val;
+        }
+    }
+    return VAL(int_from_c(result));
+}
+
 static Env *primitive_bindings(void)
 {
-    #define DEFINE(name, arity, fn) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
+    #define DEFINE(name, fn, arity) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
     
     Env *env = env_toplevel();
-    DEFINE("null?", 1, prim_nullP);
-    DEFINE("pair?", 1, prim_pairP);
-    DEFINE("not", 1, prim_not);
+    DEFINE("null?", prim_nullP, 1);
+    DEFINE("pair?", prim_pairP, 1);
+    DEFINE("not", prim_not, 1);
+    DEFINE("+", prim_add, ARITY_VARARGS);
+    DEFINE("-", prim_sub, ARITY_VARARGS);
+    DEFINE("*", prim_mul, ARITY_VARARGS);
+    DEFINE("/", prim_div, ARITY_VARARGS);
     return env;
 }
 
