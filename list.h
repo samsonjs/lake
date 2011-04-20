@@ -18,6 +18,7 @@ LakeList *list_make(void);
 void list_free(LakeList *list);
 LakeList *list_make_with_capacity(size_t cap);
 LakeList *list_from_array(size_t n, LakeVal *vals[]);
+LakeList *list_copy(LakeList *list);
 LakeVal *list_set(LakeList *list, size_t i, LakeVal *val);
 LakeVal *list_append(LakeList *list, LakeVal *val);
 LakeVal *list_get(LakeList *list, LakeInt *li);
@@ -28,6 +29,5 @@ LakeInt *list_cmp(LakeList *a, LakeList *b);
 LakeBool *list_eq(LakeList *a, LakeList *b);
 LakeStr *list_to_str(LakeList *list);
 char *list_repr(LakeList *list);
-LakeVal **list_vals(LakeList *list);
 
 #endif

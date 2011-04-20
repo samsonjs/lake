@@ -19,6 +19,7 @@
 #include "lake.h"
 #include "list.h"
 #include "parse.h"
+#include "primitive.h"
 #include "string.h"
 
 static LakeBool _T = { { TYPE_BOOL, sizeof(LakeBool) }, TRUE };
@@ -42,10 +43,35 @@ void oom(void)
     die("out of memory");
 }
 
-Env *primitive_bindings(void)
+static LakeVal *prim_nullP(LakeList *args)
 {
+    LakeVal *val = list_shift(args);
+    LakeBool *is_null = IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0 ? T : F;
+    return VAL(is_null);
+}
+
+static LakeVal *prim_pairP(LakeList *args)
+{
+    LakeVal *val = list_shift(args);
+    LakeBool *is_pair = IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0 ? T : F;
+    return VAL(is_pair);
+}
+
+static LakeVal *prim_not(LakeList *args)
+{
+    LakeVal *val = list_shift(args);
+    LakeBool *not = IS_FALSE(val) ? T : F;
+    return VAL(not);
+}
+
+static Env *primitive_bindings(void)
+{
+    #define DEFINE(name, arity, fn) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
+    
     Env *env = env_toplevel();
-    /* TODO */
+    DEFINE("null?", 1, prim_nullP);
+    DEFINE("pair?", 1, prim_pairP);
+    DEFINE("not", 1, prim_not);
     return env;
 }
 
@@ -54,7 +80,7 @@ void print(LakeVal *val)
     puts(repr(val));
 }
 
-LakeVal *prompt_read(char *prompt)
+static LakeVal *prompt_read(char *prompt)
 {
     static int n = 1024;
     printf("%s", prompt);
@@ -73,7 +99,7 @@ LakeVal *prompt_read(char *prompt)
     return parse_expr(buf, strlen(buf));
 }
 
-void run_repl_with_env(Env *env)
+static void run_repl_with_env(Env *env)
 {
     puts("Lake Scheme v" LAKE_VERSION);
     LakeVal *expr;
@@ -92,12 +118,12 @@ void run_repl_with_env(Env *env)
     }
 }
 
-void run_repl(void)
+static void run_repl(void)
 {
     run_repl_with_env(primitive_bindings());
 }
 
-void run_one_then_repl(int argc, char const *args[])
+static void run_one_then_repl(int argc, char const *args[])
 {
     /* create a top level environment */
     Env *env = primitive_bindings();

@@ -196,7 +196,7 @@ static LakeVal *eval_special_form(Env *env, LakeList *expr)
     LakeSym *name = SYM(LIST_VAL(expr, 0));
     special_form_handler handler = get_special_form_handler(name);
     if (handler) {
-        return handler(env, expr);
+        return handler(env, list_copy(expr));
     }
     char *msg = g_strdup_printf("unrecognized special form: %s", SYM_S(name));
     err(msg);
@@ -238,14 +238,23 @@ LakeVal *eval(Env *env, LakeVal *expr)
                 result = eval_special_form(env, list);
             }
             else {
-                LakeVal *fn = eval(env, list_shift(list));
+                LakeVal *fn = eval(env, LIST_VAL(list, 0));
                 if (!fn) {
                     return NULL;
                 }
-                LakeList *args = list_make_with_capacity(LIST_N(list));
+                LakeList *args = list_make_with_capacity(LIST_N(list) - 1);
                 int i;
-                for (i = 0; i < LIST_N(list); ++i) {
-                    list_append(args, eval(env, LIST_VAL(list, i)));
+                LakeVal *v;
+                for (i = 1; i < LIST_N(list); ++i) {
+                    v = eval(env, LIST_VAL(list, i));
+                    if (v != NULL) {
+                        list_append(args, v);
+                    }
+                    else {
+                        list_free(args);
+                        result = NULL;
+                        goto done;
+                    }
                 }
                 result = apply(fn, args);
             }
@@ -257,7 +266,7 @@ LakeVal *eval(Env *env, LakeVal *expr)
         die("we don't eval that around here!");
     }
     
-    return result;
+    done: return result;
 }
 
 static LakeList *eval_exprs(Env *env, LakeList *exprs)
@@ -274,7 +283,17 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
 {
     LakeVal *result = NULL;
     if (IS(TYPE_PRIM, fnVal)) {
-        result = PRIM(fnVal)->fn(args);
+        LakePrimitive *prim = PRIM(fnVal);
+        int arity = prim->arity;
+        if (arity == ARITY_VARARGS || LIST_N(args) == arity) {
+            result = prim->fn(args);
+        }
+        else {
+            char *msg = g_strdup_printf("%s expects %d params but got %zu", prim->name, arity, LIST_N(args));
+            err(msg);
+            g_free(msg);
+            result = NULL;
+        }
     }
     else if (IS(TYPE_FN, fnVal)) {
         LakeFn *fn = FN(fnVal);

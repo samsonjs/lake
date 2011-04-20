@@ -55,12 +55,18 @@ LakeList *list_from_array(size_t n, LakeVal *vals[])
 {
     LakeList *list = list_make_with_capacity(n);
     memcpy(list->vals, vals, n * sizeof(LakeVal *));
+    list->n = n;
     return list;
 }
 
 LakeInt *list_len(LakeList *list)
 {
     return int_from_c(list->n);
+}
+
+LakeList *list_copy(LakeList *list)
+{
+    return list_from_array(list->n, list->vals);
 }
 
 static void list_grow(LakeList *list)
@@ -157,11 +163,4 @@ char *list_repr(LakeList *list)
 	gchar *repr = s->str;
 	g_string_free(s, FALSE); /* don't free char data */
 	return repr;
-}
-
-LakeVal **list_vals(LakeList *list)
-{
-	LakeVal **vals = malloc(list->n * sizeof(LakeVal *));
-    memcpy(vals, list->vals, list->n * sizeof(LakeVal *));
-	return vals;
 }

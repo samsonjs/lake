@@ -114,9 +114,13 @@ typedef LakeVal *(*lake_fn)(LakeList *args);
 struct lake_primitive {
 	LakeVal base;
 	char *name;
+    int arity;
 	lake_fn fn;
 };
 typedef struct lake_primitive LakePrimitive;
+
+#define PRIM_ARITY(x) (x->arity)
+#define ARITY_VARARGS -1
 
 #include "env.h"
 
@@ -140,7 +144,6 @@ char *repr(LakeVal *val);
 #include "string.h"
 #include "list.h"
 #include "dlist.h"
-#include "primitive.h"
 #include "fn.h"
 
 #include "bootstrap.h"
