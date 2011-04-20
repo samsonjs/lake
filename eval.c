@@ -22,9 +22,7 @@ static void init_special_form_handlers(void);
 
 static void invalid_special_form(LakeList *expr, char *detail)
 {
-    char *msg = g_strdup_printf("unrecognized special form, %s: %s", detail, repr(VAL(expr)));
-    err(msg);
-    g_free(msg);
+    ERR("unrecognized special form, %s: %s", detail, repr(VAL(expr)));
 }
 
 /* expr begins with the symbol "quote" so the quoted value is the 2nd value */
@@ -71,9 +69,7 @@ static LakeVal *setB_special_form(Env *env, LakeList *expr)
         LakeSym *var = SYM(list_shift(expr));
         LakeVal *form = list_shift(expr);
         if (!env_set(env, var, form)) {
-            char *msg = g_strdup_printf("%s is not defined", SYM_S(var));
-            err(msg);
-            g_free(msg);
+            ERR("%s is not defined", SYM_S(var));
         }
     }
     else {
@@ -198,9 +194,7 @@ static LakeVal *eval_special_form(Env *env, LakeList *expr)
     if (handler) {
         return handler(env, list_copy(expr));
     }
-    char *msg = g_strdup_printf("unrecognized special form: %s", SYM_S(name));
-    err(msg);
-    g_free(msg);
+    ERR("unrecognized special form: %s", SYM_S(name));
     return NULL;
 }
 
@@ -223,7 +217,7 @@ LakeVal *eval(Env *env, LakeVal *expr)
         break;
 
     case TYPE_DLIST:
-        err("malformed function call");
+        ERR("malformed function call");
         result = NULL;
         break;
 
@@ -262,8 +256,8 @@ LakeVal *eval(Env *env, LakeVal *expr)
         break;
 
     default:
-        printf("error: unrecognized value, type %d, size %zu bytes", expr->type, expr->size);
-        die("we don't eval that around here!");
+        ERR("unrecognized value, type %d, size %zu bytes", expr->type, expr->size);
+        DIE("we don't eval that around here!");
     }
     
     done: return result;
@@ -289,9 +283,7 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
             result = prim->fn(args);
         }
         else {
-            char *msg = g_strdup_printf("%s expects %d params but got %zu", prim->name, arity, LIST_N(args));
-            err(msg);
-            g_free(msg);
+            ERR("%s expects %d params but got %zu", prim->name, arity, LIST_N(args));
             result = NULL;
         }
     }
@@ -301,9 +293,7 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
         /* Check # of params */
         size_t nparams = LIST_N(fn->params);
         if (nparams != LIST_N(args) && !fn->varargs) {
-            char *msg = g_strdup_printf("expected %zu params but got %zu", nparams, LIST_N(args));
-            err(msg);
-            g_free(msg);
+            ERR("expected %zu params but got %zu", nparams, LIST_N(args));
             return NULL;
         }
 
@@ -330,9 +320,7 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
         list_free(results);
     }
     else {
-        char *msg = g_strdup_printf("not a function: %s", repr(fnVal));
-        err(msg);
-        g_free(msg);
+        ERR("not a function: %s", repr(fnVal));
     }
     return result;
 }

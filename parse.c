@@ -48,7 +48,7 @@ static char peek(Ctx *ctx)
 static void consume(Ctx *ctx, size_t n)
 {
     if (ctx->i + n > ctx->n) {
-        die("ERROR: cannot consume, no more input");
+        DIE("cannot consume, no more input");
     }
     ctx->i += n;
 }
@@ -67,10 +67,7 @@ static char ch(Ctx *ctx, char expected)
         consume1(ctx);
         return c;
     }
-    char *msg = g_malloc(64);
-    sprintf(msg, "parse error, expected '%c' got '%c'", expected, c);
-    die(msg);
-    return 0; /* placate the compiler */
+    DIE("parse error, expected '%c' got '%c'", expected, c);
 }
 
 static int maybe_spaces(Ctx *ctx)
@@ -121,7 +118,7 @@ static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
         if (i >= n) {
             n *= 2;
             char *t = g_realloc(s, n);
-            if (!t) oom();
+            if (!t) OOM();
             s = t;
         }
     }
@@ -216,7 +213,7 @@ static LakeVal *parse_str(Ctx *ctx)
         if (i >= n) {
             n *= 2;
             char *t = g_realloc(s, n);
-            if (!t) oom();
+            if (!t) OOM();
             s = t;
         }
     }
@@ -304,9 +301,7 @@ static LakeVal *_parse_expr(Ctx *ctx)
         /* noop */
     }
     else {
-        char *msg = g_strdup_printf("unexpected char '%c'", c);
-        err(msg);
-        g_free(msg);
+        ERR("unexpected char '%c'", c);
         result = VAL(PARSE_ERR);
         ctx->i = ctx->n; /* consume the rest */
     }

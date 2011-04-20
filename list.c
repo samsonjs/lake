@@ -9,6 +9,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "int.h"
 #include "lake.h"
@@ -77,21 +78,21 @@ static void list_grow(LakeList *list)
 
 LakeVal *list_set(LakeList *list, size_t i, LakeVal *val)
 {
-    if (i < 0 || i >= list->n) {
-        err("list_set: index is out of bounds");
-        return NULL;
+    if (i >= 0 && i < list->n) {
+        list->vals[i] = val;
+    } else {
+        ERR("list_set: index %zu is out of bounds (%zu)", i, list->n);
     }
-    list->vals[i] = val;
     return NULL;
 }
 
 LakeVal *list_get(LakeList *list, LakeInt *li)
 {
-    int i = int_val(li);
-    if (i < 0 || i >= list->n) {
-        return NULL;
+    int i = INT_VAL(li);
+    if (i >= 0 && i < list->n) {
+        return list->vals[i];
     }
-    return list->vals[i];
+    return NULL;
 }
 
 LakeVal *list_append(LakeList *list, LakeVal *val)

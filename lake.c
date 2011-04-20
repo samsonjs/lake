@@ -27,22 +27,6 @@ static LakeBool _F = { { TYPE_BOOL, sizeof(LakeBool) }, FALSE };
 LakeBool *T = &_T;
 LakeBool *F = &_F;
 
-void die(char *msg)
-{
-	err(msg);
-    exit(1);
-}
-
-void err(char *msg)
-{
-	printf("error: %s\n", msg);
-}
-
-void oom(void)
-{
-    die("out of memory");
-}
-
 static LakeVal *prim_nullP(LakeList *args)
 {
     LakeVal *val = list_shift(args);
@@ -108,7 +92,7 @@ static void run_repl_with_env(Env *env)
         expr = prompt_read("> ");
         if (expr == VAL(EOF)) break;
         if (expr == VAL(PARSE_ERR)) {
-            err("parse error");
+            ERR("parse error");
             continue;
         }
         if (expr) {

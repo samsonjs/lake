@@ -133,10 +133,13 @@ struct lake_fn {
 };
 typedef struct lake_fn LakeFn;
 
-void err(char *msg);
-void die(char *msg);
-void oom();
 char *repr(LakeVal *val);
+
+#include <stdio.h>
+
+#define ERR(...) printf("error: "); printf(__VA_ARGS__); putchar('\n')
+#define DIE(...) ERR(__VA_ARGS__); exit(1)
+#define OOM() DIE("out of memory")
 
 #include "sym.h"
 #include "bool.h"

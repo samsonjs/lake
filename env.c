@@ -74,9 +74,7 @@ LakeVal *env_get(Env *env, LakeSym *key)
         val = env_get(env->parent, key);
     }
     if (!val) {
-        char *msg = g_strdup_printf("undefined variable: %s", SYM_S(key));
-        err(msg);
-        g_free(msg);
+        ERR("undefined variable: %s", SYM_S(key));
         val = NULL;
     }
     return val;
