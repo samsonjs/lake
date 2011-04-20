@@ -12,21 +12,29 @@
 
 #include <glib.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include "env.h"
+#include "eval.h"
 #include "lake.h"
 #include "list.h"
 #include "parse.h"
 #include "string.h"
 
-static LakeVal _NIL = { TYPE_NIL, sizeof(LakeVal) };
-LakeVal *NIL = &_NIL;
+static LakeBool _T = { { TYPE_BOOL, sizeof(LakeBool) }, TRUE };
+static LakeBool _F = { { TYPE_BOOL, sizeof(LakeBool) }, FALSE };
+LakeBool *T = &_T;
+LakeBool *F = &_F;
 
 void die(char *msg)
 {
-    printf("error: %s\n", msg);
+	err(msg);
     exit(1);
+}
+
+void err(char *msg)
+{
+	printf("error: %s\n", msg);
 }
 
 void oom(void)
@@ -36,7 +44,7 @@ void oom(void)
 
 Env *primitive_bindings(void)
 {
-    Env *env = shared_env();
+    Env *env = env_toplevel();
     /* TODO */
     return env;
 }
@@ -55,6 +63,9 @@ LakeVal *prompt_read(char *prompt)
         if (ferror(stdin)) {
             printf("error: cannot read from stdin");
         }
+        if (feof(stdin)) {
+            return VAL(EOF);
+        }
         return NULL;
     }
 	/* trim the newline if any */
@@ -69,9 +80,15 @@ void run_repl_with_env(Env *env)
     LakeVal *result;
     for (;;) {
         expr = prompt_read("> ");
-        if (!expr) return;
-        result = env_eval(env, expr);
-        print(result);
+        if (expr == VAL(EOF)) break;
+        if (expr == VAL(PARSE_ERR)) {
+            err("parse error");
+            continue;
+        }
+        if (expr) {
+            result = eval(env, expr);
+            if (result) print(result);
+        }
     }
 }
 
@@ -98,22 +115,19 @@ void run_one_then_repl(int argc, char const *args[])
 
 char *repr(LakeVal *expr)
 {
+    if (expr == NULL) return g_strdup("(null)");
+
     char *s = NULL;
     LakeStr *str;
     
     switch (expr->type) {
-
-    case TYPE_NIL:
-        s = g_strdup("nil");
-        break;
 
     case TYPE_SYM:
         s = sym_repr(SYM(expr));
         break;
 
     case TYPE_BOOL:
-        printf("%s:%d TODO: repr for bools", __FILE__, __LINE__);
-        s = g_strdup("[bool]");
+        s = bool_repr(BOOL(expr));
         break;
 
     case TYPE_INT:
@@ -129,10 +143,18 @@ char *repr(LakeVal *expr)
     case TYPE_LIST:
 		s = list_repr(LIST(expr));
         break;
-        
+    
+    case TYPE_DLIST:
+        s = dlist_repr(DLIST(expr));
+        break;
+    
+    case TYPE_FN:
+        s = fn_repr(FN(expr));
+        break;
+    
     default:
-        printf("unrecognized value, type %d, size %Zu bytes", expr->type, expr->size);
-        s = g_strdup("unrecognized value");
+        printf("error: unrecognized value, type %d, size %zu bytes", expr->type, expr->size);
+        s = g_strdup("");
     }
     
     return s;

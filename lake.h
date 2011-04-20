@@ -10,18 +10,21 @@
 #ifndef _LAKE_LAKE_H
 #define _LAKE_LAKE_H 1
 
+#include <glib.h>
 #include <stdlib.h>
 
 #define LAKE_VERSION "0.1"
 
 typedef int LakeType;
 
-#define TYPE_NIL  0
-#define TYPE_SYM  1
-#define TYPE_BOOL 2
-#define TYPE_INT  3
-#define TYPE_STR  4
-#define TYPE_LIST 5
+#define TYPE_SYM   1
+#define TYPE_BOOL  2
+#define TYPE_INT   3
+#define TYPE_STR   4
+#define TYPE_LIST  5
+#define TYPE_DLIST 6
+#define TYPE_PRIM  7
+#define TYPE_FN    8
 
 #define VAL(x) ((LakeVal *)x)
 #define SYM(x) ((LakeSym *)x)
@@ -29,6 +32,9 @@ typedef int LakeType;
 #define INT(x) ((LakeInt *)x)
 #define STR(x) ((LakeStr *)x)
 #define LIST(x) ((LakeList *)x)
+#define DLIST(x) ((LakeDottedList *)x)
+#define PRIM(x) ((LakePrimitive *)x)
+#define FN(x) ((LakeFn *)x)
 
 struct lake_val {
     LakeType type;
@@ -36,11 +42,8 @@ struct lake_val {
 };
 typedef struct lake_val LakeVal;
 
-LakeVal *NIL;
-typedef LakeVal *NILP;
-
-#define VAL_SIZE(x) (x != NULL ? VAL(x)->size : NIL->size)
-#define VAL_OR_NIL(x) (x != NULL ? VAL(x) : NIL)
+#define VAL_SIZE(x) (VAL(x)->size)
+#define IS(t, x) (VAL(x)->type == t)
 
 struct lake_sym {
     LakeVal base;
@@ -49,6 +52,24 @@ struct lake_sym {
     unsigned long hash;
 };
 typedef struct lake_sym LakeSym;
+
+#define SYM_S(x) (x->s)
+#define SYM_HASH(x) (x->hash)
+
+struct lake_bool {
+	LakeVal base;
+	gboolean val;
+};
+typedef struct lake_bool LakeBool;
+
+LakeBool *T;
+LakeBool *F;
+
+#define BOOL_VAL(x) (x->val)
+#define IS_TRUE(x) (VAL(x) == VAL(T))
+#define IS_FALSE(x) (VAL(x) == VAL(F))
+#define IS_TRUTHY(x) (!IS_FALSE(x))
+#define IS_FALSY(x) (IS_FALSE(x))
 
 struct lake_int {
     LakeVal base;
@@ -75,8 +96,40 @@ struct lake_list {
 typedef struct lake_list LakeList;
 
 #define LIST_N(list) (list->n)
-#define LIST_VAL(list, i) (list->vals[i])
+#define LIST_VALS(list) (list->vals)
+#define LIST_VAL(list, i) (i >= 0 && i < list->n ? list->vals[i] : NULL)
 
+struct lake_dlist {
+	LakeVal base;
+	LakeList *head;
+	LakeVal *tail;
+};
+typedef struct lake_dlist LakeDottedList;
+
+#define DLIST_HEAD(x) (x->head)
+#define DLIST_TAIL(x) (x->tail)
+
+typedef LakeVal *(*lake_fn)(LakeList *args);
+
+struct lake_primitive {
+	LakeVal base;
+	char *name;
+	lake_fn fn;
+};
+typedef struct lake_primitive LakePrimitive;
+
+#include "env.h"
+
+struct lake_fn {
+	LakeVal base;
+	LakeList *params;
+	LakeSym *varargs;
+	LakeList *body;
+	Env *closure;
+};
+typedef struct lake_fn LakeFn;
+
+void err(char *msg);
 void die(char *msg);
 void oom();
 char *repr(LakeVal *val);
@@ -84,7 +137,12 @@ char *repr(LakeVal *val);
 #include "sym.h"
 #include "bool.h"
 #include "int.h"
-#include "list.h"
 #include "string.h"
+#include "list.h"
+#include "dlist.h"
+#include "primitive.h"
+#include "fn.h"
+
+#include "bootstrap.h"
 
 #endif

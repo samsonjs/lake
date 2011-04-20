@@ -8,16 +8,14 @@
   */
 
 #include <glib.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "bool.h"
 #include "int.h"
 
 static LakeInt *int_alloc(void)
 {
     LakeInt *i = g_malloc(sizeof(LakeInt));
-    i->base.type = TYPE_INT;
-    i->base.size = sizeof(LakeInt);
+    VAL(i)->type = TYPE_INT;
+    VAL(i)->size = sizeof(LakeInt);
     return i;
 }
 
@@ -55,16 +53,15 @@ LakeInt *int_cmp(LakeInt *a, LakeInt *b)
     return result;
 }
 
-LakeSym *int_eq(LakeInt *a, LakeInt *b)
+LakeBool *int_eq(LakeInt *a, LakeInt *b)
 {
     return bool_from_int(a->val == b->val);
 }
 
 LakeStr *int_to_str(LakeInt *i)
 {
-    static int size = 32;
-    char s[size];
-    snprintf(s, size, "%d", i->val);
+    char *s = g_strdup_printf("%d", i->val);
     LakeStr *str = str_from_c(s);
+	g_free(s);
     return str;
 }

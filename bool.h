@@ -10,12 +10,15 @@
 #ifndef _LAKE_BOOL_H
 #define _LAKE_BOOL_H 1
 
+#include <glib.h>
 #include "lake.h"
 
-LakeSym *bool_from_int(int b);
-int is_true(LakeVal *val);
-int is_false(LakeVal *val);
-int is_truthy(LakeVal *val);
-int is_falsy(LakeVal *val);
+LakeBool *bool_from_int(int b);
+gboolean bool_val(LakeBool *b);
+LakeStr *bool_to_str(LakeBool *b);
+LakeBool *bool_eq(LakeBool *a, LakeBool *b);
+char *bool_repr(LakeBool *b);
+LakeVal* bool_and(LakeVal *a, LakeVal *b);
+LakeVal* bool_or(LakeVal *a, LakeVal *b);
 
 #endif

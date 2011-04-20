@@ -11,8 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "dlist.h"
+#include "int.h"
 #include "lake.h"
 #include "list.h"
+#include "parse.h"
+#include "string.h"
+#include "sym.h"
 
 struct context {
     char *s;
@@ -28,22 +33,15 @@ LakeVal *parse_expr(char *s, size_t n)
     Ctx ctx = { s, n, 0 };
     LakeVal *result = _parse_expr(&ctx);
     if (ctx.i < ctx.n) {
-        printf("ignoring %Zu trailing chars: %s\n", ctx.n - ctx.i - 1, ctx.s + ctx.i);
+        char *trailing = ctx.s + ctx.i;
+        printf("warning: ignoring %d trailing chars: %s\n", (int)(ctx.n - ctx.i), trailing);
     }
     return result;
 }
 
-#define PARSE_EOF -1
-
 static char peek(Ctx *ctx)
 {
     if (ctx->i < ctx->n) return ctx->s[ctx->i];
-    return PARSE_EOF;
-}
-
-static char peek2(Ctx *ctx)
-{
-    if (ctx->i + 1 < ctx->n) return ctx->s[ctx->i + 1];
     return PARSE_EOF;
 }
 
@@ -95,22 +93,22 @@ static int whitespace(Ctx *ctx)
     return result;
 }
 */
-static int is_letter(char c)
+static gboolean is_letter(char c)
 {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static int is_symbol(char c)
+static gboolean is_symbol(char c)
 {
     return strchr("!$%&|*+-/:<=>?@^_~#", c) != NULL;
 }
 
-static int is_digit(char c)
+static gboolean is_digit(char c)
 {
     return c >= '0' && c <= '9';
 }
 
-static char *parse_while(Ctx *ctx, int (*is_valid)(char))
+static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
 {
     size_t n = 8;
     size_t i = 0;
@@ -147,13 +145,14 @@ static LakeVal *parse_int(Ctx *ctx)
     return VAL(int_from_c(sign * n));
 }
 
-static int is_sym_char(char c)
+static gboolean is_sym_char(char c)
 {
     return is_letter(c) || is_symbol(c) || is_digit(c);
 }
 
 static LakeVal *parse_sym(Ctx *ctx)
 {
+	LakeVal *val;
     static int size = 1024;
     char s[size];
     char c;
@@ -163,8 +162,14 @@ static LakeVal *parse_sym(Ctx *ctx)
         consume1(ctx);
     }
     s[i] = '\0';
-    /* TODO: check for #t and #f and return true boolean values (LakeBool *) */
-    return VAL(sym_intern(s));
+	if (g_strcmp0(s, "#t") == 0) {
+		val = VAL(T);
+	} else if (g_strcmp0(s, "#f") == 0) {
+		val = VAL(F);
+	} else {
+		val = VAL(sym_intern(s));
+	}
+    return val;
 }
 
 static char escape_char(char c)
@@ -230,15 +235,38 @@ static LakeVal* parse_list(Ctx *ctx)
     while ((c = peek(ctx)) != ')') {
         if (c == PARSE_EOF) {
             printf("error: end of input while parsing list");
-            return NIL;
+            list_free(list);
+            ctx-> i = ctx->n;
+            return NULL;
         }
-        list_append(list, _parse_expr(ctx));
+        
+        /* check for dotted lists */
+        if (c == '.') {
+            ch(ctx, '.');
+            maybe_spaces(ctx);
+            LakeVal *tail = _parse_expr(ctx);
+            if (tail == VAL(PARSE_ERR)) {
+                list_free(list);
+                ctx->i = ctx->n;
+                return NULL;
+            }
+            ch(ctx, ')');
+            return VAL(dlist_make(list, tail));
+        }
+        
+        LakeVal *val = _parse_expr(ctx);
+        if (val == VAL(PARSE_ERR)) {
+            list_free(list);
+            ctx->i = ctx->n;
+            return NULL;
+        }
+        list_append(list, val);
     }
     ch(ctx, ')');
     return VAL(list);
 }
 
-static int is_not_newline(char c)
+static gboolean is_not_newline(char c)
 {
     return !(c == '\n' || c == '\r');
 }
@@ -250,17 +278,11 @@ static void parse_comment(Ctx *ctx)
 
 static LakeVal *_parse_expr(Ctx *ctx)
 {
-    LakeVal *result = NIL;
+    LakeVal *result = NULL;
     char c = peek(ctx);
-    /*char d =*/ peek2(ctx);
     if (c >= '0' && c <= '9') {
         result = VAL(parse_int(ctx));
     }
-    /* TODO: chars
-    else if (c == '#' && d == '\\') {
-        result = parse_char(ctx);
-    }
-    */
     else if (is_letter(c) || is_symbol(c)) {
         result = parse_sym(ctx);
     }
@@ -279,12 +301,14 @@ static LakeVal *_parse_expr(Ctx *ctx)
         parse_comment(ctx);
     }
     else if (c == PARSE_EOF) {
-        printf("error: end of input, expected an expression");
+        /* noop */
     }
     else {
-        char msg[32];
-        sprintf(msg, "unexpected char '%c'", c);
-        die(msg);
+        char *msg = g_strdup_printf("unexpected char '%c'", c);
+        err(msg);
+        g_free(msg);
+        result = VAL(PARSE_ERR);
+        ctx->i = ctx->n; /* consume the rest */
     }
     maybe_spaces(ctx);
     return result;

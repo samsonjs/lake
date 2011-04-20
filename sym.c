@@ -16,26 +16,26 @@
 #include "string.h"
 #include "sym.h"
 
-#define SYM_TABLE_SIZE 1024
+static GHashTable *_symbols;
 
 static LakeSym *sym_alloc(void)
 {
     LakeSym *sym = g_malloc(sizeof(LakeSym));
-    sym->base.type = TYPE_SYM;
-    sym->base.size = sizeof(LakeSym);
+    VAL(sym)->type = TYPE_SYM;
+    VAL(sym)->size = sizeof(LakeSym);
     return sym;
 }
 
 LakeSym *sym_intern(char *s)
 {
-    GHashTable *symbols = shared_env()->symbols;
-    LakeSym *sym = g_hash_table_lookup(symbols, s);
+    if (!_symbols) _symbols = g_hash_table_new(g_str_hash, g_str_equal);
+    LakeSym *sym = g_hash_table_lookup(_symbols, s);
     if (!sym) {
         sym = sym_alloc();
         sym->n = strlen(s);
         sym->s = g_strdup(s);
         sym->hash = g_str_hash(s);
-        g_hash_table_insert(symbols, sym->s, sym);
+        g_hash_table_insert(_symbols, sym->s, sym);
 	}
     return sym;
 }
@@ -60,7 +60,7 @@ unsigned long sym_val(LakeSym *sym)
     return sym->hash;
 }
 
-LakeSym *sym_eq(LakeSym *a, LakeSym *b)
+LakeBool *sym_eq(LakeSym *a, LakeSym *b)
 {
     return bool_from_int(g_strcmp0(a->s, b->s) == 0);
 }

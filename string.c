@@ -17,8 +17,8 @@
 static LakeStr *str_alloc(void)
 {
     LakeStr *str = g_malloc(sizeof(LakeStr));
-    str->base.type = TYPE_STR;
-    str->base.size = sizeof(LakeStr);
+    VAL(str)->type = TYPE_STR;
+    VAL(str)->size = sizeof(LakeStr);
     return str;
 }
 
@@ -28,11 +28,11 @@ void str_free(LakeStr *str)
     g_free(str);
 }
 
-NILP str_set(LakeStr *str, char *s)
+LakeVal *str_set(LakeStr *str, char *s)
 {
     str->n = strlen(s);
     str->s = g_strdup(s);
-    return NIL;
+    return NULL;
 }
 
 LakeStr *str_from_c(char *s)
@@ -67,7 +67,7 @@ LakeInt *str_cmp(LakeStr *a, LakeStr *b)
     return int_from_c(g_strcmp0(a->s, b->s));
 }
 
-LakeSym *str_eq(LakeStr *a, LakeStr *b)
+LakeBool *str_eq(LakeStr *a, LakeStr *b)
 {
     return bool_from_int(g_strcmp0(a->s, b->s) == 0);
 }

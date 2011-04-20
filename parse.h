@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include "lake.h"
 
+#define PARSE_EOF -1
+#define PARSE_ERR -2
+
 LakeVal *parse_expr(char *s, size_t n);
 
 #endif

@@ -15,20 +15,18 @@
 struct env {
     struct env *parent;
     GHashTable *bindings;
-    GHashTable *symbols;
 };
 typedef struct env Env;
 
 #include "lake.h"
 
-void set_shared_env(Env *env);
-Env *shared_env(void);
+void env_set_toplevel(Env *env);
+Env *env_toplevel(void);
 
 Env *env_make(Env *parent);
-LakeVal *env_define(Env *env, char *key, LakeVal *val);
-LakeVal *env_set(Env *env, char *key, LakeVal *val);
-LakeVal *env_get(Env *env, char *key);
-int env_is_bound(Env *env, char *key);
-LakeVal *env_eval(Env *env, LakeVal *expr);
+LakeVal *env_define(Env *env, LakeSym *key, LakeVal *val);
+LakeVal *env_set(Env *env, LakeSym *key, LakeVal *val);
+LakeVal *env_get(Env *env, LakeSym *key);
+Env *env_is_defined(Env *env, LakeSym *key);
 
 #endif

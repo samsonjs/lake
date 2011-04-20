@@ -15,27 +15,34 @@
 #include "list.h"
 #include "string.h"
 
+/* TODO: use a linked list instead of this cheesy structure */
+
 #define LIST_INIT_CAP 2
 
 static LakeList *list_alloc(void)
 {
     LakeList *list = g_malloc(sizeof(LakeList));
-    list->base.type = TYPE_LIST;
-    list->base.size = sizeof(LakeList);
+    VAL(list)->type = TYPE_LIST;
+    VAL(list)->size = sizeof(LakeList);
     return list;
+}
+
+void list_free(LakeList *list)
+{
+	/* TODO: proper memory management ... refcounting? */
+	if (list) {
+		g_free(list);
+	}
 }
 
 LakeList *list_make(void)
 {
-    LakeList *list = list_make_with_cap(LIST_INIT_CAP);
-    int i;
-    for (i = 0; i < list->cap; ++i) {
-        list->vals[i] = NULL;
-    }
+    LakeList *list = list_make_with_capacity(LIST_INIT_CAP);
+    memset(list->vals, 0, list->cap);
     return list;
 }
 
-LakeList *list_make_with_cap(size_t cap)
+LakeList *list_make_with_capacity(size_t cap)
 {
     LakeList *list = list_alloc();
     list->cap = cap;
@@ -46,11 +53,8 @@ LakeList *list_make_with_cap(size_t cap)
 
 LakeList *list_from_array(size_t n, LakeVal *vals[])
 {
-    LakeList *list = list_make_with_cap(n);
-    int i;
-    for (i = 0; i < n; ++i) {
-        list->vals[i] = vals[i];
-    }
+    LakeList *list = list_make_with_capacity(n);
+    memcpy(list->vals, vals, n * sizeof(LakeVal *));
     return list;
 }
 
@@ -59,46 +63,63 @@ LakeInt *list_len(LakeList *list)
     return int_from_c(list->n);
 }
 
-NILP list_grow(LakeList *list)
+static void list_grow(LakeList *list)
 {
     list->cap *= 2;
-    LakeVal **new_vals;
-    new_vals = g_malloc(list->cap * sizeof(LakeVal *));
-    int i;
-    for (i = 0; i < list->n; ++i) {
-        new_vals[i] = list->vals[i];
-    }
-    g_free(list->vals);
-    list->vals = new_vals;
-    return NIL;
+    list->vals = g_realloc(list->vals, list->cap * sizeof(LakeVal *));
 }
 
-NILP list_append(LakeList *list, LakeVal *val)
-{
-    if (list->n >= list->cap) {
-        list_grow(list);
-    }
-    list->vals[list->n++] = val;
-    return NIL;
-}
-
-NILP list_set(LakeList *list, size_t i, LakeVal *val)
+LakeVal *list_set(LakeList *list, size_t i, LakeVal *val)
 {
     if (i < 0 || i >= list->n) {
-        /* TODO error */
+        err("list_set: index is out of bounds");
         return NULL;
     }
     list->vals[i] = val;
-    return NIL;
+    return NULL;
 }
 
 LakeVal *list_get(LakeList *list, LakeInt *li)
 {
     int i = int_val(li);
     if (i < 0 || i >= list->n) {
-        return NIL;
+        return NULL;
     }
-    return VAL_OR_NIL(list->vals[i]);
+    return list->vals[i];
+}
+
+LakeVal *list_append(LakeList *list, LakeVal *val)
+{
+    if (list->n >= list->cap) {
+        list_grow(list);
+    }
+    list->vals[list->n++] = val;
+    return NULL;
+}
+
+LakeVal *list_shift(LakeList *list)
+{
+	LakeVal *head = NULL;
+	if (list->n > 0) {
+		head = list->vals[0];
+		size_t i;
+		size_t n = list->n;
+		for (i = 1; i < n; ++i) {
+			list->vals[i - 1] = list->vals[i];
+		}
+		list->n--;
+	}
+	return head;
+}
+
+LakeVal *list_pop(LakeList *list)
+{
+	LakeVal *tail = NULL;
+	if (list->n > 0) {
+		tail = list->vals[list->n - 1];
+		list->n--;
+	}
+	return tail;
 }
 
 LakeInt *list_cmp(LakeList *a, LakeList *b)
@@ -107,7 +128,7 @@ LakeInt *list_cmp(LakeList *a, LakeList *b)
     return 0;
 }
 
-LakeSym *list_eq(LakeList *a, LakeList *b)
+LakeBool *list_eq(LakeList *a, LakeList *b)
 {
     /* TODO */
     return bool_from_int(a == b);
@@ -123,21 +144,24 @@ LakeStr *list_to_str(LakeList *list)
 
 char *list_repr(LakeList *list)
 {
-	char s[1024];
-	size_t n = 0;
-	s[n++] = '(';
+	GString *s = g_string_new("(");
     int i;
 	char *s2;
-	size_t len;
     for (i = 0; i < LIST_N(list); ++i) {
 		s2 = repr(LIST_VAL(list, i));
-		len = strlen(s2);
-        memcpy(s + n, s2, len);
-		n += len;
+		g_string_append(s, s2);
 		g_free(s2);
-        if (i != LIST_N(list) - 1) s[n++] = ' ';
+		if (i != LIST_N(list) - 1) g_string_append(s, " ");
     }
-    s[n++] = ')';
-	s[n] = '\0';
-	return g_strdup(s);
+	g_string_append(s, ")");
+	gchar *repr = s->str;
+	g_string_free(s, FALSE); /* don't free char data */
+	return repr;
+}
+
+LakeVal **list_vals(LakeList *list)
+{
+	LakeVal **vals = malloc(list->n * sizeof(LakeVal *));
+    memcpy(vals, list->vals, list->n * sizeof(LakeVal *));
+	return vals;
 }

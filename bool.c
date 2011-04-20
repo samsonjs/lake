@@ -7,31 +7,37 @@
   *
   */
 
+#include <glib.h>
 #include "bool.h"
 #include "lake.h"
 #include "sym.h"
 
-LakeSym *bool_from_int(int n)
+LakeBool *bool_from_int(int n)
 {
-    return n ? sym_intern("#t") : sym_intern("#f");
+    return n ? T : F;
 }
 
-int is_true(LakeVal *val)
+gboolean bool_val(LakeBool *b)
 {
-    return (val->type == TYPE_SYM && sym_eq(sym_intern("#t"), SYM(val)));
+	return b->val;
 }
 
-int is_false(LakeVal *val)
+char *bool_repr(LakeBool *b)
 {
-    return (val->type == TYPE_SYM && sym_eq(sym_intern("#f"), SYM(val)));
+	return g_strdup(BOOL_VAL(b) ? "#t" : "#f");
 }
 
-int is_truthy(LakeVal *val)
+LakeStr *bool_to_str(LakeBool *b)
 {
-    return is_true(val); /* TODO */
+	return str_from_c(BOOL_VAL(b) ? "#t" : "#f");
 }
 
-int is_falsy(LakeVal *val)
+LakeVal* bool_and(LakeVal *a, LakeVal *b)
 {
-    return is_false(val); /* TODO */
+    return IS_TRUTHY(a) && IS_TRUTHY(b) ? b : a;
+}
+
+LakeVal* bool_or(LakeVal *a, LakeVal *b)
+{
+    return IS_TRUTHY(a) ? a : b;
 }
