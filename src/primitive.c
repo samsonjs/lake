@@ -164,6 +164,35 @@ static LakeVal *prim_int_eq(LakeList *args)
     return VAL(bool_from_int(result));
 }
 
+static LakeVal *prim_car(LakeList *args)
+{
+    LakeList *list = LIST(LIST_VAL(args, 0));
+    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+        return LIST_VAL(list, 0);
+    }
+    ERR("not a pair: %s", list_repr(list));
+    return NULL;
+}
+
+static LakeVal *prim_cdr(LakeList *args)
+{
+    LakeList *list = LIST(LIST_VAL(args, 0));
+    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+        LakeList *cdr = list_copy(list);
+        list_shift(cdr);
+        return VAL(cdr);
+    }
+    ERR("not a pair: %s", list_repr(list));
+    return NULL;
+}
+
+static LakeVal *prim_cons(LakeList *args)
+{
+    LakeVal *car = LIST_VAL(args, 0);
+    LakeVal *cdr = LIST_VAL(args, 1);
+    return VAL(list_cons(car, cdr));
+}
+
 Env *primitive_bindings(void)
 {
     #define DEFINE(name, fn, arity) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
@@ -177,5 +206,8 @@ Env *primitive_bindings(void)
     DEFINE("*", prim_mul, ARITY_VARARGS);
     DEFINE("/", prim_div, ARITY_VARARGS);
     DEFINE("=", prim_int_eq, ARITY_VARARGS);
+    DEFINE("car", prim_car, 1);
+    DEFINE("cdr", prim_cdr, 1);
+    DEFINE("cons", prim_cons, 2);
     return env;
 }

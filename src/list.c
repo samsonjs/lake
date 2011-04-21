@@ -43,6 +43,14 @@ LakeList *list_make(void)
     return list;
 }
 
+LakeList *list_cons(LakeVal *car, LakeVal *cdr)
+{
+    LakeList *list = list_make_with_capacity(2);
+    list->vals[0] = car;
+    list->vals[1] = cdr;
+    return list;
+}
+
 LakeList *list_make_with_capacity(size_t cap)
 {
     LakeList *list = list_alloc();

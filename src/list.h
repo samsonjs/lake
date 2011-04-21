@@ -15,6 +15,7 @@
 #include "string.h"
 
 LakeList *list_make(void);
+LakeList *list_cons(LakeVal *car, LakeVal *cdr);
 void list_free(LakeList *list);
 LakeList *list_make_with_capacity(size_t cap);
 LakeList *list_from_array(size_t n, LakeVal *vals[]);
