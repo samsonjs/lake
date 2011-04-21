@@ -78,8 +78,9 @@ static LakeVal *prompt_read(Env *env, char *prompt)
     LakeVal *result;
     
     /* naked call */
-    LakeVal *head = eval(env, LIST_VAL(list, 0));
-    if (LIST_N(list) > 1 && CALLABLE(head)) {
+    LakeVal *head;
+    if (is_special_form(list) ||
+        (LIST_N(list) > 1 && (head = eval(env, LIST_VAL(list, 0))) && CALLABLE(head))) {
         result = VAL(list);
     }
 

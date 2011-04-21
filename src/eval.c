@@ -167,7 +167,7 @@ static void init_special_form_handlers(void)
     /* HANDLER("letrec", &letrec_special_form); */
 }
 
-static gboolean is_special_form(LakeList *expr)
+gboolean is_special_form(LakeList *expr)
 {
     if (special_form_handlers == NULL) {
         init_special_form_handlers();

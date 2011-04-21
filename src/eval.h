@@ -16,5 +16,6 @@
 LakeVal *eval(Env *env, LakeVal *expr);
 LakeList *eval_exprs(Env *env, LakeList *exprs);
 LakeVal *apply(LakeVal *fnVal, LakeList *args);
+gboolean is_special_form(LakeList *expr);
 
 #endif
