@@ -63,7 +63,6 @@ static LakeVal *prim_not(LakeList *args)
         }                                                          \
     } while (0)
 
-
 static LakeVal *prim_add(LakeList *args)
 {
     int result = 0;
