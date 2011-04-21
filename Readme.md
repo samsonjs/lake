@@ -30,8 +30,7 @@ That will drop you at a repl. There are booleans, symbols, integers, strings, li
     (1 . 2)
     > (lambda () "hello")
     (lambda () "hello")
-    > (define inc (lambda (x) (+ x 1)))
-    > (inc 41)
+    > ((lambda (x) (+ x 1)) 41)
     42
 
 Hooray! That sure is repl-ish.
@@ -44,13 +43,14 @@ The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, an
     > (set! answer 42)
     > answer
     42
+    > (define drop2 (lambda (a b . rest) rest))
+    > (drop2 1 2 3 4)
+    (3 4)
     > (define list (lambda rest rest))
     > (list 1 2 3 4)
     (1 2 3 4)
 
-Woah, we even managed to define a useful function without using any primitives!
-
-There are primitives now though. So few they can be easily named. They are named thusly:
+Woah, we even managed to define a useful function without using any primitives! There are primitives now though. So few they can be easily named. They are named thusly:
 
   * car, cdr, cons
   * null?
