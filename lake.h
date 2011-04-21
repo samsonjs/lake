@@ -149,9 +149,14 @@ char *repr(LakeVal *val);
 
 #include <stdio.h>
 
-#define ERR(...) printf("error: "); printf(__VA_ARGS__); putchar('\n')
-#define DIE(...) ERR(__VA_ARGS__); exit(1)
-#define OOM() DIE("out of memory")
+#define ERR(...) do {                 \
+        fprintf(stderr, "error: ");   \
+        fprintf(stderr, __VA_ARGS__); \
+        fprintf(stderr, "\n");        \
+    } while (0)
+
+#define DIE(...) do { ERR(__VA_ARGS__); exit(1); } while(0)
+#define OOM() DIE("%s:%d out of memory", __FILE__, __LINE__)
 
 #include "sym.h"
 #include "bool.h"
