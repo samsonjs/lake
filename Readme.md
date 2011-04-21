@@ -30,7 +30,7 @@ That will drop you at a repl. There are booleans, symbols, integers, strings, li
     (lambda () "hello")
     > (define inc (lambda (x) (+ x 1)))
 
-Hooray! It parses (reads), evaluates, and then prints things back.
+Hooray! That sure is repl-ish.
 
 The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, and `lambda`.
 
@@ -51,6 +51,7 @@ Woah, we even managed to define a useful function without using any primitives! 
   * not
   * math operations: add, subtract, multiply, and divide (+ - * /)
   * numeric equals (=)
+  * car, cdr, cons
 
 Lake still needs:
 
@@ -63,11 +64,10 @@ Lake still needs:
       * boolean (logic)
       * string
       * function
-      * list (cons, car, cdr, ...)
       * dotted list (head, tail)
   * a minimal stdlib
 
-I don't think I'll need any other numeric types. Similarly I don't intend to add features expected from real languages, such as exception handling, I/O, GC, etc.
+There's enough here to start reading so I'm going to see where the book takes me.
 
 Contributors
 ============
