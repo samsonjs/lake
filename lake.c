@@ -10,6 +10,7 @@
   *
   */
 
+#include <errno.h>
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
@@ -60,46 +61,6 @@ static LakeVal *prompt_read(char *prompt)
 	/* trim the newline if any */
 	buf[strcspn(buf, "\n")] = '\0';
     return parse_expr(buf, strlen(buf));
-}
-
-static void run_repl_with_env(Env *env)
-{
-    puts("Lake Scheme v" LAKE_VERSION);
-    LakeVal *expr;
-    LakeVal *result;
-    for (;;) {
-        expr = prompt_read("> ");
-        if (expr == VAL(EOF)) break;
-        if (expr == VAL(PARSE_ERR)) {
-            ERR("parse error");
-            continue;
-        }
-        if (expr) {
-            result = eval(env, expr);
-            if (result) print(result);
-        }
-    }
-}
-
-static void run_repl(void)
-{
-    run_repl_with_env(primitive_bindings());
-}
-
-static void run_one_then_repl(int argc, char const *args[])
-{
-    /* create a top level environment */
-    Env *env = primitive_bindings();
-
-    /* bind args */
-    /*
-    LakeList *lakeArgs = list_of_strings_from_array(argc, args);
-    env_bind(env, "args", lakeArgs);
-    */
-
-    /* eval (load args[0]) in env */
-    
-    run_repl_with_env(env);
 }
 
 char *repr(LakeVal *expr)
@@ -157,13 +118,88 @@ char *repr(LakeVal *expr)
     return s;
 }
 
-int main (int argc, char const *argv[])
+static void run_repl(Env *env)
 {
-    if (argc == 1) {
-        run_repl();
+    puts("Lake Scheme v" LAKE_VERSION);
+    LakeVal *expr;
+    LakeVal *result;
+    for (;;) {
+        expr = prompt_read("> ");
+        if (expr == VAL(EOF)) break;
+        if (expr == VAL(PARSE_ERR)) {
+            ERR("parse error");
+            continue;
+        }
+        if (expr) {
+            result = eval(env, expr);
+            if (result) print(result);
+        }
+    }
+}
+
+char *read_file(char const *filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if (fp) {
+        size_t size = 4096;
+        char buf[size];
+        size_t n = size;
+        size_t i = 0;
+        size_t read;
+        char *s = g_malloc(n);
+        
+        while (!feof(fp) && !ferror(fp)) {
+            read = fread(buf, 1, size, fp);
+            if (i + read > n) {
+                n += size;
+                if (!(s = g_realloc(s, n))) OOM();
+            }
+            memcpy(s + i, buf, read);
+            i += read;
+        }
+        s[i] = '\0';
+        if (ferror(fp)) {
+            ERR("failed to read file %s: %s", filename, strerror(errno));
+            return NULL;
+        }
+        fclose(fp);
+        
+        return s;
     }
     else {
-        run_one_then_repl(argc, argv);
+        ERR("cannot open file %s: %s", filename, strerror(errno));
+        return NULL;
     }
+}
+
+int main (int argc, char const *argv[])
+{
+    /* create a top level environment */
+    Env *env = primitive_bindings();
+
+    /* create and bind args */
+    LakeVal **argVals = g_malloc(argc * sizeof(LakeVal *));
+    int i;
+    for (i = 0; i < argc; ++i) {
+        argVals[i] = VAL(str_from_c((char *)argv[i]));
+    }
+    LakeList *args = list_from_array(argc, argVals);
+    free(argVals);
+    env_define(env, sym_intern("args"), VAL(args));
+    
+    /* if a filename is given load the file */
+    if (argc > 1) {
+        char *text = read_file(argv[1]);
+        if (text) {
+            LakeList *exprs = parse_exprs(text, strlen(text));
+            if (exprs) {
+                eval_exprs(env, exprs);
+            }
+        }
+    }
+    
+    /* run the repl */
+    run_repl(env);
+    
     return 0;
 }

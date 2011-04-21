@@ -14,6 +14,7 @@
 #include "lake.h"
 
 LakeVal *eval(Env *env, LakeVal *expr);
+LakeList *eval_exprs(Env *env, LakeList *exprs);
 LakeVal *apply(LakeVal *fnVal, LakeList *args);
 
 #endif

@@ -27,17 +27,41 @@ struct context {
 };
 typedef struct context Ctx;
 
+static void warn_trailing(Ctx *ctx)
+{
+    if (ctx->i < ctx->n) {
+        char *trailing = ctx->s + ctx->i;
+        printf("warning: ignoring %d trailing chars: %s\n", (int)(ctx->n - ctx->i), trailing);
+    }
+}
+
 static LakeVal *_parse_expr(Ctx *ctx);
 
 LakeVal *parse_expr(char *s, size_t n)
 {
     Ctx ctx = { s, n, 0, 0 };
     LakeVal *result = _parse_expr(&ctx);
-    if (ctx.i < ctx.n) {
-        char *trailing = ctx.s + ctx.i;
-        printf("warning: ignoring %d trailing chars: %s\n", (int)(ctx.n - ctx.i), trailing);
-    }
+    warn_trailing(&ctx);
     return result;
+}
+
+LakeList *parse_exprs(char *s, size_t n)
+{
+    Ctx ctx = { s, n, 0, 0 };
+    LakeList *results = list_make();
+    LakeVal *result;
+    while (ctx.i < ctx.n) {
+        result = _parse_expr(&ctx);
+        if (result && result != VAL(PARSE_ERR)) {
+            list_append(results, result);
+        }
+        else {
+            list_free(results);
+            return NULL;
+        }
+    }
+    warn_trailing(&ctx);
+    return results;
 }
 
 static char peek(Ctx *ctx)
@@ -81,7 +105,7 @@ static void backtrack(Ctx *ctx)
     ctx->i = ctx->mark;
 }
 
-static gboolean is_space(c)
+static gboolean is_space(char c)
 {
     return strchr(" \r\n\t", c) != NULL;
 }
@@ -123,9 +147,7 @@ static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            char *t = g_realloc(s, n);
-            if (!t) OOM();
-            s = t;
+            if (!(s = g_realloc(s, n))) OOM();
         }
     }
     s[i] = '\0';
@@ -234,9 +256,7 @@ static LakeVal *parse_str(Ctx *ctx)
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            char *t = g_realloc(s, n);
-            if (!t) OOM();
-            s = t;
+            if (!(s = g_realloc(s, n))) OOM();
         }
     }
     s[i] = '\0';
@@ -344,5 +364,10 @@ static LakeVal *_parse_expr(Ctx *ctx)
         ctx->i = ctx->n; /* consume the rest */
     }
     maybe_spaces(ctx);
+    
+    if (IS(TYPE_SYM, result)) {
+        /* TODO: try to parse a naked list */
+    }
+    
     return result;
 }

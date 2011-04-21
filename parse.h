@@ -17,5 +17,6 @@
 #define PARSE_ERR -2
 
 LakeVal *parse_expr(char *s, size_t n);
+LakeList *parse_exprs(char *s, size_t n);
 
 #endif

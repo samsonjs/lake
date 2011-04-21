@@ -74,6 +74,7 @@ static void list_grow(LakeList *list)
 {
     list->cap *= 2;
     list->vals = g_realloc(list->vals, list->cap * sizeof(LakeVal *));
+    if (!list->vals) OOM();
 }
 
 LakeVal *list_set(LakeList *list, size_t i, LakeVal *val)

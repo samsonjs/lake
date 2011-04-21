@@ -267,7 +267,7 @@ LakeVal *eval(Env *env, LakeVal *expr)
     done: return result;
 }
 
-static LakeList *eval_exprs(Env *env, LakeList *exprs)
+LakeList *eval_exprs(Env *env, LakeList *exprs)
 {
     LakeList *results = list_make_with_capacity(LIST_N(exprs));
     int i;
