@@ -12,7 +12,7 @@ Install glib 2.x using your package manager, for me it's either `brew install gl
 
     $ make && ./lake
 
-That will drop you at a repl. There are booleans, symbols, integers, strings, lists, dotted lists (pairs), lambdas, and a few special forms.
+That will drop you at a repl. There are booleans, symbols, integers, strings, lists, dotted lists (pairs), lambdas, special forms, and a few primitive functions.
 
     > #t
     #t
@@ -30,7 +30,9 @@ That will drop you at a repl. There are booleans, symbols, integers, strings, li
     (lambda () "hello")
     > (define inc (lambda (x) (+ x 1)))
 
-Hooray! It parses (reads), evaluates, and then prints things back. However there aren't any primitives yet, so no `+`, and if you try to *use* `inc` defined above it will not work. The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, and `lambda`.
+Hooray! It parses (reads), evaluates, and then prints things back.
+
+The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, and `lambda`.
 
     > (define answer 7)
     > answer
@@ -42,7 +44,13 @@ Hooray! It parses (reads), evaluates, and then prints things back. However there
     > (list 1 2 3 4)
     (1 2 3 4)
 
-Woah, we even managed to define a useful function without any primitives!
+Woah, we even managed to define a useful function without using any primitives! There are primitives now though. So few they can be easily named. They are named thusly:
+
+  * null?
+  * pair?
+  * not
+  * math operations: add, subtract, multiply, and divide (+ - * /)
+  * numeric equals (=)
 
 Lake still needs:
 
@@ -52,14 +60,12 @@ Lake still needs:
     * basic control flow (if, cond, when)
     * native type operations:
       * symbol
-      * integer (math)
       * boolean (logic)
       * string
       * function
       * list (cons, car, cdr, ...)
       * dotted list (head, tail)
   * a minimal stdlib
-  * sugar such as '... -> (quote ...)
 
 I don't think I'll need any other numeric types. Similarly I don't intend to add features expected from real languages, such as exception handling, I/O, GC, etc.
 
