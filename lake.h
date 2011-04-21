@@ -25,6 +25,7 @@ typedef int LakeType;
 #define TYPE_DLIST 6
 #define TYPE_PRIM  7
 #define TYPE_FN    8
+#define TYPE_COMM  9
 
 #define VAL(x) ((LakeVal *)x)
 #define SYM(x) ((LakeSym *)x)
@@ -35,6 +36,7 @@ typedef int LakeType;
 #define DLIST(x) ((LakeDottedList *)x)
 #define PRIM(x) ((LakePrimitive *)x)
 #define FN(x) ((LakeFn *)x)
+#define COMM(x) ((LakeComment *)x)
 
 struct lake_val {
     LakeType type;
@@ -135,6 +137,14 @@ struct lake_fn {
 };
 typedef struct lake_fn LakeFn;
 
+struct lake_comment {
+    LakeVal base;
+    LakeStr *text;
+};
+typedef struct lake_comment LakeComment;
+
+#define COMM_TEXT(x) (x->text)
+
 char *repr(LakeVal *val);
 
 #include <stdio.h>
@@ -150,7 +160,6 @@ char *repr(LakeVal *val);
 #include "list.h"
 #include "dlist.h"
 #include "fn.h"
-
-#include "bootstrap.h"
+#include "comment.h"
 
 #endif

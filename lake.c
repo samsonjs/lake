@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
+#include "comment.h"
 #include "env.h"
 #include "eval.h"
 #include "lake.h"
@@ -142,6 +143,10 @@ char *repr(LakeVal *expr)
     
     case TYPE_FN:
         s = fn_repr(FN(expr));
+        break;
+    
+    case TYPE_COMM:
+        s = comment_repr(COMM(expr));
         break;
     
     default:

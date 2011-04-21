@@ -221,6 +221,10 @@ LakeVal *eval(Env *env, LakeVal *expr)
         result = NULL;
         break;
 
+    case TYPE_COMM:
+        result = NULL;
+        break;
+
     case TYPE_LIST:
         list = LIST(expr);
 

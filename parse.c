@@ -299,14 +299,19 @@ static gboolean is_not_newline(char c)
     return !is_newline(c);
 }
 
-static void parse_comment(Ctx *ctx)
+static LakeVal *parse_comment(Ctx *ctx)
 {
-    g_free(parse_while(ctx, is_not_newline));
+    char *text = parse_while(ctx, is_not_newline);
+    LakeComment *comment = comment_from_c(text);
+    g_free(text);
+    return VAL(comment);
 }
 
 static LakeVal *_parse_expr(Ctx *ctx)
 {
-    LakeVal *result = NULL;
+    maybe_spaces(ctx);
+    
+    LakeVal *result;
     char c = peek(ctx);
     /* try to parse a number, if that fails parse a symbol */
     if ((c >= '0' && c <= '9') || c == '-' || c == '+') {
@@ -328,10 +333,10 @@ static LakeVal *_parse_expr(Ctx *ctx)
         result = parse_list(ctx);
     }
     else if (c == ';') {
-        parse_comment(ctx);
+        result = parse_comment(ctx);
     }
     else if (c == PARSE_EOF) {
-        /* noop */
+        result = NULL;
     }
     else {
         ERR("unexpected char '%c'", c);
