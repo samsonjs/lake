@@ -40,11 +40,17 @@ char *type_name(LakeVal *expr)
 
 void print(LakeVal *expr)
 {
-    /* printf("[%s]\n", type_name(expr)); */
     printf("%s\n", repr(expr));
 }
 
-static LakeVal *prompt_read(char *prompt)
+static char first_char(char *s)
+{
+    char c;
+    while ((c = *s++) && (c == ' ' || c == '\n' || c == '\t'));
+    return c;
+}
+
+static LakeVal *prompt_read(Env *env, char *prompt)
 {
     static int n = 1024;
     printf("%s", prompt);
@@ -60,7 +66,30 @@ static LakeVal *prompt_read(char *prompt)
     }
 	/* trim the newline if any */
 	buf[strcspn(buf, "\n")] = '\0';
-    return parse_expr(buf, strlen(buf));
+	
+	/* parse list expressions */
+	if (first_char(buf) == '(') {
+        return parse_expr(buf, strlen(buf));
+    }
+    
+    /* try to parse a naked call without parens
+       (makes the repl more palatable) */
+    LakeList *list = parse_naked_list(buf, strlen(buf));
+    LakeVal *result;
+    
+    /* naked call */
+    LakeVal *head = eval(env, LIST_VAL(list, 0));
+    if (LIST_N(list) > 1 && CALLABLE(head)) {
+        result = VAL(list);
+    }
+
+    /* probably not function calls, just give the first expr
+       (maybe do an implicit progn thing here) */
+    else {
+        result = LIST_VAL(list, 0);
+    }
+    
+    return result;
 }
 
 char *repr(LakeVal *expr)
@@ -124,7 +153,7 @@ static void run_repl(Env *env)
     LakeVal *expr;
     LakeVal *result;
     for (;;) {
-        expr = prompt_read("> ");
+        expr = prompt_read(env, "> ");
         if (expr == VAL(EOF)) break;
         if (expr == VAL(PARSE_ERR)) {
             ERR("parse error");

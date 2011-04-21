@@ -26,6 +26,7 @@ LakeVal *list_get(LakeList *list, LakeInt *li);
 LakeInt *list_len(LakeList *list);
 LakeVal *list_pop(LakeList *list);
 LakeVal *list_shift(LakeList *list);
+LakeVal *list_unshift(LakeList *list, LakeVal *val);
 LakeInt *list_cmp(LakeList *a, LakeList *b);
 LakeBool *list_eq(LakeList *a, LakeList *b);
 LakeStr *list_to_str(LakeList *list);

@@ -64,10 +64,31 @@ LakeList *parse_exprs(char *s, size_t n)
     return results;
 }
 
+static int maybe_spaces(Ctx *ctx);
+
 static char peek(Ctx *ctx)
 {
     if (ctx->i < ctx->n) return ctx->s[ctx->i];
     return PARSE_EOF;
+}
+
+LakeList *parse_naked_list(char *s, size_t n)
+{
+    Ctx ctx = { s, n, 0, 0 };
+    LakeList *list = list_make();
+    char c;
+    maybe_spaces(&ctx);
+    while ((c = peek(&ctx)) != PARSE_EOF) {
+        LakeVal *val = _parse_expr(&ctx);
+        if (val == VAL(PARSE_ERR)) {
+            list_free(list);
+            list = NULL;
+            ctx.i = ctx.n;
+        }
+        list_append(list, val);
+    }
+    warn_trailing(&ctx);
+    return list;
 }
 
 static void consume(Ctx *ctx, size_t n)
@@ -364,10 +385,6 @@ static LakeVal *_parse_expr(Ctx *ctx)
         ctx->i = ctx->n; /* consume the rest */
     }
     maybe_spaces(ctx);
-    
-    if (IS(TYPE_SYM, result)) {
-        /* TODO: try to parse a naked list */
-    }
-    
+
     return result;
 }

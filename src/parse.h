@@ -18,5 +18,6 @@
 
 LakeVal *parse_expr(char *s, size_t n);
 LakeList *parse_exprs(char *s, size_t n);
+LakeList *parse_naked_list(char *s, size_t n);
 
 #endif

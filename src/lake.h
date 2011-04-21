@@ -137,6 +137,8 @@ struct lake_fn {
 };
 typedef struct lake_fn LakeFn;
 
+#define CALLABLE(x) (IS(TYPE_FN, x) || IS(TYPE_PRIM, x))
+
 struct lake_comment {
     LakeVal base;
     LakeStr *text;
