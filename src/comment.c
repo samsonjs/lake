@@ -7,8 +7,10 @@
   *
   */
 
+#include <glib.h>
 #include "comment.h"
 #include "lake.h"
+#include "string.h"
 
 static LakeComment *comment_alloc(void)
 {
@@ -33,4 +35,9 @@ LakeComment *comment_from_c(char *text)
 char *comment_repr(LakeComment *comment)
 {
 	return g_strdup(STR_S(comment->text));
+}
+
+gboolean comm_equal(LakeComment *a, LakeComment *b)
+{
+    return str_equal(COMM_TEXT(a), COMM_TEXT(b));
 }

@@ -10,6 +10,7 @@
 #ifndef _LAKE_STRING_H
 #define _LAKE_STRING_H 1
 
+#include <glib.h>
 #include "lake.h"
 
 LakeStr *str_make(void);
@@ -20,7 +21,7 @@ char *str_val(LakeStr *str);
 LakeInt *str_len(LakeStr *str);
 LakeVal *str_set(LakeStr *str, char *s);
 LakeInt *str_cmp(LakeStr *a, LakeStr *b);
-LakeBool *str_eq(LakeStr *a, LakeStr *b);
+gboolean str_equal(LakeStr *a, LakeStr *b);
 LakeStr *str_to_str(LakeStr *str);
 
 #endif

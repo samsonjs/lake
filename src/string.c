@@ -67,9 +67,11 @@ LakeInt *str_cmp(LakeStr *a, LakeStr *b)
     return int_from_c(g_strcmp0(a->s, b->s));
 }
 
-LakeBool *str_eq(LakeStr *a, LakeStr *b)
+gboolean str_equal(LakeStr *a, LakeStr *b)
 {
-    return bool_from_int(g_strcmp0(a->s, b->s) == 0);
+    size_t n = STR_N(a);
+    if (n != STR_N(b)) return FALSE;
+    return g_strcmp0(a->s, b->s) == 0;
 }
 
 LakeStr *str_to_str(LakeStr *str)

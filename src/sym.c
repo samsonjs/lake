@@ -59,8 +59,3 @@ unsigned long sym_val(LakeSym *sym)
 {
     return sym->hash;
 }
-
-LakeBool *sym_eq(LakeSym *a, LakeSym *b)
-{
-    return bool_from_int(g_strcmp0(a->s, b->s) == 0);
-}

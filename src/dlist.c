@@ -48,3 +48,12 @@ char *dlist_repr(LakeDottedList *dlist)
 	g_string_free(s, FALSE); /* don't free char data */
 	return repr;
 }
+
+gboolean dlist_equal(LakeDottedList *a, LakeDottedList *b)
+{
+    LakeVal *headA = VAL(DLIST_HEAD(a));
+    LakeVal *tailA = DLIST_TAIL(a);
+    LakeVal *headB = VAL(DLIST_HEAD(b));
+    LakeVal *tailB = DLIST_TAIL(b);
+    return lake_equal(headA, headB) && lake_equal(tailA, tailB);
+}

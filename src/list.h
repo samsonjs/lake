@@ -10,6 +10,7 @@
 #ifndef _LAKE_LIST_H
 #define _LAKE_LIST_H 1
 
+#include <glib.h>
 #include <stdlib.h>
 #include "lake.h"
 #include "string.h"
@@ -28,7 +29,7 @@ LakeVal *list_pop(LakeList *list);
 LakeVal *list_shift(LakeList *list);
 LakeVal *list_unshift(LakeList *list, LakeVal *val);
 LakeInt *list_cmp(LakeList *a, LakeList *b);
-LakeBool *list_eq(LakeList *a, LakeList *b);
+gboolean list_equal(LakeList *a, LakeList *b);
 LakeStr *list_to_str(LakeList *list);
 char *list_repr(LakeList *list);
 

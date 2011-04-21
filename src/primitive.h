@@ -13,7 +13,7 @@
 #include "env.h"
 #include "lake.h"
 
-LakePrimitive *prim_make(char *name, int arity, lake_fn fn);
+LakePrimitive *prim_make(char *name, int arity, lake_prim fn);
 char *prim_repr(LakePrimitive *prim);
 Env *primitive_bindings(void);
 

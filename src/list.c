@@ -170,10 +170,16 @@ LakeInt *list_cmp(LakeList *a, LakeList *b)
     return 0;
 }
 
-LakeBool *list_eq(LakeList *a, LakeList *b)
+gboolean list_equal(LakeList *a, LakeList *b)
 {
-    /* TODO */
-    return bool_from_int(a == b);
+    if (a == b) return TRUE;
+    size_t n = LIST_N(a);
+    if (n != LIST_N(b)) return FALSE;
+    size_t i;
+    for (i = 0; i < n; ++i) {
+        if (!lake_equal(LIST_VAL(a, i), LIST_VAL(b, i))) return FALSE;
+    }
+    return TRUE;
 }
 
 LakeStr *list_to_str(LakeList *list)

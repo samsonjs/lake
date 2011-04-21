@@ -147,6 +147,48 @@ char *repr(LakeVal *expr)
     return s;
 }
 
+gboolean lake_is(LakeVal *a, LakeVal *b)
+{
+    if (IS(TYPE_INT, a) && IS(TYPE_INT, b)) {
+        return INT_VAL(INT(a)) == INT_VAL(INT(b));
+    }
+    if (IS_NIL(a) && IS_NIL(b)) return TRUE;
+    return a == b;
+}
+
+gboolean lake_equal(LakeVal *a, LakeVal *b)
+{
+    if (a->type != b->type) return FALSE;
+    switch (a->type) {
+
+        /* singletons can be compared directly */
+        case TYPE_SYM:
+        case TYPE_BOOL:
+        case TYPE_PRIM:
+        case TYPE_FN:
+            return a == b;
+        
+        case TYPE_INT:
+            return INT_VAL(INT(a)) == INT_VAL(INT(b));
+        
+        case TYPE_STR:
+            return str_equal(STR(a), STR(b));
+        
+        case TYPE_LIST:
+            return list_equal(LIST(a), LIST(b));
+        
+        case TYPE_DLIST:
+            return dlist_equal(DLIST(a), DLIST(b));
+        
+        case TYPE_COMM:
+            return comm_equal(COMM(a), COMM(b));
+        
+        default:
+            ERR("unknown type %d (%s)", a->type, type_name(a));
+            return FALSE;
+    }
+}
+
 static void run_repl(Env *env)
 {
     puts("Lake Scheme v" LAKE_VERSION);

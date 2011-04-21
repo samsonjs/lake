@@ -48,11 +48,6 @@ LakeInt *int_cmp(LakeInt *a, LakeInt *b)
     return result;
 }
 
-LakeBool *int_eq(LakeInt *a, LakeInt *b)
-{
-    return bool_from_int(a->val == b->val);
-}
-
 LakeStr *int_to_str(LakeInt *i)
 {
     char *s = g_strdup_printf("%d", i->val);

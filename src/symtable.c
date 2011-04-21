@@ -18,7 +18,7 @@ static guint _sym_hash(gconstpointer key)
 
 static gboolean _sym_eq(gconstpointer a, gconstpointer b)
 {
-    return BOOL_VAL(sym_eq(SYM(a), SYM(b)));
+    return a == b;
 }
 
 GHashTable *symtable_make(void)

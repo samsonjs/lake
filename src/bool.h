@@ -16,7 +16,6 @@
 LakeBool *bool_from_int(int b);
 gboolean bool_val(LakeBool *b);
 LakeStr *bool_to_str(LakeBool *b);
-LakeBool *bool_eq(LakeBool *a, LakeBool *b);
 char *bool_repr(LakeBool *b);
 LakeVal* bool_and(LakeVal *a, LakeVal *b);
 LakeVal* bool_or(LakeVal *a, LakeVal *b);

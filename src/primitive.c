@@ -9,9 +9,15 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include "comment.h"
 #include "env.h"
+#include "int.h"
+#include "dlist.h"
+#include "fn.h"
+#include "list.h"
 #include "lake.h"
 #include "primitive.h"
+#include "string.h"
 
 static LakePrimitive *prim_alloc(void)
 {
@@ -21,7 +27,7 @@ static LakePrimitive *prim_alloc(void)
     return prim;
 }
 
-LakePrimitive *prim_make(char *name, int arity, lake_fn fn)
+LakePrimitive *prim_make(char *name, int arity, lake_prim fn)
 {
     LakePrimitive *prim = prim_alloc();
     prim->name = g_strdup(name);
@@ -35,21 +41,64 @@ char *prim_repr(LakePrimitive *prim)
     return g_strdup_printf("<#primitive:%s(%d)>", prim->name, prim->arity);
 }
 
-static LakeVal *prim_nullP(LakeList *args)
+static LakeVal *_car(LakeList *args)
+{
+    LakeList *list = LIST(LIST_VAL(args, 0));
+    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+        return LIST_VAL(list, 0);
+    }
+    ERR("not a pair: %s", list_repr(list));
+    return NULL;
+}
+
+static LakeVal *_cdr(LakeList *args)
+{
+    LakeList *list = LIST(LIST_VAL(args, 0));
+    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+        LakeList *cdr = list_copy(list);
+        list_shift(cdr);
+        return VAL(cdr);
+    }
+    ERR("not a pair: %s", list_repr(list));
+    return NULL;
+}
+
+static LakeVal *_cons(LakeList *args)
+{
+    LakeVal *car = LIST_VAL(args, 0);
+    LakeVal *cdr = LIST_VAL(args, 1);
+    return VAL(list_cons(car, cdr));
+}
+
+static LakeVal *_nullP(LakeList *args)
 {
     LakeVal *val = list_shift(args);
     LakeBool *is_null = IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0 ? T : F;
     return VAL(is_null);
 }
 
-static LakeVal *prim_pairP(LakeList *args)
+static LakeVal *_pairP(LakeList *args)
 {
     LakeVal *val = list_shift(args);
     LakeBool *is_pair = IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0 ? T : F;
     return VAL(is_pair);
 }
 
-static LakeVal *prim_not(LakeList *args)
+static LakeVal *_isP(LakeList *args)
+{
+    LakeVal *a = LIST_VAL(args, 0);
+    LakeVal *b = LIST_VAL(args, 1);
+    return VAL(bool_from_int(lake_is(a, b)));
+}
+
+static LakeVal *_equalP(LakeList *args)
+{
+    LakeVal *a = LIST_VAL(args, 0);
+    LakeVal *b = LIST_VAL(args, 1);
+    return VAL(bool_from_int(lake_equal(a, b)));
+}
+
+static LakeVal *_not(LakeList *args)
 {
     LakeVal *val = list_shift(args);
     LakeBool *not = IS_FALSE(val) ? T : F;
@@ -63,7 +112,7 @@ static LakeVal *prim_not(LakeList *args)
         }                                                          \
     } while (0)
 
-static LakeVal *prim_add(LakeList *args)
+static LakeVal *_add(LakeList *args)
 {
     int result = 0;
     size_t n = LIST_N(args);
@@ -76,7 +125,7 @@ static LakeVal *prim_add(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *prim_sub(LakeList *args)
+static LakeVal *_sub(LakeList *args)
 {
     size_t n = LIST_N(args);
     
@@ -95,7 +144,7 @@ static LakeVal *prim_sub(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *prim_mul(LakeList *args)
+static LakeVal *_mul(LakeList *args)
 {
     int result = 1;
     size_t n = LIST_N(args);
@@ -110,7 +159,7 @@ static LakeVal *prim_mul(LakeList *args)
 
 #define DIVIDE_BY_ZERO() ERR("divide by zero")
 
-static LakeVal *prim_div(LakeList *args)
+static LakeVal *_div(LakeList *args)
 {
     size_t n = LIST_N(args);
     
@@ -146,7 +195,7 @@ static LakeVal *prim_div(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *prim_int_eq(LakeList *args)
+static LakeVal *_int_eq(LakeList *args)
 {
     gboolean result = TRUE;
     size_t n = LIST_N(args);
@@ -164,33 +213,46 @@ static LakeVal *prim_int_eq(LakeList *args)
     return VAL(bool_from_int(result));
 }
 
-static LakeVal *prim_car(LakeList *args)
+static LakeVal *_int_lt(LakeList *args)
 {
-    LakeList *list = LIST(LIST_VAL(args, 0));
-    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
-        return LIST_VAL(list, 0);
+    gboolean result = TRUE;
+    size_t n = LIST_N(args);
+    size_t i;
+    int curr, prev;
+
+    if (n > 1) {
+        for (i = 0; i < n; ++i) {
+            LakeVal *v = LIST_VAL(args, i);
+            ENSURE_INT(v, i);
+            curr = INT_VAL(INT(v));
+            if (i > 0) {
+                result = result && prev < curr;
+            }
+            prev = INT_VAL(INT(v));
+        }
     }
-    ERR("not a pair: %s", list_repr(list));
-    return NULL;
+    return VAL(bool_from_int(result));
 }
 
-static LakeVal *prim_cdr(LakeList *args)
+static LakeVal *_int_gt(LakeList *args)
 {
-    LakeList *list = LIST(LIST_VAL(args, 0));
-    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
-        LakeList *cdr = list_copy(list);
-        list_shift(cdr);
-        return VAL(cdr);
-    }
-    ERR("not a pair: %s", list_repr(list));
-    return NULL;
-}
+    gboolean result = TRUE;
+    size_t n = LIST_N(args);
+    size_t i;
+    int curr, prev;
 
-static LakeVal *prim_cons(LakeList *args)
-{
-    LakeVal *car = LIST_VAL(args, 0);
-    LakeVal *cdr = LIST_VAL(args, 1);
-    return VAL(list_cons(car, cdr));
+    if (n > 1) {
+        for (i = 0; i < n; ++i) {
+            LakeVal *v = LIST_VAL(args, i);
+            ENSURE_INT(v, i);
+            curr = INT_VAL(INT(v));
+            if (i > 0) {
+                result = result && prev > curr;
+            }
+            prev = INT_VAL(INT(v));
+        }
+    }
+    return VAL(bool_from_int(result));
 }
 
 Env *primitive_bindings(void)
@@ -198,16 +260,37 @@ Env *primitive_bindings(void)
     #define DEFINE(name, fn, arity) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
     
     Env *env = env_toplevel();
-    DEFINE("null?", prim_nullP, 1);
-    DEFINE("pair?", prim_pairP, 1);
-    DEFINE("not", prim_not, 1);
-    DEFINE("+", prim_add, ARITY_VARARGS);
-    DEFINE("-", prim_sub, ARITY_VARARGS);
-    DEFINE("*", prim_mul, ARITY_VARARGS);
-    DEFINE("/", prim_div, ARITY_VARARGS);
-    DEFINE("=", prim_int_eq, ARITY_VARARGS);
-    DEFINE("car", prim_car, 1);
-    DEFINE("cdr", prim_cdr, 1);
-    DEFINE("cons", prim_cons, 2);
+    DEFINE("car", _car, 1);
+    DEFINE("cdr", _cdr, 1);
+    DEFINE("cons", _cons, 2);
+    DEFINE("null?", _nullP, 1);
+    DEFINE("pair?", _pairP, 1);
+    DEFINE("is?", _isP, 2);
+    DEFINE("equal?", _equalP, 2);
+    DEFINE("not", _not, 1);
+    DEFINE("+", _add, ARITY_VARARGS);
+    DEFINE("-", _sub, ARITY_VARARGS);
+    DEFINE("*", _mul, ARITY_VARARGS);
+    DEFINE("/", _div, ARITY_VARARGS);
+    DEFINE("=", _int_eq, ARITY_VARARGS);
+    DEFINE("<", _int_lt, ARITY_VARARGS);
+    DEFINE(">", _int_gt, ARITY_VARARGS);
+
+    /* symbol? */
+    /* list? */
+    /* dotted-list? */
+    /* number? */
+    /* integer? */
+    /* string? */
+    /* bool? */
+    /* function? */
+    /* primitive? */
+
+    /* string=? */
+    /* string< */
+    /* string> */
+    /* string-concatenate */
+    /* string-slice */
+    
     return env;
 }

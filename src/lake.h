@@ -46,6 +46,7 @@ typedef struct lake_val LakeVal;
 
 #define VAL_SIZE(x) (VAL(x)->size)
 #define IS(t, x) (VAL(x)->type == t)
+#define IS_NIL(x) (IS(TYPE_LIST, x) && LIST_N(LIST(x)) == 0)
 
 struct lake_sym {
     LakeVal base;
@@ -113,13 +114,13 @@ typedef struct lake_dlist LakeDottedList;
 #define DLIST_HEAD(x) (x->head)
 #define DLIST_TAIL(x) (x->tail)
 
-typedef LakeVal *(*lake_fn)(LakeList *args);
+typedef LakeVal *(*lake_prim)(LakeList *args);
 
 struct lake_primitive {
 	LakeVal base;
 	char *name;
     int arity;
-	lake_fn fn;
+	lake_prim fn;
 };
 typedef struct lake_primitive LakePrimitive;
 
@@ -147,6 +148,8 @@ typedef struct lake_comment LakeComment;
 
 #define COMM_TEXT(x) (x->text)
 
+gboolean lake_is(LakeVal *a, LakeVal *b);
+gboolean lake_equal(LakeVal *a, LakeVal *b);
 char *repr(LakeVal *val);
 
 #include <stdio.h>

@@ -10,10 +10,12 @@
 #ifndef _LAKE_COMMENT_H
 #define _LAKE_COMMENT_H 1
 
+#include <glib.h>
 #include "lake.h"
 
 LakeComment *comment_make(LakeStr *text);
 LakeComment *comment_from_c(char *text);
 char *comment_repr(LakeComment *comment);
+gboolean comm_equal(LakeComment *a, LakeComment *b);
 
 #endif
