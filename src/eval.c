@@ -311,6 +311,10 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
 
         /* bind varargs */
         if (fn->varargs) {
+            if (LIST_N(args) < nparams) {
+                ERR("expected at least %zu params but got %zu", nparams, LIST_N(args));
+                return NULL;
+            }
             LakeList *remainingArgs = list_make_with_capacity(LIST_N(args) - nparams);
             for (; i < LIST_N(args); ++i) {
                 list_append(remainingArgs, LIST_VAL(args, i));
