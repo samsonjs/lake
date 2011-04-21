@@ -69,15 +69,15 @@ Deviating from RSR5 `eq?` is called `is?` in Lake Scheme, which I find much clea
     > (equal? a b)
     #t
 
-One final thing to note is an experiment I call *naked lists* (or expressions). These are only valid at the top level in the repl and are just lists without parens, like so:
+One final thing to note is an experiment I call *naked calls* (or expressions). These are only valid at the top level in the repl and are just lists without parens, like so:
 
-    > define empty? (lambda (x) (or (null? x) (is? x 0) (equal? x "") ))
+    > define empty? (lambda (x) (or (null? x) (is? x 0) (equal? x "")))
     > empty? 4
     #f
     > empty? (cdr '(a))
     #t
     > empty?
-    (lambda (x) (or (null? x) (is? x 0) (equal? x "") ))
+    (lambda (x) (or (null? x) (is? x 0) (equal? x "")))
 
 A naked expression with one value evaluates to the single value it contains so that typing in an atomic expression doesn't produce strange results. Due to this behaviour one caveat is that if you want to invoke a function without arguments you cannot use a naked list. When evaluating code from a file naked lists are not parsed at all.
 
