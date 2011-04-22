@@ -26,7 +26,7 @@ static void invalid_special_form(LakeList *expr, char *detail)
 }
 
 /* expr begins with the symbol "quote" so the quoted value is the 2nd value */
-static LakeVal *quote_special_form(Env *env, LakeList *expr)
+static LakeVal *_quote(Env *env, LakeList *expr)
 {
     if (LIST_N(expr) == 2) {
         return list_pop(expr);
@@ -35,7 +35,7 @@ static LakeVal *quote_special_form(Env *env, LakeList *expr)
     return NULL;
 }
 
-static LakeVal *and_special_form(Env *env, LakeList *expr)
+static LakeVal *_and(Env *env, LakeList *expr)
 {
     /* drop the "and" symbol */
     list_shift(expr);
@@ -48,7 +48,7 @@ static LakeVal *and_special_form(Env *env, LakeList *expr)
     return result;
 }
 
-static LakeVal *or_special_form(Env *env, LakeList *expr)
+static LakeVal *_or(Env *env, LakeList *expr)
 {
     /* drop the "or" symbol */
     list_shift(expr);
@@ -61,7 +61,7 @@ static LakeVal *or_special_form(Env *env, LakeList *expr)
     return result;
 }
 
-static LakeVal *setB_special_form(Env *env, LakeList *expr)
+static LakeVal *_setB(Env *env, LakeList *expr)
 {
     /* (set! x 42) */
     if (LIST_N(expr) == 3 && IS(TYPE_SYM, LIST_VAL(expr, 1))) {
@@ -78,7 +78,7 @@ static LakeVal *setB_special_form(Env *env, LakeList *expr)
     return NULL;
 }
 
-static LakeVal *define_special_form(Env *env, LakeList *expr)
+static LakeVal *_define(Env *env, LakeList *expr)
 {
     /* TODO: make these more robust, check all expected params */
     
@@ -117,7 +117,7 @@ static LakeVal *define_special_form(Env *env, LakeList *expr)
     return NULL;
 }
 
-static LakeVal *lambda_special_form(Env *env, LakeList *expr)
+static LakeVal *_lambda(Env *env, LakeList *expr)
 {
     /* (lambda (a b c) ...) */
     if (LIST_N(expr) >= 3 && IS(TYPE_LIST, LIST_VAL(expr, 1))) {
@@ -146,7 +146,7 @@ static LakeVal *lambda_special_form(Env *env, LakeList *expr)
     }
 }
 
-static LakeVal *if_special_form(Env *env, LakeList *expr)
+static LakeVal *_if(Env *env, LakeList *expr)
 {
     if (LIST_N(expr) < 3) {
         invalid_special_form(expr, "if requires 3 parameters");
@@ -170,17 +170,18 @@ static void init_special_form_handlers(void)
 
     special_form_handlers = symtable_make();
     /* HANDLER("load", &load_special_form); */
-    HANDLER("quote", &quote_special_form);
-    HANDLER("and", &and_special_form);
-    HANDLER("or", &or_special_form);
-    HANDLER("if", &if_special_form);
     /* HANDLER("cond", &cond_special_form); */
-    HANDLER("set!", &setB_special_form);
-    HANDLER("define", &define_special_form);
-    HANDLER("lambda", &lambda_special_form);
-    /* HANDLER("let", &let_special_form); */
-    /* HANDLER("let!", &letB_special_form); */
-    /* HANDLER("letrec", &letrec_special_form); */
+    HANDLER("quote", &_quote);
+    HANDLER("and", &_and);
+    HANDLER("or", &_or);
+    HANDLER("if", &_if);
+    /* HANDLER("when", &_when); */
+    HANDLER("set!", &_setB);
+    HANDLER("define", &_define);
+    HANDLER("lambda", &_lambda);
+    /* HANDLER("let", &_let); */
+    /* HANDLER("let!", &_letB); */
+    /* HANDLER("letrec", &_letrec); */
 }
 
 gboolean is_special_form(LakeList *expr)
