@@ -162,6 +162,28 @@ static LakeVal *_if(Env *env, LakeList *expr)
     }
 }
 
+static LakeVal *_cond(Env *env, LakeList *expr)
+{
+    static LakeVal *ELSE = NULL;
+    if (!ELSE) ELSE = VAL(sym_intern("else"));
+
+    list_shift(expr); /* "cond" token */
+    LakeVal *pred;
+    LakeList *conseq;
+    while (LIST_N(expr)) {
+        if (!IS(TYPE_LIST, LIST_VAL(expr, 0))) {
+            invalid_special_form(expr, "expected a (predicate consequence) pair");
+            return NULL;
+        }
+        conseq = LIST(list_shift(expr));
+        pred = list_shift(conseq);
+        if (pred == ELSE || IS_TRUTHY(eval(env, pred))) {
+            return eval_exprs1(env, conseq);
+        }
+    }
+    return NULL;
+}
+
 static void init_special_form_handlers(void)
 {
     #define HANDLER(name, fn) g_hash_table_insert(special_form_handlers, \
@@ -170,12 +192,12 @@ static void init_special_form_handlers(void)
 
     special_form_handlers = symtable_make();
     /* HANDLER("load", &load_special_form); */
-    /* HANDLER("cond", &cond_special_form); */
     HANDLER("quote", &_quote);
     HANDLER("and", &_and);
     HANDLER("or", &_or);
     HANDLER("if", &_if);
     /* HANDLER("when", &_when); */
+    HANDLER("cond", &_cond);
     HANDLER("set!", &_setB);
     HANDLER("define", &_define);
     HANDLER("lambda", &_lambda);
@@ -294,6 +316,14 @@ LakeList *eval_exprs(Env *env, LakeList *exprs)
     return results;
 }
 
+LakeVal *eval_exprs1(Env *env, LakeList *exprs)
+{
+    LakeList *results = eval_exprs(env, exprs);
+    LakeVal *result = list_pop(results);
+    list_free(results);
+    return result;
+}
+
 LakeVal *apply(LakeVal *fnVal, LakeList *args)
 {
     LakeVal *result = NULL;
@@ -340,9 +370,7 @@ LakeVal *apply(LakeVal *fnVal, LakeList *args)
         }
 
         /* evaluate body */
-        LakeList *results = eval_exprs(env, fn->body);
-        result = list_pop(results);
-        list_free(results);
+        result = eval_exprs1(env, fn->body);
     }
     else {
         ERR("not a function: %s", repr(fnVal));
