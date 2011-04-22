@@ -27,15 +27,24 @@ struct context {
 };
 typedef struct context Ctx;
 
+static LakeVal *_parse_expr(Ctx *ctx);
+static int maybe_spaces(Ctx *ctx);
+
+static char peek(Ctx *ctx)
+{
+    if (ctx->i < ctx->n) return ctx->s[ctx->i];
+    return PARSE_EOF;
+}
+
 static void warn_trailing(Ctx *ctx)
 {
-    if (ctx->i < ctx->n) {
+    maybe_spaces(ctx);
+    /* don't warn about trailing comments */
+    if (ctx->i < ctx->n && peek(ctx) != ';') {
         char *trailing = ctx->s + ctx->i;
         printf("warning: ignoring %d trailing chars: %s\n", (int)(ctx->n - ctx->i), trailing);
     }
 }
-
-static LakeVal *_parse_expr(Ctx *ctx);
 
 LakeVal *parse_expr(char *s, size_t n)
 {
@@ -62,14 +71,6 @@ LakeList *parse_exprs(char *s, size_t n)
     }
     warn_trailing(&ctx);
     return results;
-}
-
-static int maybe_spaces(Ctx *ctx);
-
-static char peek(Ctx *ctx)
-{
-    if (ctx->i < ctx->n) return ctx->s[ctx->i];
-    return PARSE_EOF;
 }
 
 LakeList *parse_naked_list(char *s, size_t n)
