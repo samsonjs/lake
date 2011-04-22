@@ -35,7 +35,17 @@ That will drop you at a repl. There are booleans, symbols, integers, strings, li
 
 Hooray! That sure is repl-ish.
 
-The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, and `lambda`.
+Lake's special forms are:
+
+  * `quote`
+  * `define`
+  * `set!`
+  * `and`
+  * `or`
+  * `lambda`
+  * `if`
+  * `when`
+  * `cond`
 
     > (define answer 7)
     > answer
@@ -49,6 +59,11 @@ The special forms present so far are: `quote`, `define`, `set!`, `and`, `or`, an
     > (define list (lambda rest rest))
     > (list 1 2 3 4)
     (1 2 3 4)
+    > (if #t "hooray" "sad panda")
+    "hooray"
+    > (when #f (nuke 'the-world)) ; never executes
+    > (cond ((> 0 1) "backwards") ((< 0 1) "correct") (else "bizarre"))
+    "correct"
 
 Woah, we even managed to define a useful function without using any primitives! There are primitives now though. So few they can be easily named. They are named thusly:
 
@@ -86,7 +101,6 @@ Lake still needs:
   * primitives:
     * display values
     * compare values
-    * basic control flow (if, cond, when)
     * eval and apply
     * native type operations:
       * symbol
