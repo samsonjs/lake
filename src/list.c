@@ -52,8 +52,8 @@ LakeList *list_cons(LakeVal *car, LakeVal *cdr)
     }
     else {
         list = list_make_with_capacity(2);
-        list->vals[0] = car;
-        list->vals[1] = cdr;
+        list_append(list, car);
+        list_append(list, cdr);
     }
     return list;
 }
