@@ -82,8 +82,8 @@ LakeList *parse_naked_list(char *s, size_t n)
         LakeVal *val = _parse_expr(&ctx);
         if (val == VAL(PARSE_ERR)) {
             list_free(list);
-            list = NULL;
             ctx.i = ctx.n;
+            return NULL;
         }
         list_append(list, val);
     }

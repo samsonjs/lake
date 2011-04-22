@@ -75,6 +75,8 @@ static LakeVal *prompt_read(Env *env, char *prompt)
     /* try to parse a naked call without parens
        (makes the repl more palatable) */
     LakeList *list = parse_naked_list(buf, strlen(buf));
+    if (!list) return NULL;
+
     LakeVal *result;
     
     /* naked call */
