@@ -184,6 +184,17 @@ static LakeVal *_cond(Env *env, LakeList *expr)
     return NULL;
 }
 
+static LakeVal *_when(Env *env, LakeList *expr)
+{
+    if (LIST_N(expr) < 2) {
+        invalid_special_form(expr, "when requires at least 2 parameters");
+        return NULL;
+    }
+    list_shift(expr); /* "when" token */
+    LakeVal *cond = eval(env, list_shift(expr));
+    return IS_TRUTHY(cond) ? eval_exprs1(env, expr) : NULL;
+}
+
 static void init_special_form_handlers(void)
 {
     #define HANDLER(name, fn) g_hash_table_insert(special_form_handlers, \
@@ -196,7 +207,7 @@ static void init_special_form_handlers(void)
     HANDLER("and", &_and);
     HANDLER("or", &_or);
     HANDLER("if", &_if);
-    /* HANDLER("when", &_when); */
+    HANDLER("when", &_when);
     HANDLER("cond", &_cond);
     HANDLER("set!", &_setB);
     HANDLER("define", &_define);
