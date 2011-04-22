@@ -22,7 +22,7 @@ static void init_special_form_handlers(void);
 
 static void invalid_special_form(LakeList *expr, char *detail)
 {
-    ERR("unrecognized special form, %s: %s", detail, repr(VAL(expr)));
+    ERR("malformed special form, %s: %s", detail, repr(VAL(expr)));
 }
 
 /* expr begins with the symbol "quote" so the quoted value is the 2nd value */
@@ -146,6 +146,22 @@ static LakeVal *lambda_special_form(Env *env, LakeList *expr)
     }
 }
 
+static LakeVal *if_special_form(Env *env, LakeList *expr)
+{
+    if (LIST_N(expr) < 3) {
+        invalid_special_form(expr, "if requires 3 parameters");
+        return NULL;
+    }
+    list_shift(expr); /* "if" token */
+    LakeVal *cond = eval(env, list_shift(expr));
+    if (IS_TRUTHY(cond)) {
+        return eval(env, list_shift(expr));
+    }
+    else {
+        return eval(env, LIST_VAL(expr, 1));
+    }
+}
+
 static void init_special_form_handlers(void)
 {
     #define HANDLER(name, fn) g_hash_table_insert(special_form_handlers, \
@@ -157,7 +173,7 @@ static void init_special_form_handlers(void)
     HANDLER("quote", &quote_special_form);
     HANDLER("and", &and_special_form);
     HANDLER("or", &or_special_form);
-    /* HANDLER("if", &if_special_form); */
+    HANDLER("if", &if_special_form);
     /* HANDLER("cond", &cond_special_form); */
     HANDLER("set!", &setB_special_form);
     HANDLER("define", &define_special_form);
