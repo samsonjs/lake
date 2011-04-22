@@ -146,9 +146,9 @@ LakeVal *list_unshift(LakeList *list, LakeVal *val)
             list_grow(list);
         }
 		size_t i = list->n++;
-		while (i--) {
+		do {
 			list->vals[i] = list->vals[i - 1];
-		}
+        } while (i--);
         list->vals[0] = val;
 	}
 	return NULL;
