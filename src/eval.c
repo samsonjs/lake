@@ -148,7 +148,7 @@ static LakeVal *_lambda(Env *env, LakeList *expr)
 
 static LakeVal *_if(Env *env, LakeList *expr)
 {
-    if (LIST_N(expr) < 3) {
+    if (LIST_N(expr) != 3) {
         invalid_special_form(expr, "if requires 3 parameters");
         return NULL;
     }
