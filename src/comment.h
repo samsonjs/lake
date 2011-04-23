@@ -16,6 +16,6 @@
 LakeComment *comment_make(LakeStr *text);
 LakeComment *comment_from_c(char *text);
 char *comment_repr(LakeComment *comment);
-gboolean comm_equal(LakeComment *a, LakeComment *b);
+gboolean comment_equal(LakeComment *a, LakeComment *b);
 
 #endif

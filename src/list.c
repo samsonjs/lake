@@ -164,12 +164,6 @@ LakeVal *list_pop(LakeList *list)
 	return tail;
 }
 
-LakeInt *list_cmp(LakeList *a, LakeList *b)
-{
-    /* TODO */
-    return 0;
-}
-
 gboolean list_equal(LakeList *a, LakeList *b)
 {
     if (a == b) return TRUE;

@@ -184,7 +184,7 @@ gboolean lake_equal(LakeVal *a, LakeVal *b)
             return dlist_equal(DLIST(a), DLIST(b));
         
         case TYPE_COMM:
-            return comm_equal(COMM(a), COMM(b));
+            return comment_equal(COMM(a), COMM(b));
         
         default:
             ERR("unknown type %d (%s)", a->type, type_name(a));

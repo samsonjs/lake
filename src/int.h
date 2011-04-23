@@ -13,9 +13,7 @@
 #include "lake.h"
 
 LakeInt *int_make(void);
-LakeInt *int_copy(LakeInt *i);
 LakeInt *int_from_c(int n);
-LakeInt *int_cmp(LakeInt *a, LakeInt *b);
 LakeStr *int_to_str(LakeInt *i);
 
 #endif

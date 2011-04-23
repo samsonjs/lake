@@ -28,7 +28,6 @@ LakeInt *list_len(LakeList *list);
 LakeVal *list_pop(LakeList *list);
 LakeVal *list_shift(LakeList *list);
 LakeVal *list_unshift(LakeList *list, LakeVal *val);
-LakeInt *list_cmp(LakeList *a, LakeList *b);
 gboolean list_equal(LakeList *a, LakeList *b);
 LakeStr *list_to_str(LakeList *list);
 char *list_repr(LakeList *list);

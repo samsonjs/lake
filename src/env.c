@@ -16,11 +16,6 @@
 
 static Env *_top = NULL;
 
-void env_set_toplevel(Env *env)
-{
-    _top = env;
-}
-
 Env *env_toplevel(void)
 {
     if (!_top) {

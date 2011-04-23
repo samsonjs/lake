@@ -37,7 +37,7 @@ char *comment_repr(LakeComment *comment)
 	return g_strdup(STR_S(comment->text));
 }
 
-gboolean comm_equal(LakeComment *a, LakeComment *b)
+gboolean comment_equal(LakeComment *a, LakeComment *b)
 {
     return str_equal(COMM_TEXT(a), COMM_TEXT(b));
 }

@@ -20,7 +20,6 @@ typedef struct env Env;
 
 #include "lake.h"
 
-void env_set_toplevel(Env *env);
 Env *env_toplevel(void);
 
 Env *env_make(Env *parent);

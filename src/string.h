@@ -19,8 +19,6 @@ LakeStr *str_copy(LakeStr *str);
 LakeStr *str_from_c(char *s);
 char *str_val(LakeStr *str);
 LakeInt *str_len(LakeStr *str);
-LakeVal *str_set(LakeStr *str, char *s);
-LakeInt *str_cmp(LakeStr *a, LakeStr *b);
 gboolean str_equal(LakeStr *a, LakeStr *b);
 LakeStr *str_to_str(LakeStr *str);
 

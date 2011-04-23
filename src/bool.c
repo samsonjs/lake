@@ -10,16 +10,11 @@
 #include <glib.h>
 #include "bool.h"
 #include "lake.h"
-#include "sym.h"
+#include "string.h"
 
 LakeBool *bool_from_int(int n)
 {
     return n ? T : F;
-}
-
-gboolean bool_val(LakeBool *b)
-{
-	return b->val;
 }
 
 char *bool_repr(LakeBool *b)

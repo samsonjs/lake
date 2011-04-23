@@ -28,7 +28,7 @@ void str_free(LakeStr *str)
     g_free(str);
 }
 
-LakeVal *str_set(LakeStr *str, char *s)
+static LakeVal *str_set(LakeStr *str, char *s)
 {
     str->n = strlen(s);
     str->s = g_strdup(s);
@@ -60,11 +60,6 @@ LakeStr *str_copy(LakeStr *str)
 char *str_val(LakeStr *str)
 {
     return g_strdup(str->s);
-}
-
-LakeInt *str_cmp(LakeStr *a, LakeStr *b)
-{
-    return int_from_c(g_strcmp0(a->s, b->s));
 }
 
 gboolean str_equal(LakeStr *a, LakeStr *b)
