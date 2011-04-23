@@ -23,11 +23,7 @@
 #include "parse.h"
 #include "primitive.h"
 #include "string.h"
-
-static LakeBool _T = { { TYPE_BOOL, sizeof(LakeBool) }, TRUE };
-static LakeBool _F = { { TYPE_BOOL, sizeof(LakeBool) }, FALSE };
-LakeBool *T = &_T;
-LakeBool *F = &_F;
+#include "symtable.h"
 
 char *type_name(LakeVal *expr)
 {
@@ -50,7 +46,7 @@ static char first_char(char *s)
     return c;
 }
 
-static LakeVal *prompt_read(Env *env, char *prompt)
+static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
 {
     static int n = 1024;
     printf("%s", prompt);
@@ -69,20 +65,20 @@ static LakeVal *prompt_read(Env *env, char *prompt)
 	
 	/* parse list expressions */
 	if (first_char(buf) == '(') {
-        return parse_expr(buf, strlen(buf));
+        return parse_expr(ctx, buf, strlen(buf));
     }
     
     /* try to parse a naked call without parens
        (makes the repl more palatable) */
-    LakeList *list = parse_naked_list(buf, strlen(buf));
-    if (!list) return NULL;
+    LakeList *list = parse_naked_list(ctx, buf, strlen(buf));
+    if (!list || LIST_N(list) == 0) return NULL;
 
     LakeVal *result;
     
     /* naked call */
     LakeVal *head;
-    if (is_special_form(list) ||
-        (LIST_N(list) > 1 && (head = eval(env, LIST_VAL(list, 0))) && CALLABLE(head))) {
+    if (is_special_form(ctx, list) ||
+        (LIST_N(list) > 1 && (head = eval(ctx, env, LIST_VAL(list, 0))) && CALLABLE(head))) {
         result = VAL(list);
     }
 
@@ -109,7 +105,7 @@ char *repr(LakeVal *expr)
         break;
 
     case TYPE_BOOL:
-        s = bool_repr(BOOL(expr));
+        s = BOOL_REPR(BOOL(expr));
         break;
 
     case TYPE_INT:
@@ -192,20 +188,20 @@ gboolean lake_equal(LakeVal *a, LakeVal *b)
     }
 }
 
-static void run_repl(Env *env)
+static void run_repl(LakeCtx *ctx, Env *env)
 {
     puts("Lake Scheme v" LAKE_VERSION);
     LakeVal *expr;
     LakeVal *result;
     for (;;) {
-        expr = prompt_read(env, "> ");
+        expr = prompt_read(ctx, env, "> ");
         if (expr == VAL(EOF)) break;
         if (expr == VAL(PARSE_ERR)) {
             ERR("parse error");
             continue;
         }
         if (expr) {
-            result = eval(env, expr);
+            result = eval(ctx, env, expr);
             if (result) print(result);
         }
     }
@@ -246,10 +242,32 @@ char *read_file(char const *filename)
     }
 }
 
+LakeBool *bool_make(gboolean val)
+{
+    LakeBool *b = g_malloc(sizeof(LakeBool));
+    VAL(b)->type = TYPE_BOOL;
+    VAL(b)->size = sizeof(LakeBool);
+    b->val = val;
+    return b;
+}
+
+LakeCtx *lake_init(void)
+{
+    LakeCtx *ctx = g_malloc(sizeof(LakeCtx));
+    ctx->toplevel = env_make(NULL);
+    ctx->symbols = g_hash_table_new(g_str_hash, g_str_equal);
+    ctx->special_form_handlers = symtable_make();
+    ctx->T = bool_make(TRUE);
+    ctx->F = bool_make(FALSE);
+    return ctx;
+}
+
 int main (int argc, char const *argv[])
 {
-    /* create a top level environment */
-    Env *env = primitive_bindings();
+    /* create an execution context */
+    LakeCtx *ctx = lake_init();
+    bind_primitives(ctx);
+    init_special_form_handlers(ctx);
 
     /* create and bind args */
     LakeVal **argVals = g_malloc(argc * sizeof(LakeVal *));
@@ -259,21 +277,21 @@ int main (int argc, char const *argv[])
     }
     LakeList *args = list_from_array(argc, argVals);
     free(argVals);
-    env_define(env, sym_intern("args"), VAL(args));
+    env_define(ctx->toplevel, sym_intern(ctx, "args"), VAL(args));
     
     /* if a filename is given load the file */
     if (argc > 1) {
         char *text = read_file(argv[1]);
         if (text) {
-            LakeList *exprs = parse_exprs(text, strlen(text));
+            LakeList *exprs = parse_exprs(ctx, text, strlen(text));
             if (exprs) {
-                eval_exprs(env, exprs);
+                eval_exprs(ctx, ctx->toplevel, exprs);
             }
         }
     }
     
     /* run the repl */
-    run_repl(env);
+    run_repl(ctx, ctx->toplevel);
     
     return 0;
 }

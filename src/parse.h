@@ -16,8 +16,8 @@
 #define PARSE_EOF -1
 #define PARSE_ERR -2
 
-LakeVal *parse_expr(char *s, size_t n);
-LakeList *parse_exprs(char *s, size_t n);
-LakeList *parse_naked_list(char *s, size_t n);
+LakeVal *parse_expr(LakeCtx *ctx, char *s, size_t n);
+LakeList *parse_exprs(LakeCtx *ctx, char *s, size_t n);
+LakeList *parse_naked_list(LakeCtx *ctx, char *s, size_t n);
 
 #endif

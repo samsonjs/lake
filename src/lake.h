@@ -65,14 +65,15 @@ struct lake_bool {
 };
 typedef struct lake_bool LakeBool;
 
-LakeBool *T;
-LakeBool *F;
-
 #define BOOL_VAL(x) (x->val)
-#define IS_TRUE(x) (VAL(x) == VAL(T))
-#define IS_FALSE(x) (VAL(x) == VAL(F))
-#define IS_TRUTHY(x) (!IS_FALSE(x))
-#define IS_FALSY(x) (IS_FALSE(x))
+#define IS_TRUE(ctx, x) (VAL(x) == VAL(ctx->T))
+#define IS_FALSE(ctx, x) (VAL(x) == VAL(ctx->F))
+#define IS_TRUTHY(ctx, x) (!IS_FALSE(ctx, x))
+#define IS_FALSY(ctx, x) (IS_FALSE(ctx, x))
+#define BOOL_FROM_INT(ctx, n) (n ? ctx->T : ctx->F)
+#define BOOL_REPR(b) (g_strdup(BOOL_VAL(b) ? "#t" : "#f"))
+#define BOOL_AND(ctx, a, b) (IS_TRUTHY(ctx, a) && IS_TRUTHY(ctx, b) ? b : a)
+#define BOOL_OR(ctx, a, b) (IS_TRUTHY(ctx, a) ? a : b)
 
 struct lake_int {
     LakeVal base;
@@ -114,7 +115,19 @@ typedef struct lake_dlist LakeDottedList;
 #define DLIST_HEAD(x) (x->head)
 #define DLIST_TAIL(x) (x->tail)
 
-typedef LakeVal *(*lake_prim)(LakeList *args);
+#include "env.h"
+
+/* Execution context */
+struct lake_ctx {
+    Env *toplevel;
+    GHashTable *symbols;
+    GHashTable *special_form_handlers;
+    LakeBool *T;
+    LakeBool *F;
+};
+typedef struct lake_ctx LakeCtx;
+
+typedef LakeVal *(*lake_prim)(LakeCtx *ctx, LakeList *args);
 
 struct lake_primitive {
 	LakeVal base;
@@ -127,7 +140,6 @@ typedef struct lake_primitive LakePrimitive;
 #define PRIM_ARITY(x) (x->arity)
 #define ARITY_VARARGS -1
 
-#include "env.h"
 
 struct lake_fn {
 	LakeVal base;
@@ -164,7 +176,6 @@ char *repr(LakeVal *val);
 #define OOM() DIE("%s:%d out of memory", __FILE__, __LINE__)
 
 #include "sym.h"
-#include "bool.h"
 #include "int.h"
 #include "string.h"
 #include "list.h"

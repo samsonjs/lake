@@ -8,8 +8,8 @@
   */
 
 #include <glib.h>
-#include "bool.h"
 #include "int.h"
+#include "lake.h"
 
 static LakeInt *int_alloc(void)
 {

@@ -16,8 +16,6 @@
 #include "string.h"
 #include "sym.h"
 
-static GHashTable *_symbols;
-
 static LakeSym *sym_alloc(void)
 {
     LakeSym *sym = g_malloc(sizeof(LakeSym));
@@ -26,16 +24,15 @@ static LakeSym *sym_alloc(void)
     return sym;
 }
 
-LakeSym *sym_intern(char *s)
+LakeSym *sym_intern(LakeCtx *ctx, char *s)
 {
-    if (!_symbols) _symbols = g_hash_table_new(g_str_hash, g_str_equal);
-    LakeSym *sym = g_hash_table_lookup(_symbols, s);
+    LakeSym *sym = g_hash_table_lookup(ctx->symbols, s);
     if (!sym) {
         sym = sym_alloc();
         sym->n = strlen(s);
         sym->s = g_strdup(s);
         sym->hash = g_str_hash(s);
-        g_hash_table_insert(_symbols, sym->s, sym);
+        g_hash_table_insert(ctx->symbols, sym->s, sym);
 	}
     return sym;
 }
@@ -45,9 +42,9 @@ LakeStr *sym_to_str(LakeSym *sym)
     return str_from_c(sym->s);
 }
 
-LakeSym *sym_from_str(LakeStr *str)
+LakeSym *sym_from_str(LakeCtx *ctx, LakeStr *str)
 {
-    return sym_intern(str->s);
+    return sym_intern(ctx, str->s);
 }
 
 char *sym_repr(LakeSym *sym)

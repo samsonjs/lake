@@ -24,6 +24,7 @@ struct context {
     size_t n;
     size_t i;
     size_t mark;
+    LakeCtx *lake_ctx;
 };
 typedef struct context Ctx;
 
@@ -46,17 +47,17 @@ static void warn_trailing(Ctx *ctx)
     }
 }
 
-LakeVal *parse_expr(char *s, size_t n)
+LakeVal *parse_expr(LakeCtx *lake_ctx, char *s, size_t n)
 {
-    Ctx ctx = { s, n, 0, 0 };
+    Ctx ctx = { s, n, 0, 0, lake_ctx };
     LakeVal *result = _parse_expr(&ctx);
     warn_trailing(&ctx);
     return result;
 }
 
-LakeList *parse_exprs(char *s, size_t n)
+LakeList *parse_exprs(LakeCtx *lake_ctx, char *s, size_t n)
 {
-    Ctx ctx = { s, n, 0, 0 };
+    Ctx ctx = { s, n, 0, 0, lake_ctx };
     LakeList *results = list_make();
     LakeVal *result;
     while (ctx.i < ctx.n) {
@@ -73,9 +74,9 @@ LakeList *parse_exprs(char *s, size_t n)
     return results;
 }
 
-LakeList *parse_naked_list(char *s, size_t n)
+LakeList *parse_naked_list(LakeCtx *lake_ctx, char *s, size_t n)
 {
-    Ctx ctx = { s, n, 0, 0 };
+    Ctx ctx = { s, n, 0, 0, lake_ctx };
     LakeList *list = list_make();
     char c;
     maybe_spaces(&ctx);
@@ -224,13 +225,13 @@ static LakeVal *parse_sym(Ctx *ctx)
     }
     s[i] = '\0';
 	if (g_strcmp0(s, "#t") == 0) {
-		val = VAL(T);
+		val = VAL(ctx->lake_ctx->T);
 	}
 	else if (g_strcmp0(s, "#f") == 0) {
-		val = VAL(F);
+		val = VAL(ctx->lake_ctx->F);
 	}
 	else {
-		val = VAL(sym_intern(s));
+		val = VAL(sym_intern(ctx->lake_ctx, s));
 	}
     return val;
 }
@@ -331,7 +332,7 @@ static LakeVal *parse_quoted(Ctx *ctx)
 {
     ch(ctx, '\'');
     LakeList *list = list_make();
-    list_append(list, VAL(sym_intern("quote")));
+    list_append(list, VAL(sym_intern(ctx->lake_ctx, "quote")));
     list_append(list, _parse_expr(ctx));
     return VAL(list);
 }
@@ -384,6 +385,7 @@ static LakeVal *_parse_expr(Ctx *ctx)
         ERR("unexpected char '%c'", c);
         result = VAL(PARSE_ERR);
         ctx->i = ctx->n; /* consume the rest */
+        result = NULL;
     }
     maybe_spaces(ctx);
 

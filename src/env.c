@@ -14,16 +14,6 @@
 #include "env.h"
 #include "symtable.h"
 
-static Env *_top = NULL;
-
-Env *env_toplevel(void)
-{
-    if (!_top) {
-        _top = env_make(NULL);
-    }
-    return _top;
-}
-
 Env *env_make(Env *parent)
 {
     Env *env = g_malloc(sizeof(Env));

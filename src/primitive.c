@@ -41,7 +41,7 @@ char *prim_repr(LakePrimitive *prim)
     return g_strdup_printf("<#primitive:%s(%d)>", prim->name, prim->arity);
 }
 
-static LakeVal *_car(LakeList *args)
+static LakeVal *_car(LakeCtx *ctx, LakeList *args)
 {
     LakeList *list = LIST(LIST_VAL(args, 0));
     if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
@@ -51,7 +51,7 @@ static LakeVal *_car(LakeList *args)
     return NULL;
 }
 
-static LakeVal *_cdr(LakeList *args)
+static LakeVal *_cdr(LakeCtx *ctx, LakeList *args)
 {
     LakeList *list = LIST(LIST_VAL(args, 0));
     if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
@@ -63,45 +63,45 @@ static LakeVal *_cdr(LakeList *args)
     return NULL;
 }
 
-static LakeVal *_cons(LakeList *args)
+static LakeVal *_cons(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *car = LIST_VAL(args, 0);
     LakeVal *cdr = LIST_VAL(args, 1);
     return VAL(list_cons(car, cdr));
 }
 
-static LakeVal *_nullP(LakeList *args)
+static LakeVal *_nullP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *is_null = IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0 ? T : F;
+    LakeBool *is_null = BOOL_FROM_INT(ctx, IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0);
     return VAL(is_null);
 }
 
-static LakeVal *_pairP(LakeList *args)
+static LakeVal *_pairP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *is_pair = IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0 ? T : F;
+    LakeBool *is_pair = BOOL_FROM_INT(ctx, IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0);
     return VAL(is_pair);
 }
 
-static LakeVal *_isP(LakeList *args)
+static LakeVal *_isP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *a = LIST_VAL(args, 0);
     LakeVal *b = LIST_VAL(args, 1);
-    return VAL(bool_from_int(lake_is(a, b)));
+    return VAL(BOOL_FROM_INT(ctx, lake_is(a, b)));
 }
 
-static LakeVal *_equalP(LakeList *args)
+static LakeVal *_equalP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *a = LIST_VAL(args, 0);
     LakeVal *b = LIST_VAL(args, 1);
-    return VAL(bool_from_int(lake_equal(a, b)));
+    return VAL(BOOL_FROM_INT(ctx, lake_equal(a, b)));
 }
 
-static LakeVal *_not(LakeList *args)
+static LakeVal *_not(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *not = IS_FALSE(val) ? T : F;
+    LakeBool *not = BOOL_FROM_INT(ctx, IS_FALSE(ctx, val));
     return VAL(not);
 }
 
@@ -112,7 +112,7 @@ static LakeVal *_not(LakeList *args)
         }                                                          \
     } while (0)
 
-static LakeVal *_add(LakeList *args)
+static LakeVal *_add(LakeCtx *ctx, LakeList *args)
 {
     int result = 0;
     size_t n = LIST_N(args);
@@ -125,7 +125,7 @@ static LakeVal *_add(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *_sub(LakeList *args)
+static LakeVal *_sub(LakeCtx *ctx, LakeList *args)
 {
     size_t n = LIST_N(args);
     
@@ -144,7 +144,7 @@ static LakeVal *_sub(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *_mul(LakeList *args)
+static LakeVal *_mul(LakeCtx *ctx, LakeList *args)
 {
     int result = 1;
     size_t n = LIST_N(args);
@@ -159,7 +159,7 @@ static LakeVal *_mul(LakeList *args)
 
 #define DIVIDE_BY_ZERO() ERR("divide by zero")
 
-static LakeVal *_div(LakeList *args)
+static LakeVal *_div(LakeCtx *ctx, LakeList *args)
 {
     size_t n = LIST_N(args);
     
@@ -195,7 +195,7 @@ static LakeVal *_div(LakeList *args)
     return VAL(int_from_c(result));
 }
 
-static LakeVal *_int_eq(LakeList *args)
+static LakeVal *_int_eq(LakeCtx *ctx, LakeList *args)
 {
     gboolean result = TRUE;
     size_t n = LIST_N(args);
@@ -210,10 +210,10 @@ static LakeVal *_int_eq(LakeList *args)
         }
         prev = INT_VAL(INT(v));
     }
-    return VAL(bool_from_int(result));
+    return VAL(BOOL_FROM_INT(ctx, result));
 }
 
-static LakeVal *_int_lt(LakeList *args)
+static LakeVal *_int_lt(LakeCtx *ctx, LakeList *args)
 {
     gboolean result = TRUE;
     size_t n = LIST_N(args);
@@ -231,10 +231,10 @@ static LakeVal *_int_lt(LakeList *args)
             prev = INT_VAL(INT(v));
         }
     }
-    return VAL(bool_from_int(result));
+    return VAL(BOOL_FROM_INT(ctx, result));
 }
 
-static LakeVal *_int_gt(LakeList *args)
+static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
 {
     gboolean result = TRUE;
     size_t n = LIST_N(args);
@@ -252,14 +252,15 @@ static LakeVal *_int_gt(LakeList *args)
             prev = INT_VAL(INT(v));
         }
     }
-    return VAL(bool_from_int(result));
+    return VAL(BOOL_FROM_INT(ctx, result));
 }
 
-Env *primitive_bindings(void)
+void bind_primitives(LakeCtx *ctx)
 {
-    #define DEFINE(name, fn, arity) env_define(env, sym_intern(name), VAL(prim_make(name, arity, fn)))
-    
-    Env *env = env_toplevel();
+    #define DEFINE(name, fn, arity) env_define(ctx->toplevel,         \
+                                               sym_intern(ctx, name), \
+                                               VAL(prim_make(name, arity, fn)))
+
     DEFINE("car", _car, 1);
     DEFINE("cdr", _cdr, 1);
     DEFINE("cons", _cons, 2);
@@ -291,6 +292,4 @@ Env *primitive_bindings(void)
     /* string> */
     /* string-concatenate */
     /* string-slice */
-    
-    return env;
 }

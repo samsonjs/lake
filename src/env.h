@@ -20,8 +20,6 @@ typedef struct env Env;
 
 #include "lake.h"
 
-Env *env_toplevel(void);
-
 Env *env_make(Env *parent);
 LakeVal *env_define(Env *env, LakeSym *key, LakeVal *val);
 LakeVal *env_set(Env *env, LakeSym *key, LakeVal *val);

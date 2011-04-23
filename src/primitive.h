@@ -15,6 +15,6 @@
 
 LakePrimitive *prim_make(char *name, int arity, lake_prim fn);
 char *prim_repr(LakePrimitive *prim);
-Env *primitive_bindings(void);
+void bind_primitives(LakeCtx *ctx);
 
 #endif

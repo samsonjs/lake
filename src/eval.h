@@ -13,10 +13,11 @@
 #include "env.h"
 #include "lake.h"
 
-LakeVal *eval(Env *env, LakeVal *expr);
-LakeList *eval_exprs(Env *env, LakeList *exprs);
-LakeVal *eval_exprs1(Env *env, LakeList *exprs);
-LakeVal *apply(LakeVal *fnVal, LakeList *args);
-gboolean is_special_form(LakeList *expr);
+LakeVal *eval(LakeCtx *ctx, Env *env, LakeVal *expr);
+LakeList *eval_exprs(LakeCtx *ctx, Env *env, LakeList *exprs);
+LakeVal *eval_exprs1(LakeCtx *ctx, Env *env, LakeList *exprs);
+LakeVal *apply(LakeCtx *ctx, LakeVal *fnVal, LakeList *args);
+gboolean is_special_form(LakeCtx *ctx, LakeList *expr);
+void init_special_form_handlers(LakeCtx *ctx);
 
 #endif
