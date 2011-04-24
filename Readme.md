@@ -12,7 +12,9 @@ Compiling & Running
 
 Portable C99, only dep is glib, nothing to configure, no documentation!
 
-Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`. Once you have glib you can build the repl:
+Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`. You'll also need some version of gcc and GNU make.
+
+Once you have all that you can build the repl:
 
     $ make repl && build/repl
 
@@ -41,7 +43,19 @@ If you want to build a static library:
 
     $ make lake
 
-The binary will be in `build/lake.a` and you may do with it as you like.
+The binary will be in `build/lake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](blob/master/src/lake.h#L120-128) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
+
+Tests
+=====
+
+The last interesting make task runs tests:
+
+    $ make test
+
+There are a few tests right now and more should be coming.
+
+Special Forms
+=============
 
 Lake's special forms are:
 
@@ -54,6 +68,8 @@ Lake's special forms are:
   * `if`
   * `when`
   * `cond`
+
+And an illustrative repl session:
 
     > (define answer 7)
     > answer
@@ -73,7 +89,12 @@ Lake's special forms are:
     > (cond ((> 0 1) "backwards") ((< 0 1) "correct") (else "bizarre"))
     "correct"
 
-Woah, we even managed to define a useful function without using any primitives! There are primitives now though. So few they can be easily named. They are named thusly:
+Woah, we even managed to define a useful function without using any primitives!
+
+Primitives
+==========
+
+There are primitives though. So few they can be easily named, and they are named thusly:
 
   * car, cdr, cons
   * null?
@@ -92,7 +113,10 @@ Deviating from RSR5 `eq?` is called `is?` in Lake Scheme, which I find much clea
     > (equal? a b)
     #t
 
-One final thing to note is an experiment I call *naked calls* (or expressions). These are only valid at the top level in the repl and are just lists without parens, like so:
+Naked Calls
+===========
+
+One final thing to note is an experiment called *naked calls* (or expressions). These are only valid at the top level in the repl and are just lists without parens, like so:
 
     > define empty? (lambda (x) (or (null? x) (is? x 0) (equal? x "")))
     > empty? 4
@@ -104,18 +128,22 @@ One final thing to note is an experiment I call *naked calls* (or expressions). 
 
 A naked expression with one value evaluates to the single value it contains so that typing in an atomic expression doesn't produce strange results. Due to this behaviour one caveat is that if you want to invoke a function without arguments you cannot use a naked list. When evaluating code from a file naked lists are not parsed at all.
 
+TODO
+====
+
 Lake still needs:
 
-  * primitives:
+  * primitive functions:
     * display values
     * compare values
     * eval and apply
-    * native type operations:
-      * symbol
-      * boolean (logic)
-      * string
-      * function
-      * dotted list (head, tail)
+  * native type operations on:
+    * symbol
+    * boolean (logic)
+    * string
+    * function (eval, apply)
+    * dotted list (head, tail)
+  * type conversions, hopefully in a more general way than RSR5
   * a minimal stdlib
 
 There's enough here to start reading so I'm going to see where the book takes me. Other than that as much of the language as possible should be moved from C-land into Scheme-land, like the repl. The present functionality should require less C than there currently is.
