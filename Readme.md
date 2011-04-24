@@ -12,7 +12,7 @@ Compiling & Running
 
 Portable C99, only dep is glib, nothing to configure, no documentation!
 
-Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`. You'll also need some version of gcc and GNU make.
+Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install libglib2.0-dev`. You'll also need some version of gcc and GNU make.
 
 Once you have all that you can build the repl:
 
@@ -48,11 +48,9 @@ The binary will be in `build/lake.a` and you may do with it as you like. Lake cr
 Tests
 =====
 
-The last interesting make task runs tests:
+There are a few tests right now and more are on the way. Run them like so:
 
     $ make test
-
-There are a few tests right now and more should be coming.
 
 Special Forms
 =============
@@ -113,6 +111,8 @@ Deviating from RSR5 `eq?` is called `is?` in Lake Scheme, which I find much clea
     > (equal? a b)
     #t
 
+If you like you can write `()` instead of `'()` for nil.
+
 Naked Calls
 ===========
 
@@ -151,11 +151,11 @@ There's enough here to start reading so I'm going to see where the book takes me
 Contributors
 ============
 
-Just me, and I don't want any credit ;-)
+[Sami Samhuri](http://samhuri.net) ([@_sjs](https://twitter.com/_sjs))
 
 License
 =======
 
-Copyright 2011 Sami Samhuri
+Copyright 2011 Sami Samhuri <sami.samhuri@gmail.com>
 
-MIT License, see included [LICENSE](blob/master/LICENSE) file
+MIT licensed, see the [included LICENSE file](blob/master/LICENSE)
