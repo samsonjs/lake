@@ -35,9 +35,6 @@ static void env_put(Env *env, LakeSym *key, LakeVal *val)
 
 LakeVal *env_define(Env *env, LakeSym *key, LakeVal *val)
 {
-    if (env_is_defined(env, key) == env) {
-        printf("warning: redefining %s\n", SYM_S(key));
-    }
     env_put(env, key, val);
     return val;
 }
@@ -57,10 +54,6 @@ LakeVal *env_get(Env *env, LakeSym *key)
     LakeVal *val = g_hash_table_lookup(env->bindings, key);
     if (!val && env->parent) {
         val = env_get(env->parent, key);
-    }
-    if (!val) {
-        ERR("undefined variable: %s", SYM_S(key));
-        val = NULL;
     }
     return val;
 }

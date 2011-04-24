@@ -97,9 +97,6 @@ LakeVal *list_set(LakeList *list, size_t i, LakeVal *val)
     if (i >= 0 && i < list->n) {
         list->vals[i] = val;
     }
-    else {
-        ERR("list_set: index %zu is out of bounds (%zu)", i, list->n);
-    }
     return NULL;
 }
 

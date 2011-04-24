@@ -253,6 +253,9 @@ LakeVal *eval(LakeCtx *ctx, Env *env, LakeVal *expr)
 
     case TYPE_SYM:
         result = env_get(env, (gpointer)SYM(expr));
+        if (!result) {
+            ERR("undefined variable: %s", SYM_S(SYM(expr)));
+        }
         break;
 
     case TYPE_DLIST:
