@@ -1,3 +1,6 @@
 *.o
 lake
 lake.a
+test/*
+!test/*.[ch]
+!test/Makefile
