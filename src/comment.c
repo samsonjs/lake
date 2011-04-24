@@ -10,7 +10,7 @@
 #include <glib.h>
 #include "comment.h"
 #include "lake.h"
-#include "string.h"
+#include "str.h"
 
 static LakeComment *comment_alloc(void)
 {

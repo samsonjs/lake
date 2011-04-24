@@ -14,7 +14,7 @@
 #include "int.h"
 #include "lake.h"
 #include "list.h"
-#include "string.h"
+#include "str.h"
 
 /* TODO: use a linked list instead of this cheesy structure */
 

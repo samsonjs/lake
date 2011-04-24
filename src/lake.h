@@ -177,10 +177,11 @@ char *repr(LakeVal *val);
 
 #include "sym.h"
 #include "int.h"
-#include "string.h"
+#include "str.h"
 #include "list.h"
 #include "dlist.h"
 #include "fn.h"
 #include "comment.h"
+#include "primitive.h"
 
 #endif

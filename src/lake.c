@@ -22,7 +22,7 @@
 #include "list.h"
 #include "parse.h"
 #include "primitive.h"
-#include "string.h"
+#include "str.h"
 #include "symtable.h"
 
 char *type_name(LakeVal *expr)

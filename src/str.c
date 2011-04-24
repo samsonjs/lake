@@ -1,5 +1,5 @@
 /** 
-  * string.c
+  * str.c
   * Lake Scheme
   *
   * Copyright 2011 Sami Samhuri
@@ -12,7 +12,7 @@
 #include <string.h>
 #include "int.h"
 #include "lake.h"
-#include "string.h"
+#include "str.h"
 
 static LakeStr *str_alloc(void)
 {

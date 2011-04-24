@@ -1,5 +1,5 @@
 /** 
-  * string.h
+  * str.h
   * Lake Scheme
   *
   * Copyright 2011 Sami Samhuri

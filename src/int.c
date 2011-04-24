@@ -10,6 +10,7 @@
 #include <glib.h>
 #include "int.h"
 #include "lake.h"
+#include "str.h"
 
 static LakeInt *int_alloc(void)
 {

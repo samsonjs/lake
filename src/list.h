@@ -13,7 +13,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include "lake.h"
-#include "string.h"
+#include "str.h"
 
 LakeList *list_make(void);
 LakeList *list_cons(LakeVal *car, LakeVal *cdr);

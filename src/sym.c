@@ -13,7 +13,7 @@
 #include <string.h>
 #include "env.h"
 #include "lake.h"
-#include "string.h"
+#include "str.h"
 #include "sym.h"
 
 static LakeSym *sym_alloc(void)

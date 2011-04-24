@@ -16,7 +16,7 @@
 #include "lake.h"
 #include "list.h"
 #include "parse.h"
-#include "string.h"
+#include "str.h"
 #include "sym.h"
 
 struct context {

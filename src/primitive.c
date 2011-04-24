@@ -17,7 +17,7 @@
 #include "list.h"
 #include "lake.h"
 #include "primitive.h"
-#include "string.h"
+#include "str.h"
 
 static LakePrimitive *prim_alloc(void)
 {
