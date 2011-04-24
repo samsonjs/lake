@@ -31,13 +31,18 @@ char *dlist_repr(LakeDottedList *dlist)
 	GString *s = g_string_new("(");
     int i;
 	char *s2;
-	if (dlist->head) {
+	if (dlist->head && LIST_N(dlist->head)) {
         for (i = 0; i < LIST_N(dlist->head); ++i) {
 		    s2 = lake_repr(LIST_VAL(dlist->head, i));
 		    g_string_append(s, s2);
 		    g_free(s2);
 		    if (i != LIST_N(dlist->head) - 1) g_string_append(s, " ");
         }
+    }
+    else if (dlist->head) {
+        s2 = lake_repr(VAL(dlist->head));
+        g_string_append(s, s2);
+        g_free(s2);
     }
 	g_string_append(s, " . ");
     s2 = lake_repr(dlist->tail);
