@@ -43,7 +43,7 @@ static void warn_trailing(Ctx *ctx)
     /* don't warn about trailing comments */
     if (ctx->i < ctx->n && peek(ctx) != ';') {
         char *trailing = ctx->s + ctx->i;
-        printf("warning: ignoring %d trailing chars: %s\n", (int)(ctx->n - ctx->i), trailing);
+        fprintf(stderr, "warning: ignoring %d trailing chars: %s\n", (int)(ctx->n - ctx->i), trailing);
     }
 }
 

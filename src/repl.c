@@ -41,7 +41,7 @@ static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
     char buf[n];
     if (!fgets(buf, n, stdin)) {
         if (ferror(stdin)) {
-            printf("error: cannot read from stdin");
+            fprintf(stderr, "error: cannot read from stdin");
         }
         if (feof(stdin)) {
             return VAL(EOF);
@@ -50,19 +50,19 @@ static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
     }
 	/* trim the newline if any */
 	buf[strcspn(buf, "\n")] = '\0';
-	
+
 	/* parse list expressions */
 	if (first_char(buf) == '(') {
         return parse_expr(ctx, buf, strlen(buf));
     }
-    
+
     /* try to parse a naked call without parens
        (makes the repl more palatable) */
     LakeList *list = parse_naked_list(ctx, buf, strlen(buf));
     if (!list || LIST_N(list) == 0) return NULL;
 
     LakeVal *result;
-    
+
     /* naked call */
     LakeVal *head;
     if (is_special_form(ctx, list) ||
@@ -75,7 +75,7 @@ static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
     else {
         result = LIST_VAL(list, 0);
     }
-    
+
     return result;
 }
 

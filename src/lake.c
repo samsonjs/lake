@@ -68,7 +68,7 @@ char *lake_repr(LakeVal *expr)
         break;
     
     default:
-        printf("error: unrecognized value, type %d, size %zu bytes", expr->type, expr->size);
+        fprintf(stderr, "error: unrecognized value, type %d, size %zu bytes", expr->type, expr->size);
         s = g_strdup("");
     }
     
