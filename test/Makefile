@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS := -Wall -g -I../src $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
-TESTS = test_comment test_dlist test_env
 DEPS = laketest.o ../build/lake.a
+TESTS = test_comment test_dlist test_env test_eval
 
 all: $(TESTS)
 	@clear
