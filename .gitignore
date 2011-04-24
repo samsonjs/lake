@@ -3,3 +3,4 @@ build
 test/*
 !test/*.[ch]
 !test/Makefile
+!test/Readme.md

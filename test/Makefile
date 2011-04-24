@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS := -Wall -g -I../src $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
-DEPS = minunit.h ../build/lake.a
 TESTS = test_comment test_dlist test_env
+DEPS = laketest.o ../build/lake.a
 
 all: $(TESTS)
 	@clear
@@ -10,6 +10,8 @@ all: $(TESTS)
 		echo;             \
 		./$$test;         \
 	done
+
+test: all
 
 test_comment: $(DEPS) test_comment.o
 	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
