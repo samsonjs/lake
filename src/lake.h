@@ -160,6 +160,7 @@ typedef struct lake_comment LakeComment;
 
 #define COMM_TEXT(x) (x->text)
 
+LakeCtx *lake_init(void);
 gboolean lake_is(LakeVal *a, LakeVal *b);
 gboolean lake_equal(LakeVal *a, LakeVal *b);
 char *lake_repr(LakeVal *val);
