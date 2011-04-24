@@ -12,11 +12,11 @@ Compiling & Running
 
 Portable C99, only dep is glib, nothing to configure, no documentation!
 
-Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`. Once you have glib just run:
+Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install glib`. Once you have glib you can build the repl:
 
-    $ make && ./lake
+    $ make repl && build/repl
 
-That will drop you at a repl. There are booleans, symbols, integers, strings, lists, dotted lists (pairs), lambdas, a few special forms, and some primitive functions.
+There are booleans, symbols, integers, strings, lists, dotted lists (pairs), lambdas, a few special forms, and some primitive functions. You can evaluate these as you expect in a Scheme repl:
 
     > #t
     #t
@@ -36,6 +36,12 @@ That will drop you at a repl. There are booleans, symbols, integers, strings, li
     42
 
 Hooray! That sure is repl-ish.
+
+If you want to build a static library:
+
+    $ make lake
+
+The binary will be in `build/lake.a` and you may do with it as you like.
 
 Lake's special forms are:
 

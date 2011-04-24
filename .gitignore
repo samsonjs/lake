@@ -1,6 +1,5 @@
 *.o
-lake
-lake.a
+build
 test/*
 !test/*.[ch]
 !test/Makefile

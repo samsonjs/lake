@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS := -Wall -g -I../src $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
-DEPS = minunit.h ../src/lake.a
+DEPS = minunit.h ../build/lake.a
 TESTS = test_comment test_dlist test_env
 
 all: $(TESTS)
@@ -23,9 +23,7 @@ test_env: $(DEPS) test_env.o
 test_eval: $(DEPS) test_eval.o
 	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
 
-# use touch to prevent errors in case files do not exist
 clean:
-	@touch dummy.o $(TESTS)
-	rm -f *.o $(TESTS)
+	-rm -f *.o $(TESTS)
 
 .PHONY: all $(TESTS)

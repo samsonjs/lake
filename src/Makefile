@@ -1,20 +1,33 @@
+LAKE_BUILD = ../build
 CC = gcc
 CFLAGS := -Wall -g $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
-LAKE_OBJS = env.o int.o str.o sym.o parse.o list.o eval.o \
-            symtable.o fn.o dlist.o primitive.o comment.o lake.o
-OBJS = $(LAKE_OBJS) repl.o
+LAKE_OBJS = $(LAKE_BUILD)/comment.o   \
+            $(LAKE_BUILD)/dlist.o     \
+            $(LAKE_BUILD)/env.o       \
+            $(LAKE_BUILD)/eval.o      \
+            $(LAKE_BUILD)/fn.o        \
+            $(LAKE_BUILD)/int.o       \
+            $(LAKE_BUILD)/lake.o      \
+            $(LAKE_BUILD)/list.o      \
+            $(LAKE_BUILD)/parse.o     \
+            $(LAKE_BUILD)/primitive.o \
+            $(LAKE_BUILD)/str.o       \
+            $(LAKE_BUILD)/sym.o       \
+            $(LAKE_BUILD)/symtable.o
 
-all: lake
+all: lake repl
 
-lake: $(OBJS)
-	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
+repl: $(LAKE_OBJS) $(LAKE_BUILD)/repl.o
+	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $(LAKE_BUILD)/$@
 
-lake.a: $(LAKE_OBJS)
-	rm -f $@
-	ar cq $@ $(LAKE_OBJS)
+$(LAKE_BUILD)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# use touch to prevent errors in case files do not exist
+lake: $(LAKE_OBJS)
+	rm -f $(LAKE_BUILD)/$@.a
+	ar cq $(LAKE_BUILD)/$@.a $(LAKE_OBJS)
+
 clean:
-	@touch dummy.o lake
-	rm -f *.o lake
+	-rm -rf $(LAKE_BUILD)
