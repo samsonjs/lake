@@ -162,7 +162,7 @@ typedef struct lake_comment LakeComment;
 
 gboolean lake_is(LakeVal *a, LakeVal *b);
 gboolean lake_equal(LakeVal *a, LakeVal *b);
-char *repr(LakeVal *val);
+char *lake_repr(LakeVal *val);
 
 #include <stdio.h>
 

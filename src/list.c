@@ -187,7 +187,7 @@ char *list_repr(LakeList *list)
     int i;
 	char *s2;
     for (i = 0; i < LIST_N(list); ++i) {
-		s2 = repr(LIST_VAL(list, i));
+		s2 = lake_repr(LIST_VAL(list, i));
 		g_string_append(s, s2);
 		g_free(s2);
 		if (i != LIST_N(list) - 1) g_string_append(s, " ");

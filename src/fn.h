@@ -17,6 +17,4 @@
 LakeFn *fn_make(LakeList *params, LakeSym *varargs, LakeList *body, Env *closure);
 char *fn_repr(LakeFn *fn);
 
-/* TODO: function operations */
-
 #endif

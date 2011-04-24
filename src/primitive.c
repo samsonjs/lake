@@ -105,11 +105,11 @@ static LakeVal *_not(LakeCtx *ctx, LakeList *args)
     return VAL(not);
 }
 
-#define ENSURE_INT(x, i) do {                                      \
-        if (!IS(TYPE_INT, x)) {                                    \
-            ERR("argument %zu is not an integer: %s", i, repr(x)); \
-            return NULL;                                           \
-        }                                                          \
+#define ENSURE_INT(x, i) do {                                           \
+        if (!IS(TYPE_INT, x)) {                                         \
+            ERR("argument %zu is not an integer: %s", i, lake_repr(x)); \
+            return NULL;                                                \
+        }                                                               \
     } while (0)
 
 static LakeVal *_add(LakeCtx *ctx, LakeList *args)

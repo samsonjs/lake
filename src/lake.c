@@ -91,7 +91,7 @@ static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
     return result;
 }
 
-char *repr(LakeVal *expr)
+char *lake_repr(LakeVal *expr)
 {
     if (expr == NULL) return g_strdup("(null)");
 

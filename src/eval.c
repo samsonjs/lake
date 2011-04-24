@@ -19,7 +19,7 @@ typedef LakeVal *(*special_form_handler)(LakeCtx *ctx, Env *env, LakeList *expr)
 
 static void invalid_special_form(LakeList *expr, char *detail)
 {
-    ERR("malformed special form, %s: %s", detail, repr(VAL(expr)));
+    ERR("malformed special form, %s: %s", detail, lake_repr(VAL(expr)));
 }
 
 /* expr begins with the symbol "quote" so the quoted value is the 2nd value */
@@ -376,7 +376,7 @@ LakeVal *apply(LakeCtx *ctx, LakeVal *fnVal, LakeList *args)
         result = eval_exprs1(ctx, env, fn->body);
     }
     else {
-        ERR("not a function: %s", repr(fnVal));
+        ERR("not a function: %s", lake_repr(fnVal));
     }
     return result;
 }

@@ -42,19 +42,19 @@ char *fn_repr(LakeFn *fn)
         free(s2);
 	}
 	else if (fn->varargs) {
-        s2 = repr(VAL(fn->varargs));
+        s2 = lake_repr(VAL(fn->varargs));
         g_string_append(s, s2);
         free(s2);
     }
     else {
-        s2 = repr(VAL(fn->params));
+        s2 = lake_repr(VAL(fn->params));
         g_string_append(s, s2);
         free(s2);
 	}
     g_string_append(s, " ");
     int i;
     for (i = 0; i < LIST_N(fn->body); ++i) {
-		s2 = repr(LIST_VAL(fn->body, i));
+		s2 = lake_repr(LIST_VAL(fn->body, i));
 		g_string_append(s, s2);
 		g_free(s2);
 		if (i != LIST_N(fn->body) - 1) g_string_append(s, " ");
