@@ -1,3 +1,5 @@
+<p align=center><img src=lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
+
 Lake Scheme
 ===========
 
