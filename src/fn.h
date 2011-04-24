@@ -10,7 +10,6 @@
 #ifndef _LAKE_FN_H
 #define _LAKE_FN_H 1
 
-#include <glib.h>
 #include "env.h"
 #include "lake.h"
 
