@@ -15,5 +15,6 @@
 LakeInt *int_make(void);
 LakeInt *int_from_c(int n);
 LakeStr *int_to_str(LakeInt *i);
+char *int_repr(LakeInt *i);
 
 #endif

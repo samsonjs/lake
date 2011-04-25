@@ -25,7 +25,6 @@ char *lake_repr(LakeVal *expr)
     if (expr == NULL) return g_strdup("(null)");
 
     char *s = NULL;
-    LakeStr *str;
     
     switch (expr->type) {
 
@@ -38,9 +37,7 @@ char *lake_repr(LakeVal *expr)
         break;
 
     case TYPE_INT:
-        str = int_to_str(INT(expr));
-        s = str_val(str);
-        str_free(str);
+        s = int_repr(INT(expr));
         break;
 
     case TYPE_STR:

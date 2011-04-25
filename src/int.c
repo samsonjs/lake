@@ -22,9 +22,7 @@ static LakeInt *int_alloc(void)
 
 LakeInt *int_make(void)
 {
-    LakeInt *i = int_alloc();
-    i->val = 0;
-    return i;
+    return int_from_c(0);
 }
 
 LakeInt *int_from_c(int n)
@@ -34,9 +32,14 @@ LakeInt *int_from_c(int n)
     return i;
 }
 
+char *int_repr(LakeInt *i)
+{
+    return g_strdup_printf("%d", i->val);
+}
+
 LakeStr *int_to_str(LakeInt *i)
 {
-    char *s = g_strdup_printf("%d", i->val);
+    char *s = int_repr(i);
     LakeStr *str = str_from_c(s);
 	g_free(s);
     return str;
