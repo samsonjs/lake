@@ -41,9 +41,9 @@ Hooray! That sure is repl-ish.
 
 If you want to build a static library:
 
-    $ make lake
+    $ make liblake
 
-The binary will be in `build/lake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](blob/master/src/lake.h#L120-128) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
+The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](blob/master/src/lake.h#L120-128) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
 
 Tests
 =====

@@ -9,17 +9,19 @@
   * 
   */
 
+#include <fcntl.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "laketest.h"
 
 static void capture_output(void)
 {
-    int fd = fopen("./tmp", "w");
+    int fd = open("./tmp", O_WRONLY);
     close(2);
     int newfd = dup(fd);
     close(fd);
     
-    fd = fopen("./tmp", "w");
+    fd = open("./tmp", O_WRONLY);
     close(1);
     newfd = dup(fd);
     close(fd);

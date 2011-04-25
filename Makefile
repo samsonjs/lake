@@ -1,8 +1,8 @@
 all:
 	cd src && make all
 
-lake:
-	cd src && make lake
+liblake:
+	cd src && make liblake
 
 repl:
 	cd src && make repl
@@ -12,7 +12,7 @@ clean:
 	-rm -f lake
 
 test:
-	cd src && make lake
+	cd src && make liblake
 	cd test && make
 
 test_clean:

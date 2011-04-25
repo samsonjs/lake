@@ -16,7 +16,7 @@ LAKE_OBJS = $(LAKE_BUILD)/comment.o   \
             $(LAKE_BUILD)/sym.o       \
             $(LAKE_BUILD)/symtable.o
 
-all: lake repl
+all: liblake repl
 
 repl: $(LAKE_OBJS) $(LAKE_BUILD)/repl.o
 	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $(LAKE_BUILD)/$@
@@ -25,7 +25,7 @@ $(LAKE_BUILD)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-lake: $(LAKE_OBJS)
+liblake: $(LAKE_OBJS)
 	rm -f $(LAKE_BUILD)/$@.a
 	ar cq $(LAKE_BUILD)/$@.a $(LAKE_OBJS)
 

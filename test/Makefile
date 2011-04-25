@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS := -Wall -g -I../src $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
-DEPS = laketest.o ../build/lake.a
+OBJS = ../build/liblake.a
 TESTS = test_comment test_dlist test_env test_eval
 
 all: $(TESTS)
@@ -13,17 +13,17 @@ all: $(TESTS)
 
 test: all
 
-test_comment: $(DEPS) test_comment.o
-	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
+test_comment: laketest.o test_comment.o
+	$(CC) $(CFLAGS) $(LFLAGS) $^ $(OBJS) -o $@
 
-test_dlist: $(DEPS) test_dlist.o
-	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
+test_dlist: laketest.o test_dlist.o
+	$(CC) $(CFLAGS) $(LFLAGS) $^ $(OBJS) -o $@
 
-test_env: $(DEPS) test_env.o
-	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
+test_env: laketest.o test_env.o
+	$(CC) $(CFLAGS) $(LFLAGS) $^ $(OBJS) -o $@
 
-test_eval: $(DEPS) test_eval.o
-	$(CC) $(CFLAGS) $(LFLAGS) $^ -o $@
+test_eval: laketest.o test_eval.o
+	$(CC) $(CFLAGS) $(LFLAGS) $^ $(OBJS) -o $@
 
 clean:
 	-rm -f *.o $(TESTS)
