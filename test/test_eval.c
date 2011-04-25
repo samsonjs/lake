@@ -11,6 +11,7 @@
 #include "env.h"
 #include "eval.h"
 #include "lake.h"
+#include "parse.h"
 
 int tests_run;
 char *failed_test;
@@ -129,11 +130,11 @@ static char *test_apply(void)
     LakeVal *fnVal = VAL(p_car);
     LakeList *args = list_make();
     
-    /* call primitive with too few args */
+    /* apply primitive with too few args */
     lt_assert("called primitive with too few args",
               NULL == apply(lake, fnVal, args));
 
-    /* call primitive with correct # of args */
+    /* apply primitive with correct # of args */
     LakeList *list = list_make();
     LakeSym *sym = sym_intern(lake, "test");
     list_append(list, VAL(sym));
@@ -141,30 +142,101 @@ static char *test_apply(void)
     lt_assert("car of '(test) is not the symbol test",
               VAL(sym) == apply(lake, fnVal, args));
     
-    /* call primitive with too many args */
+    /* apply primitive with too many args */
     list_append(args, VAL(sym));
     lt_assert("called primitive with too many args",
               NULL == apply(lake, fnVal, args));
     list_free(args);
 
-    /* varargs primitive */
+
+    /* var args primitive */
     fnVal = EVAL(sym_intern(lake, "+"));
     args = list_make();
-    lt_assert("failed to call varargs primitive (+)",
+    lt_assert("failed to call var args primitive (+)",
               0 == INT_VAL(INT(apply(lake, fnVal, args))));
     list_append(args, VAL(int_from_c(1)));
-    lt_assert("failed to call varargs primitive (+ 1)",
+    lt_assert("failed to call var args primitive (+ 1)",
               1 == INT_VAL(INT(apply(lake, fnVal, args))));
     list_append(args, VAL(int_from_c(2)));
-    lt_assert("failed to call varargs primitive (+ 1 2)",
+    lt_assert("failed to call var args primitive (+ 1 2)",
               3 == INT_VAL(INT(apply(lake, fnVal, args))));
     list_append(args, VAL(int_from_c(3)));
-    lt_assert("failed to call varargs primitive (+ 1 2 3)",
+    lt_assert("failed to call var args primitive (+ 1 2 3)",
               6 == INT_VAL(INT(apply(lake, fnVal, args))));
     list_free(args);
 
-    /* TODO: apply scheme functions with and without varargs */
 
+    /* set up a scheme function with fixed args */
+    eval(lake, lake->toplevel,
+         parse_expr(lake, "(define zero? (lambda (x) (= x 0)))", 35));
+    fnVal = EVAL(sym_intern(lake, "zero?"));
+    args = list_make();
+    
+    /* apply lambda with too few args */
+    lt_assert("function applied incorrectly", NULL == apply(lake, fnVal, args));
+              
+    /* apply lambda with correct # of args */
+    list_append(args, VAL(int_from_c(0)));
+    lt_assert("function applied incorrectly",
+              VAL(lake->T) == apply(lake, fnVal, args));
+
+    /* apply lambda with too many args */
+    list_append(args, VAL(int_from_c(0)));
+    lt_assert("function applied incorrectly", NULL == apply(lake, fnVal, args));
+    list_free(args);
+
+
+    /* set up a scheme function with only var args */
+    eval(lake, lake->toplevel,
+         parse_expr(lake, "(define list (lambda rest rest))", 32));
+    fnVal = EVAL(sym_intern(lake, "list"));
+    args = list_make();
+    
+    /* apply lambda with too few args */
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+              
+    /* apply lambda with correct # of args */
+    list_append(args, VAL(int_from_c(0)));
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+
+    /* apply lambda with too many args */
+    list_append(args, VAL(int_from_c(1)));
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+    list_free(args);
+
+
+    /* set up a scheme function with fixed and var args */
+    eval(lake, lake->toplevel,
+         parse_expr(lake, "(define frob (lambda (a b . rest) b))", 37));
+    fnVal = EVAL(sym_intern(lake, "frob"));
+    args = list_make();
+    
+    /* apply var args lambda with too few args */
+    lt_assert("var args function applied incorrectly",
+              NULL == apply(lake, fnVal, args));
+    list_append(args, VAL(int_from_c(0)));
+    lt_assert("var args function applied incorrectly",
+              NULL == apply(lake, fnVal, args));
+              
+    /* apply var args lambda with minimum # of args */
+    list_append(args, VAL(int_from_c(1)));
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+
+    /* apply lambda with extra args */
+    list_append(args, VAL(int_from_c(2)));
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+    list_append(args, VAL(int_from_c(3)));
+    lt_assert("var args function applied incorrectly",
+              NULL != apply(lake, fnVal, args));
+    list_free(args);
+
+
+    /* non-function in head position */
     lt_assert("apply with non-function returned non-null",
               NULL == apply(lake, VAL(sym), list_make()));
 
