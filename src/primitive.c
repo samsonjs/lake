@@ -292,4 +292,6 @@ void bind_primitives(LakeCtx *ctx)
     /* string> */
     /* string-concatenate */
     /* string-slice */
+
+    #undef DEFINE
 }

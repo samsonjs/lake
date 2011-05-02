@@ -211,6 +211,8 @@ void init_special_form_handlers(LakeCtx *ctx)
     /* HANDLER("let", &_let); */
     /* HANDLER("let!", &_letB); */
     /* HANDLER("letrec", &_letrec); */
+
+    #undef HANDLER
 }
 
 gboolean is_special_form(LakeCtx *ctx, LakeList *expr)
