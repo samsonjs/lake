@@ -87,7 +87,8 @@ static char *type_name(LakeVal *expr)
                                    "dotted-list", "primitive", "function"
                                  };
 
-    return type_names[expr->type];
+    LakeType t = expr->type;
+    return t >= 0 && t <= 8 ? type_names[t] : "(not a LakeVal)";
 }
 
 gboolean lake_equal(LakeVal *a, LakeVal *b)
