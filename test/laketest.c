@@ -14,8 +14,13 @@
 #include <unistd.h>
 #include "laketest.h"
 
+static int captured = 0;
+
 static void capture_output(void)
 {
+    if (captured) return;
+    captured = 1;
+
     int fd = open("./tmp", O_WRONLY);
     close(2);
     int newfd = dup(fd);
@@ -29,6 +34,9 @@ static void capture_output(void)
 
 void restore_output(void)
 {
+    if (!captured) return;
+    captured = 0;
+    
     freopen("/dev/tty", "a", stdout);
     freopen("/dev/tty", "a", stderr);
     unlink("./tmp");
