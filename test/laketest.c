@@ -11,8 +11,12 @@
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
+#include "eval.h"
+#include "lake.h"
 #include "laketest.h"
+#include "parse.h"
 
 static int captured = 0;
 
@@ -63,4 +67,10 @@ int lt_run_tests(char *title, test_fn *tests)
         fprintf(stderr, "FAIL: %s\n", message);
     }
     return pass;
+}
+
+LakeVal *lt_eval(LakeCtx *lake, char *s)
+{
+    LakeVal *v = parse_expr(lake, s, strlen(s));
+    return eval(lake, lake->toplevel, v);
 }

@@ -10,6 +10,7 @@
   */
 
 #include <stdio.h>
+#include "lake.h"
 
 void restore_output(void);
 
@@ -26,3 +27,4 @@ typedef char *(*test_fn)(void);
 
 /* Returns non-zero if all passed, or zero if any failed */
 int lt_run_tests(char *title, test_fn *tests);
+LakeVal *lt_eval(LakeCtx *lake, char *s);
