@@ -131,6 +131,10 @@ A naked expression with one value evaluates to the single value it contains so t
 TODO
 ====
 
+* write or find a nice small hash table and ditch glib
+* get rid of most macros
+* finish tests
+
 Lake still needs:
 
   * primitive functions:
