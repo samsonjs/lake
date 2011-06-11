@@ -138,7 +138,6 @@ TODO
 Lake still needs:
 
   * primitive functions:
-    * display values
     * compare values
     * eval and apply
   * native type operations on:

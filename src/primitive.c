@@ -264,6 +264,55 @@ static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
     return VAL(lk_bool_from_int(ctx, result));
 }
 
+static LakeVal *_set_carB(LakeCtx *ctx, LakeList *args)
+{
+    LakeList *list = LIST(LIST_VAL(args, 0));
+    if (lk_is_type(TYPE_LIST, list)) {
+        LakeVal *new_car = LIST_VAL(args, 1);
+        if (LIST_N(list) == 0) {
+            list_append(list, new_car);
+        }
+        else {
+            list_set(list, 0, new_car);
+        }
+        return VAL(list);
+    }
+    ERR("not a pair: %s", lake_repr(list));
+    return NULL;
+}
+
+static LakeVal *_display(LakeCtx *ctx, LakeList *args)
+{
+    size_t n = LIST_N(args);
+    size_t i;
+    int space = 0;
+    for (i = 0; i < n; ++i) {
+        if (space) putchar(' ');
+        printf("%s", lake_repr(LIST_VAL(args, i)));
+        space = 1;
+    }
+    putchar('\n');
+    return NULL;
+}
+
+#define DEFINE_PREDICATE(name, type)                                            \
+    static LakeVal *_## name ##P(LakeCtx *ctx, LakeList *args)                  \
+    {                                                                           \
+        return VAL(lk_bool_from_int(ctx, lk_is_type(type, LIST_VAL(args, 0)))); \
+    }
+
+DEFINE_PREDICATE(symbol, TYPE_SYM)
+DEFINE_PREDICATE(list, TYPE_LIST)
+DEFINE_PREDICATE(dotted_list, TYPE_DLIST)
+DEFINE_PREDICATE(number, TYPE_INT)
+DEFINE_PREDICATE(integer, TYPE_INT)
+DEFINE_PREDICATE(string, TYPE_STR)
+DEFINE_PREDICATE(bool, TYPE_BOOL)
+DEFINE_PREDICATE(function, TYPE_FN)
+DEFINE_PREDICATE(primitive, TYPE_PRIM)
+
+#undef DEFINE_PREDICATE
+
 void bind_primitives(LakeCtx *ctx)
 {
     #define DEFINE(name, fn, arity) env_define(ctx->toplevel,         \
@@ -285,16 +334,19 @@ void bind_primitives(LakeCtx *ctx)
     DEFINE("=", _int_eq, ARITY_VARARGS);
     DEFINE("<", _int_lt, ARITY_VARARGS);
     DEFINE(">", _int_gt, ARITY_VARARGS);
+    DEFINE("set-car!", _set_carB, 2);
 
-    /* symbol? */
-    /* list? */
-    /* dotted-list? */
-    /* number? */
-    /* integer? */
-    /* string? */
-    /* bool? */
-    /* function? */
-    /* primitive? */
+    DEFINE("display", _display, ARITY_VARARGS);
+
+    DEFINE("symbol?", _symbolP, 1);
+    DEFINE("list?", _listP, 1);
+    DEFINE("dotted-list?", _dotted_listP, 1);
+    DEFINE("number?", _numberP, 1);
+    DEFINE("integer?", _integerP, 1);
+    DEFINE("string?", _stringP, 1);
+    DEFINE("bool?", _boolP, 1);
+    DEFINE("function?", _functionP, 1);
+    DEFINE("primitive?", _primitiveP, 1);
 
     /* string=? */
     /* string< */
