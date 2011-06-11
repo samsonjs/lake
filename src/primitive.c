@@ -9,7 +9,10 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include "bool.h"
+#include "common.h"
 #include "comment.h"
+#include "dlist.h"
 #include "env.h"
 #include "int.h"
 #include "dlist.h"
@@ -44,22 +47,28 @@ char *prim_repr(LakePrimitive *prim)
 static LakeVal *_car(LakeCtx *ctx, LakeList *args)
 {
     LakeList *list = LIST(LIST_VAL(args, 0));
-    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+    if (lk_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
         return LIST_VAL(list, 0);
     }
-    ERR("not a pair: %s", list_repr(list));
+    if (lk_is_type(TYPE_DLIST, list)) {
+        return VAL(dlist_head(DLIST(list)));
+    }
+    ERR("not a pair: %s", lake_repr(list));
     return NULL;
 }
 
 static LakeVal *_cdr(LakeCtx *ctx, LakeList *args)
 {
     LakeList *list = LIST(LIST_VAL(args, 0));
-    if (IS(TYPE_LIST, list) && LIST_N(list) > 0) {
+    if (lk_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
         LakeList *cdr = list_copy(list);
         list_shift(cdr);
         return VAL(cdr);
     }
-    ERR("not a pair: %s", list_repr(list));
+    if (lk_is_type(TYPE_DLIST, list)) {
+        return dlist_tail(DLIST(list));
+    }
+    ERR("not a pair: %s", lake_repr(list));
     return NULL;
 }
 
@@ -73,14 +82,14 @@ static LakeVal *_cons(LakeCtx *ctx, LakeList *args)
 static LakeVal *_nullP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *is_null = BOOL_FROM_INT(ctx, IS(TYPE_LIST, val) && LIST_N(LIST(val)) == 0);
+    LakeBool *is_null = lk_bool_from_int(ctx, lk_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) == 0);
     return VAL(is_null);
 }
 
 static LakeVal *_pairP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *is_pair = BOOL_FROM_INT(ctx, IS(TYPE_LIST, val) && LIST_N(LIST(val)) > 0);
+    LakeBool *is_pair = lk_bool_from_int(ctx, lk_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) > 0);
     return VAL(is_pair);
 }
 
@@ -88,25 +97,25 @@ static LakeVal *_isP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *a = LIST_VAL(args, 0);
     LakeVal *b = LIST_VAL(args, 1);
-    return VAL(BOOL_FROM_INT(ctx, lake_is(a, b)));
+    return VAL(lk_bool_from_int(ctx, lake_is(a, b)));
 }
 
 static LakeVal *_equalP(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *a = LIST_VAL(args, 0);
     LakeVal *b = LIST_VAL(args, 1);
-    return VAL(BOOL_FROM_INT(ctx, lake_equal(a, b)));
+    return VAL(lk_bool_from_int(ctx, lake_equal(a, b)));
 }
 
 static LakeVal *_not(LakeCtx *ctx, LakeList *args)
 {
     LakeVal *val = list_shift(args);
-    LakeBool *not = BOOL_FROM_INT(ctx, IS_FALSE(ctx, val));
+    LakeBool *not = lk_bool_from_int(ctx, lk_is_false(ctx, val));
     return VAL(not);
 }
 
 #define ENSURE_INT(x, i) do {                                           \
-        if (!IS(TYPE_INT, x)) {                                         \
+        if (!lk_is_type(TYPE_INT, x)) {                                         \
             ERR("argument %zu is not an integer: %s", i, lake_repr(x)); \
             return NULL;                                                \
         }                                                               \
@@ -197,7 +206,7 @@ static LakeVal *_div(LakeCtx *ctx, LakeList *args)
 
 static LakeVal *_int_eq(LakeCtx *ctx, LakeList *args)
 {
-    gboolean result = TRUE;
+    bool result = TRUE;
     size_t n = LIST_N(args);
     size_t i;
     int curr, prev;
@@ -210,12 +219,12 @@ static LakeVal *_int_eq(LakeCtx *ctx, LakeList *args)
         }
         prev = INT_VAL(INT(v));
     }
-    return VAL(BOOL_FROM_INT(ctx, result));
+    return VAL(lk_bool_from_int(ctx, result));
 }
 
 static LakeVal *_int_lt(LakeCtx *ctx, LakeList *args)
 {
-    gboolean result = TRUE;
+    bool result = TRUE;
     size_t n = LIST_N(args);
     size_t i;
     int curr, prev;
@@ -231,12 +240,12 @@ static LakeVal *_int_lt(LakeCtx *ctx, LakeList *args)
             prev = INT_VAL(INT(v));
         }
     }
-    return VAL(BOOL_FROM_INT(ctx, result));
+    return VAL(lk_bool_from_int(ctx, result));
 }
 
 static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
 {
-    gboolean result = TRUE;
+    bool result = TRUE;
     size_t n = LIST_N(args);
     size_t i;
     int curr, prev;
@@ -252,7 +261,7 @@ static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
             prev = INT_VAL(INT(v));
         }
     }
-    return VAL(BOOL_FROM_INT(ctx, result));
+    return VAL(lk_bool_from_int(ctx, result));
 }
 
 void bind_primitives(LakeCtx *ctx)

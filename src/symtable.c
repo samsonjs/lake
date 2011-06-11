@@ -8,15 +8,16 @@
   */
 
 #include <glib.h>
+#include "common.h"
 #include "lake.h"
 #include "symtable.h"
 
 static guint _sym_hash(gconstpointer key)
 {
-    return SYM_HASH(SYM(key));
+    return sym_val(SYM(key));
 }
 
-static gboolean _sym_eq(gconstpointer a, gconstpointer b)
+static bool _sym_eq(gconstpointer a, gconstpointer b)
 {
     return a == b;
 }

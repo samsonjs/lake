@@ -26,6 +26,16 @@ LakeDottedList *dlist_make(LakeList *head, LakeVal *tail)
 	return dlist;
 }
 
+LakeList *dlist_head(LakeDottedList *dlist)
+{
+    return dlist->head;
+}
+
+LakeVal *dlist_tail(LakeDottedList *dlist)
+{
+    return dlist->tail;
+}
+
 char *dlist_repr(LakeDottedList *dlist)
 {
 	GString *s = g_string_new("(");
@@ -40,7 +50,7 @@ char *dlist_repr(LakeDottedList *dlist)
         }
     }
     else if (dlist->head) {
-        s2 = lake_repr(VAL(dlist->head));
+        s2 = lake_repr(dlist->head);
         g_string_append(s, s2);
         g_free(s2);
     }
@@ -54,11 +64,11 @@ char *dlist_repr(LakeDottedList *dlist)
 	return repr;
 }
 
-gboolean dlist_equal(LakeDottedList *a, LakeDottedList *b)
+bool dlist_equal(LakeDottedList *a, LakeDottedList *b)
 {
-    LakeVal *headA = VAL(DLIST_HEAD(a));
-    LakeVal *tailA = DLIST_TAIL(a);
-    LakeVal *headB = VAL(DLIST_HEAD(b));
-    LakeVal *tailB = DLIST_TAIL(b);
+    LakeVal *headA = VAL(dlist_head(a));
+    LakeVal *tailA = dlist_tail(a);
+    LakeVal *headB = VAL(dlist_head(b));
+    LakeVal *tailB = dlist_tail(b);
     return lake_equal(headA, headB) && lake_equal(tailA, tailB);
 }

@@ -8,6 +8,7 @@
   */
 
 #include <glib.h>
+#include "common.h"
 #include "laketest.h"
 #include "env.h"
 #include "lake.h"

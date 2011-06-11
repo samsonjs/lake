@@ -8,6 +8,7 @@
   */
 
 #include <glib.h>
+#include "common.h"
 #include "int.h"
 #include "lake.h"
 #include "str.h"

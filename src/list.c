@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "common.h"
 #include "int.h"
 #include "lake.h"
 #include "list.h"
@@ -46,7 +47,7 @@ LakeList *list_make(void)
 LakeList *list_cons(LakeVal *car, LakeVal *cdr)
 {
     LakeList *list;
-    if (IS(TYPE_LIST, cdr)) {
+    if (lk_is_type(TYPE_LIST, cdr)) {
         list = LIST(cdr);
         list_unshift(list, car);
     }
@@ -161,7 +162,7 @@ LakeVal *list_pop(LakeList *list)
 	return tail;
 }
 
-gboolean list_equal(LakeList *a, LakeList *b)
+bool list_equal(LakeList *a, LakeList *b)
 {
     if (a == b) return TRUE;
     size_t n = LIST_N(a);
@@ -186,8 +187,15 @@ char *list_repr(LakeList *list)
 	GString *s = g_string_new("(");
     int i;
 	char *s2;
+    LakeVal *val;
     for (i = 0; i < LIST_N(list); ++i) {
-		s2 = lake_repr(LIST_VAL(list, i));
+        val = LIST_VAL(list, i);
+        if (val == VAL(list)) {
+            s2 = g_strdup("[Circular]");
+        }
+        else {
+		    s2 = lake_repr(val);
+	    }
 		g_string_append(s, s2);
 		g_free(s2);
 		if (i != LIST_N(list) - 1) g_string_append(s, " ");

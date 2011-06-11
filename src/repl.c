@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
+#include "common.h"
 #include "env.h"
 #include "eval.h"
 #include "lake.h"

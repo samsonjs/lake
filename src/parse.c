@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "common.h"
 #include "dlist.h"
 #include "int.h"
 #include "lake.h"
@@ -128,37 +129,37 @@ static void backtrack(Ctx *ctx)
     ctx->i = ctx->mark;
 }
 
-static gboolean is_space(char c)
+static bool is_space(char c)
 {
     return strchr(" \r\n\t", c) != NULL;
 }
 
-static gboolean is_letter(char c)
+static bool is_letter(char c)
 {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static gboolean is_symbol(char c)
+static bool is_symbol(char c)
 {
     return strchr("!$%&|*+-/:<=>?@^_~#", c) != NULL;
 }
 
-static gboolean is_digit(char c)
+static bool is_digit(char c)
 {
     return c >= '0' && c <= '9';
 }
 
-static gboolean is_sym_char(char c)
+static bool is_sym_char(char c)
 {
     return is_letter(c) || is_symbol(c) || is_digit(c);
 }
 
-static gboolean is_newline(char c)
+static bool is_newline(char c)
 {
     return c == '\n' || c == '\r';
 }
 
-static char *parse_while(Ctx *ctx, gboolean (*is_valid)(char))
+static char *parse_while(Ctx *ctx, bool (*is_valid)(char))
 {
     size_t n = 8;
     size_t i = 0;
@@ -337,7 +338,7 @@ static LakeVal *parse_quoted(Ctx *ctx)
     return VAL(list);
 }
 
-static gboolean is_not_newline(char c)
+static bool is_not_newline(char c)
 {
     return !is_newline(c);
 }

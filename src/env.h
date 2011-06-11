@@ -11,6 +11,7 @@
 #define _LAKE_ENV_H 1
 
 #include <glib.h>
+#include "common.h"
 
 struct env {
     struct env *parent;

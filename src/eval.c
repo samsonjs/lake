@@ -10,16 +10,20 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "bool.h"
+#include "common.h"
 #include "env.h"
 #include "eval.h"
 #include "fn.h"
 #include "lake.h"
+#include "parse.h"
 
 typedef LakeVal *(*special_form_handler)(LakeCtx *ctx, Env *env, LakeList *expr);
 
 static void invalid_special_form(LakeList *expr, char *detail)
 {
-    ERR("malformed special form, %s: %s", detail, lake_repr(VAL(expr)));
+    ERR("malformed special form, %s: %s", detail, lake_repr(expr));
 }
 
 /* expr begins with the symbol "quote" so the quoted value is the 2nd value */
@@ -39,8 +43,8 @@ static LakeVal *_and(LakeCtx *ctx, Env *env, LakeList *expr)
     
     /* (and ...) */
     LakeVal *result = LIST_N(expr) ? eval(ctx, env, list_shift(expr)) : VAL(ctx->T);
-    while (IS_TRUTHY(ctx, result) && LIST_N(expr) > 0) {
-        result = BOOL_AND(ctx, result, eval(ctx, env, list_shift(expr)));
+    while (lk_is_truthy(ctx, result) && LIST_N(expr) > 0) {
+        result = lk_bool_and(ctx, result, eval(ctx, env, list_shift(expr)));
     }
     return result;
 }
@@ -52,8 +56,8 @@ static LakeVal *_or(LakeCtx *ctx, Env *env, LakeList *expr)
     
     /* (or ...) */
     LakeVal *result = LIST_N(expr) ? eval(ctx, env, list_shift(expr)) : VAL(ctx->F);
-    while (IS_FALSY(ctx, result) && LIST_N(expr) > 0) {
-        result = BOOL_OR(ctx, result, eval(ctx, env, list_shift(expr)));
+    while (lk_is_falsy(ctx, result) && LIST_N(expr) > 0) {
+        result = lk_bool_or(ctx, result, eval(ctx, env, list_shift(expr)));
     }
     return result;
 }
@@ -61,12 +65,12 @@ static LakeVal *_or(LakeCtx *ctx, Env *env, LakeList *expr)
 static LakeVal *_setB(LakeCtx *ctx, Env *env, LakeList *expr)
 {
     /* (set! x 42) */
-    if (LIST_N(expr) == 3 && IS(TYPE_SYM, LIST_VAL(expr, 1))) {
+    if (LIST_N(expr) == 3 && lk_is_type(TYPE_SYM, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "set!" symbol */
         LakeSym *var = SYM(list_shift(expr));
         LakeVal *form = list_shift(expr);
         if (!env_set(env, var, form)) {
-            ERR("%s is not defined", SYM_S(var));
+            ERR("%s is not defined", sym_repr(var));
         }
     }
     else {
@@ -80,7 +84,7 @@ static LakeVal *_define(LakeCtx *ctx, Env *env, LakeList *expr)
     /* TODO: make these more robust, check all expected params */
     
     /* (define x 42) */
-    if (LIST_N(expr) == 3 && IS(TYPE_SYM, LIST_VAL(expr, 1))) {
+    if (LIST_N(expr) == 3 && lk_is_type(TYPE_SYM, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "define" symbol */
         LakeSym *var = SYM(list_shift(expr));
         LakeVal *form = list_shift(expr);
@@ -88,7 +92,7 @@ static LakeVal *_define(LakeCtx *ctx, Env *env, LakeList *expr)
     }
     
     /* (define (inc x) (+ 1 x)) */
-    else if (LIST_N(expr) >= 3 && IS(TYPE_LIST, LIST_VAL(expr, 1))) {
+    else if (LIST_N(expr) >= 3 && lk_is_type(TYPE_LIST, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "define" symbol */
         LakeList *params = LIST(list_shift(expr));
         LakeSym *var = SYM(list_shift(params));
@@ -97,11 +101,11 @@ static LakeVal *_define(LakeCtx *ctx, Env *env, LakeList *expr)
     }
     
     /* (define (print format . args) (...)) */
-    else if (LIST_N(expr) >= 3 && IS(TYPE_DLIST, LIST_VAL(expr, 1))) {
+    else if (LIST_N(expr) >= 3 && lk_is_type(TYPE_DLIST, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "define" symbol */
         LakeDottedList *def = DLIST(list_shift(expr));
-        LakeList *params = DLIST_HEAD(def);
-        LakeSym *varargs = SYM(DLIST_TAIL(def));
+        LakeList *params = dlist_head(def);
+        LakeSym *varargs = SYM(dlist_tail(def));
         LakeSym *var = SYM(list_shift(params));
         LakeList *body = expr;
         env_define(env, var, VAL(fn_make(params, varargs, body, env)));
@@ -117,21 +121,21 @@ static LakeVal *_define(LakeCtx *ctx, Env *env, LakeList *expr)
 static LakeVal *_lambda(LakeCtx *ctx, Env *env, LakeList *expr)
 {
     /* (lambda (a b c) ...) */
-    if (LIST_N(expr) >= 3 && IS(TYPE_LIST, LIST_VAL(expr, 1))) {
+    if (LIST_N(expr) >= 3 && lk_is_type(TYPE_LIST, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "lambda" symbol */
         LakeList *params = LIST(list_shift(expr));
         LakeList *body = expr;
         return VAL(fn_make(params, NULL, body, env));
     }
-    else if (LIST_N(expr) >= 3 && IS(TYPE_DLIST, LIST_VAL(expr, 1))) {
+    else if (LIST_N(expr) >= 3 && lk_is_type(TYPE_DLIST, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "lambda" symbol */
         LakeDottedList *def = DLIST(list_shift(expr));
-        LakeList *params = DLIST_HEAD(def);
-        LakeSym *varargs = SYM(DLIST_TAIL(def));
+        LakeList *params = dlist_head(def);
+        LakeSym *varargs = SYM(dlist_tail(def));
         LakeList *body = expr;
         return VAL(fn_make(params, varargs, body, env));
     }
-    else if (LIST_N(expr) >= 3 && IS(TYPE_SYM, LIST_VAL(expr, 1))) {
+    else if (LIST_N(expr) >= 3 && lk_is_type(TYPE_SYM, LIST_VAL(expr, 1))) {
         list_shift(expr); /* drop the "lambda" symbol */
         LakeSym *varargs = SYM(list_shift(expr));
         LakeList *body = expr;
@@ -151,7 +155,7 @@ static LakeVal *_if(LakeCtx *ctx, Env *env, LakeList *expr)
     }
     list_shift(expr); /* "if" token */
     LakeVal *cond = eval(ctx, env, list_shift(expr));
-    if (IS_TRUTHY(ctx, cond)) {
+    if (lk_is_truthy(ctx, cond)) {
         return eval(ctx, env, list_shift(expr));
     }
     else {
@@ -168,13 +172,13 @@ static LakeVal *_cond(LakeCtx *ctx, Env *env, LakeList *expr)
     LakeVal *pred;
     LakeList *conseq;
     while (LIST_N(expr)) {
-        if (!IS(TYPE_LIST, LIST_VAL(expr, 0))) {
+        if (!lk_is_type(TYPE_LIST, LIST_VAL(expr, 0))) {
             invalid_special_form(expr, "expected a (predicate consequence) pair");
             return NULL;
         }
         conseq = LIST(list_shift(expr));
         pred = list_shift(conseq);
-        if (pred == ELSE || IS_TRUTHY(ctx, eval(ctx, env, pred))) {
+        if (pred == ELSE || lk_is_truthy(ctx, eval(ctx, env, pred))) {
             return eval_exprs1(ctx, env, conseq);
         }
     }
@@ -189,36 +193,37 @@ static LakeVal *_when(LakeCtx *ctx, Env *env, LakeList *expr)
     }
     list_shift(expr); /* "when" token */
     LakeVal *cond = eval(ctx, env, list_shift(expr));
-    return IS_TRUTHY(ctx, cond) ? eval_exprs1(ctx, env, expr) : NULL;
+    return lk_is_truthy(ctx, cond) ? eval_exprs1(ctx, env, expr) : NULL;
+}
+
+typedef LakeVal *(*handler)(LakeCtx *, Env *, LakeList *);
+
+static void define_handler(LakeCtx *ctx, char *name, handler fn)
+{
+    g_hash_table_insert(ctx->special_form_handlers, sym_intern(ctx, name), (void *)fn);
 }
 
 void init_special_form_handlers(LakeCtx *ctx)
 {
-    #define HANDLER(name, fn) g_hash_table_insert(ctx->special_form_handlers, \
-                                                  sym_intern(ctx, name),      \
-                                                  (gpointer)fn)
-
-    /* HANDLER("load", &load_special_form); */
-    HANDLER("quote", &_quote);
-    HANDLER("and", &_and);
-    HANDLER("or", &_or);
-    HANDLER("if", &_if);
-    HANDLER("when", &_when);
-    HANDLER("cond", &_cond);
-    HANDLER("set!", &_setB);
-    HANDLER("define", &_define);
-    HANDLER("lambda", &_lambda);
-    /* HANDLER("let", &_let); */
-    /* HANDLER("let!", &_letB); */
-    /* HANDLER("letrec", &_letrec); */
-
-    #undef HANDLER
+    /* define_handler(ctx, "load", &load_special_form); */
+    define_handler(ctx, "quote", &_quote);
+    define_handler(ctx, "and", &_and);
+    define_handler(ctx, "or", &_or);
+    define_handler(ctx, "if", &_if);
+    define_handler(ctx, "when", &_when);
+    define_handler(ctx, "cond", &_cond);
+    define_handler(ctx, "set!", &_setB);
+    define_handler(ctx, "define", &_define);
+    define_handler(ctx, "lambda", &_lambda);
+    /* define_handler(ctx, "let", &_let); */
+    /* define_handler(ctx, "let!", &_letB); */
+    /* define_handler(ctx, "letrec", &_letrec); */
 }
 
-gboolean is_special_form(LakeCtx *ctx, LakeList *expr)
+bool is_special_form(LakeCtx *ctx, LakeList *expr)
 {
     LakeVal *head = LIST_VAL(expr, 0);
-    if (!IS(TYPE_SYM, head)) return FALSE;
+    if (!lk_is_type(TYPE_SYM, head)) return FALSE;
     GList *special_form_names = g_hash_table_get_keys(ctx->special_form_handlers);
     return !!g_list_find(special_form_names, SYM(head));
 }
@@ -235,8 +240,13 @@ static LakeVal *eval_special_form(LakeCtx *ctx, Env *env, LakeList *expr)
     if (handler) {
         return handler(ctx, env, list_copy(expr));
     }
-    ERR("unrecognized special form: %s", SYM_S(name));
+    ERR("unrecognized special form: %s", sym_repr(name));
     return NULL;
+}
+
+LakeVal *eval_str(LakeCtx *ctx, Env *env, char *s)
+{
+    return eval(ctx, env, parse_expr(ctx, s, strlen(s)));
 }
 
 LakeVal *eval(LakeCtx *ctx, Env *env, LakeVal *expr)
@@ -254,9 +264,9 @@ LakeVal *eval(LakeCtx *ctx, Env *env, LakeVal *expr)
         break;
 
     case TYPE_SYM:
-        result = env_get(env, (gpointer)SYM(expr));
+        result = env_get(env, (void *)SYM(expr));
         if (!result) {
-            ERR("undefined variable: %s", SYM_S(SYM(expr)));
+            ERR("undefined variable: %s", sym_repr(SYM(expr)));
         }
         break;
 
@@ -332,7 +342,7 @@ LakeVal *eval_exprs1(LakeCtx *ctx, Env *env, LakeList *exprs)
 LakeVal *apply(LakeCtx *ctx, LakeVal *fnVal, LakeList *args)
 {
     LakeVal *result = NULL;
-    if (IS(TYPE_PRIM, fnVal)) {
+    if (lk_is_type(TYPE_PRIM, fnVal)) {
         LakePrimitive *prim = PRIM(fnVal);
         int arity = prim->arity;
         if (arity == ARITY_VARARGS || LIST_N(args) == arity) {
@@ -343,7 +353,7 @@ LakeVal *apply(LakeCtx *ctx, LakeVal *fnVal, LakeList *args)
             result = NULL;
         }
     }
-    else if (IS(TYPE_FN, fnVal)) {
+    else if (lk_is_type(TYPE_FN, fnVal)) {
         LakeFn *fn = FN(fnVal);
         
         /* Check # of params */

@@ -12,6 +12,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include "common.h"
 
 #define LAKE_VERSION "0.1"
 
@@ -44,10 +45,6 @@ struct lake_val {
 };
 typedef struct lake_val LakeVal;
 
-#define VAL_SIZE(x) (VAL(x)->size)
-#define IS(t, x) (VAL(x)->type == t)
-#define IS_NIL(x) (IS(TYPE_LIST, x) && LIST_N(LIST(x)) == 0)
-
 struct lake_sym {
     LakeVal base;
     size_t n;
@@ -56,24 +53,11 @@ struct lake_sym {
 };
 typedef struct lake_sym LakeSym;
 
-#define SYM_S(x) (x->s)
-#define SYM_HASH(x) (x->hash)
-
 struct lake_bool {
 	LakeVal base;
-	gboolean val;
+	bool val;
 };
 typedef struct lake_bool LakeBool;
-
-#define BOOL_VAL(x) (x->val)
-#define IS_TRUE(ctx, x) (VAL(x) == VAL(ctx->T))
-#define IS_FALSE(ctx, x) (VAL(x) == VAL(ctx->F))
-#define IS_TRUTHY(ctx, x) (!IS_FALSE(ctx, x))
-#define IS_FALSY(ctx, x) (IS_FALSE(ctx, x))
-#define BOOL_FROM_INT(ctx, n) (n ? ctx->T : ctx->F)
-#define BOOL_REPR(b) (g_strdup(BOOL_VAL(b) ? "#t" : "#f"))
-#define BOOL_AND(ctx, a, b) (IS_TRUTHY(ctx, a) && IS_TRUTHY(ctx, b) ? b : a)
-#define BOOL_OR(ctx, a, b) (IS_TRUTHY(ctx, a) ? a : b)
 
 struct lake_int {
     LakeVal base;
@@ -112,9 +96,6 @@ struct lake_dlist {
 };
 typedef struct lake_dlist LakeDottedList;
 
-#define DLIST_HEAD(x) (x->head)
-#define DLIST_TAIL(x) (x->tail)
-
 #include "env.h"
 
 /* Execution context */
@@ -150,7 +131,7 @@ struct lake_fn {
 };
 typedef struct lake_fn LakeFn;
 
-#define CALLABLE(x) (IS(TYPE_FN, x) || IS(TYPE_PRIM, x))
+#define CALLABLE(x) (lk_is_type(TYPE_FN, x) || lk_is_type(TYPE_PRIM, x))
 
 struct lake_comment {
     LakeVal base;
@@ -161,9 +142,12 @@ typedef struct lake_comment LakeComment;
 #define COMM_TEXT(x) (x->text)
 
 LakeCtx *lake_init(void);
-gboolean lake_is(LakeVal *a, LakeVal *b);
-gboolean lake_equal(LakeVal *a, LakeVal *b);
-char *lake_repr(LakeVal *val);
+int lk_val_size(void *x);
+int lk_is_type(LakeType t, void *x);
+bool lk_is_nil(LakeVal *x);
+bool lake_is(LakeVal *a, LakeVal *b);
+bool lake_equal(LakeVal *a, LakeVal *b);
+char *lake_repr(void *val);
 
 #include <stdio.h>
 

@@ -9,6 +9,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include "common.h"
 #include "laketest.h"
 #include "lake.h"
 #include "list.h"
@@ -21,11 +22,11 @@ static char *REPR = "(() . ())";
 /* LakeDottedList *dlist_make(LakeList *head, LakeVal *tail) */
 static char *test_dlist_make(void)
 {
-    lt_assert("type is not TYPE_DLIST", IS(TYPE_DLIST, dlist));
-    lt_assert("value size is incorrect", VAL_SIZE(dlist) == sizeof(LakeDottedList));
+    lt_assert("type is not TYPE_DLIST", lk_is_type(TYPE_DLIST, dlist));
+    lt_assert("value size is incorrect", lk_val_size(dlist) == sizeof(LakeDottedList));
     lt_assert("head value is incorrect",
-              lake_equal(VAL(head), VAL(DLIST_HEAD(dlist))));
-    lt_assert("tail value is incorrect", lake_equal(tail, DLIST_TAIL(dlist)));
+              lake_equal(VAL(head), VAL(dlist_head(dlist))));
+    lt_assert("tail value is incorrect", lake_equal(tail, dlist_tail(dlist)));
     return 0;
 }
 
@@ -51,7 +52,7 @@ static char *test_dlist_repr(void)
     return 0;
 }
 
-/* gboolean dlist_equal(LakeDottedList *a, LakeDottedList *b) */
+/* bool dlist_equal(LakeDottedList *a, LakeDottedList *b) */
 static char *test_dlist_equal(void)
 {
     LakeDottedList *a = dlist;

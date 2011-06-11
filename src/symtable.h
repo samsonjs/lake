@@ -11,6 +11,7 @@
 #define _LAKE_SYMTABLE_H 1
 
 #include <glib.h>
+#include "common.h"
 
 GHashTable *symtable_make(void);
 

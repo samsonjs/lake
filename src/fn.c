@@ -9,6 +9,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include "common.h"
 #include "env.h"
 #include "fn.h"
 #include "lake.h"
@@ -42,12 +43,12 @@ char *fn_repr(LakeFn *fn)
         free(s2);
 	}
 	else if (fn->varargs) {
-        s2 = lake_repr(VAL(fn->varargs));
+        s2 = lake_repr(fn->varargs);
         g_string_append(s, s2);
         free(s2);
     }
     else {
-        s2 = lake_repr(VAL(fn->params));
+        s2 = lake_repr(fn->params);
         g_string_append(s, s2);
         free(s2);
 	}

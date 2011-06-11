@@ -10,6 +10,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "common.h"
 #include "lake.h"
 #include "env.h"
 #include "symtable.h"

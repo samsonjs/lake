@@ -8,6 +8,7 @@
   */
 
 #include <glib.h>
+#include "common.h"
 #include "comment.h"
 #include "lake.h"
 #include "str.h"
@@ -37,7 +38,7 @@ char *comment_repr(LakeComment *comment)
 	return g_strdup(STR_S(comment->text));
 }
 
-gboolean comment_equal(LakeComment *a, LakeComment *b)
+bool comment_equal(LakeComment *a, LakeComment *b)
 {
     return str_equal(COMM_TEXT(a), COMM_TEXT(b));
 }

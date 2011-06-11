@@ -7,7 +7,9 @@
   *
   */
 
+#include <string.h>
 #include "laketest.h"
+#include "bool.h"
 #include "int.h"
 #include "lake.h"
 #include "str.h"
@@ -32,19 +34,19 @@ static char *test_lake_init(void)
               NULL != lake->special_form_handlers);
     lt_assert("T is null", NULL != lake->T);
     lt_assert("F is null", NULL != lake->F);
-    lt_assert("T is not a boolean", IS(TYPE_BOOL, lake->T));
-    lt_assert("F is not a boolean", IS(TYPE_BOOL, lake->F));
-    lt_assert("value of T is zero", BOOL_VAL(lake->T));
-    lt_assert("value of F is non-zero", !BOOL_VAL(lake->F));
+    lt_assert("T is not a boolean", lk_is_type(TYPE_BOOL, lake->T));
+    lt_assert("F is not a boolean", lk_is_type(TYPE_BOOL, lake->F));
+    lt_assert("value of T is zero", lk_bool_val(lake->T));
+    lt_assert("value of F is non-zero", !lk_bool_val(lake->F));
     return 0;
 }
 
-static gboolean _is(void *a, void *b)
+static bool _is(void *a, void *b)
 {
     return lake_is(VAL(a), VAL(b));
 }
 
-/* gboolean lake_is(LakeVal *a, LakeVal *b) */
+/* bool lake_is(LakeVal *a, LakeVal *b) */
 static char *test_lake_is(void)
 {
     LakeInt *i = int_from_c(42);
@@ -66,12 +68,12 @@ static char *test_lake_is(void)
     return 0;
 }
 
-static gboolean _equal(void *a, void *b)
+static bool _equal(void *a, void *b)
 {
     return lake_equal(VAL(a), VAL(b));
 }
 
-/* gboolean lake_equal(LakeVal *a, LakeVal *b) */
+/* bool lake_equal(LakeVal *a, LakeVal *b) */
 static char *test_lake_equal(void)
 {
     LakeInt *i = int_from_c(42);

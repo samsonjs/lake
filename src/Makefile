@@ -3,6 +3,7 @@ CC = gcc
 CFLAGS := -Wall -g $(shell pkg-config --cflags glib-2.0)
 LFLAGS := $(shell pkg-config --libs glib-2.0)
 LAKE_OBJS = $(LAKE_BUILD)/comment.o   \
+            $(LAKE_BUILD)/bool.o      \
             $(LAKE_BUILD)/dlist.o     \
             $(LAKE_BUILD)/env.o       \
             $(LAKE_BUILD)/eval.o      \

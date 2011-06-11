@@ -10,6 +10,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
+#include "common.h"
 #include "int.h"
 #include "lake.h"
 #include "str.h"
@@ -62,7 +63,7 @@ char *str_val(LakeStr *str)
     return g_strdup(str->s);
 }
 
-gboolean str_equal(LakeStr *a, LakeStr *b)
+bool str_equal(LakeStr *a, LakeStr *b)
 {
     size_t n = STR_N(a);
     if (n != STR_N(b)) return FALSE;
