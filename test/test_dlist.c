@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <string.h>
 #include "common.h"
 #include "laketest.h"

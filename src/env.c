@@ -7,31 +7,30 @@
   *
   */
 
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "common.h"
+#include "hash.h"
 #include "lake.h"
 #include "env.h"
-#include "symtable.h"
 
 Env *env_make(Env *parent)
 {
-    Env *env = g_malloc(sizeof(Env));
+    Env *env = malloc(sizeof(Env));
     env->parent = parent;
-    env->bindings = symtable_make();
+    env->bindings = lk_hash_make();
     return env;
 }
 
 Env *env_is_defined(Env *env, LakeSym *key)
 {
-    if (g_hash_table_lookup(env->bindings, key) != NULL) return env;
+    if (lk_hash_get(env->bindings, key->s) != NULL) return env;
     return env->parent ? env_is_defined(env->parent, key) : NULL;
 }
 
 static void env_put(Env *env, LakeSym *key, LakeVal *val)
 {
-    g_hash_table_insert(env->bindings, key, val);
+    lk_hash_put(env->bindings, key->s, val);
 }
 
 LakeVal *env_define(Env *env, LakeSym *key, LakeVal *val)
@@ -52,7 +51,7 @@ LakeVal *env_set(Env *env, LakeSym *key, LakeVal *val)
 
 LakeVal *env_get(Env *env, LakeSym *key)
 {
-    LakeVal *val = g_hash_table_lookup(env->bindings, key);
+    LakeVal *val = lk_hash_get(env->bindings, key->s);
     if (!val && env->parent) {
         val = env_get(env->parent, key);
     }

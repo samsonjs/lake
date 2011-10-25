@@ -8,19 +8,18 @@
   */
 
 #ifndef _LAKE_STRING_H
-#define _LAKE_STRING_H 1
+#define _LAKE_STRING_H
 
-#include <glib.h>
 #include "common.h"
 #include "lake.h"
 
-LakeStr *str_make(void);
-void str_free(LakeStr *str);
-LakeStr *str_copy(LakeStr *str);
-LakeStr *str_from_c(char *s);
-char *str_val(LakeStr *str);
-LakeInt *str_len(LakeStr *str);
-bool str_equal(LakeStr *a, LakeStr *b);
-LakeStr *str_to_str(LakeStr *str);
+LakeStr *lk_str_make(void);
+void lk_str_free(LakeStr *str);
+LakeStr *lk_str_copy(LakeStr *str);
+LakeStr *lk_str_from_c(char *s);
+char *lk_str_val(LakeStr *str);
+LakeInt *lk_str_len(LakeStr *str);
+bool lk_str_equal(LakeStr *a, LakeStr *b);
+LakeStr *lk_str_to_str(LakeStr *str);
 
 #endif

@@ -89,7 +89,7 @@ static char *test_eval(void)
 
     LakeBool *l_bool = lake->T;
     LakeInt *l_int = int_from_c(42);
-    LakeStr *l_str = str_from_c("i am the walrus");
+    LakeStr *l_str = lk_str_from_c("i am the walrus");
     lt_assert("bool does not self evaluate", VAL(l_bool) == EVAL(l_bool));
     lt_assert("int does not self evaluate", VAL(l_int) == EVAL(l_int));
     lt_assert("string does not self evaluate", VAL(l_str) == EVAL(l_str));
@@ -118,7 +118,7 @@ static char *test_eval(void)
     list_append(l_call, VAL(isP));
     list_append(l_call, VAL(s_x));
     list_append(l_call, VAL(l_int));
-    lt_assert("primitive evaluated incorrectly", IS_TRUE(lake, EVAL(l_call)));
+    lt_assert("primitive evaluated incorrectly", lk_is_true(lake, EVAL(l_call)));
     list_free(l_call);
     
     return 0;

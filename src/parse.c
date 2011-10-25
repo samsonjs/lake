@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -163,7 +162,7 @@ static char *parse_while(Ctx *ctx, bool (*is_valid)(char))
 {
     size_t n = 8;
     size_t i = 0;
-    char *s = g_malloc(n);
+    char *s = malloc(n);
     char c;
     while ((c = peek(ctx)) != PARSE_EOF && is_valid(c)) {
         s[i++] = c;
@@ -171,7 +170,7 @@ static char *parse_while(Ctx *ctx, bool (*is_valid)(char))
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            if (!(s = g_realloc(s, n))) OOM();
+            if (!(s = realloc(s, n))) OOM();
         }
     }
     s[i] = '\0';
@@ -215,7 +214,7 @@ static LakeVal *parse_int(Ctx *ctx)
 
 static LakeVal *parse_sym(Ctx *ctx)
 {
-	LakeVal *val;
+  LakeVal *val;
     static int size = 1024;
     char s[size];
     char c;
@@ -225,15 +224,15 @@ static LakeVal *parse_sym(Ctx *ctx)
         consume1(ctx);
     }
     s[i] = '\0';
-	if (g_strcmp0(s, "#t") == 0) {
-		val = VAL(ctx->lake_ctx->T);
-	}
-	else if (g_strcmp0(s, "#f") == 0) {
-		val = VAL(ctx->lake_ctx->F);
-	}
-	else {
-		val = VAL(sym_intern(ctx->lake_ctx, s));
-	}
+  if (strcmp(s, "#t") == 0) {
+    val = VAL(ctx->lake_ctx->T);
+  }
+  else if (strcmp(s, "#f") == 0) {
+    val = VAL(ctx->lake_ctx->F);
+  }
+  else {
+    val = VAL(sym_intern(ctx->lake_ctx, s));
+  }
     return val;
 }
 
@@ -265,7 +264,7 @@ static LakeVal *parse_str(Ctx *ctx)
 {
     size_t n = 8;
     size_t i = 0;
-    char *s = g_malloc(n);
+    char *s = malloc(n);
     char c;
     ch(ctx, '"');
     while ((c = peek(ctx)) != PARSE_EOF && c != '"') {
@@ -280,13 +279,13 @@ static LakeVal *parse_str(Ctx *ctx)
         /* grow if necessary */
         if (i >= n) {
             n *= 2;
-            if (!(s = g_realloc(s, n))) OOM();
+            if (!(s = realloc(s, n))) OOM();
         }
     }
     s[i] = '\0';
     ch(ctx, '"');
-    LakeStr *str = str_from_c(s);
-    g_free(s);
+    LakeStr *str = lk_str_from_c(s);
+    free(s);
     return VAL(str);
 }
 
@@ -347,7 +346,7 @@ static LakeVal *parse_comment(Ctx *ctx)
 {
     char *text = parse_while(ctx, is_not_newline);
     LakeComment *comment = comment_from_c(text);
-    g_free(text);
+    free(text);
     return VAL(comment);
 }
 

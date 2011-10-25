@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdlib.h>
 #include "bool.h"
 #include "common.h"
@@ -33,7 +32,7 @@ static LakePrimitive *prim_alloc(void)
 LakePrimitive *prim_make(char *name, int arity, lake_prim fn)
 {
     LakePrimitive *prim = prim_alloc();
-    prim->name = g_strdup(name);
+    prim->name = strdup(name);
     prim->arity = arity;
     prim->fn = fn;
     return prim;
@@ -41,7 +40,10 @@ LakePrimitive *prim_make(char *name, int arity, lake_prim fn)
 
 char *prim_repr(LakePrimitive *prim)
 {
-    return g_strdup_printf("<#primitive:%s(%d)>", prim->name, prim->arity);
+    size_t n = 16 + strlen(prim->name) + MAX_INT_LENGTH;
+  	char *s = malloc(n);
+  	snprintf(s, n, "<#primitive:%s(%d)>", prim->name, prim->arity);
+    return s;
 }
 
 static LakeVal *_car(LakeCtx *ctx, LakeList *args)

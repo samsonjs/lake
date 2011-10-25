@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_SYM_H
-#define _LAKE_SYM_H 1
+#define _LAKE_SYM_H
 
 #include "lake.h"
 

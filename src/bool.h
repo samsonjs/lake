@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_BOOL_H
-#define _LAKE_BOOL_H 1
+#define _LAKE_BOOL_H
 
 #include "common.h"
 #include "lake.h"

@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_COMMENT_H
-#define _LAKE_COMMENT_H 1
+#define _LAKE_COMMENT_H
 
 #include "common.h"
 #include "lake.h"

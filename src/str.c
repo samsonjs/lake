@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include "common.h"
@@ -15,62 +14,64 @@
 #include "lake.h"
 #include "str.h"
 
-static LakeStr *str_alloc(void)
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+static LakeStr *lk_str_alloc(void)
 {
-    LakeStr *str = g_malloc(sizeof(LakeStr));
+    LakeStr *str = malloc(sizeof(LakeStr));
     VAL(str)->type = TYPE_STR;
     VAL(str)->size = sizeof(LakeStr);
     return str;
 }
 
-void str_free(LakeStr *str)
+void lk_str_free(LakeStr *str)
 {
-    g_free(str->s);
-    g_free(str);
+    free(STR_S(str));
+    free(str);
 }
 
-static LakeVal *str_set(LakeStr *str, char *s)
+static LakeVal *lk_str_set(LakeStr *str, char *s)
 {
-    str->n = strlen(s);
-    str->s = g_strdup(s);
+    STR_N(str) = strlen(s);
+    STR_S(str) = strndup(s, STR_N(str));
     return NULL;
 }
 
-LakeStr *str_from_c(char *s)
+LakeStr *lk_str_from_c(char *s)
 {
-    LakeStr *str = str_alloc();
-    str_set(str, s);
+    LakeStr *str = lk_str_alloc();
+    lk_str_set(str, s);
     return str;
 }
 
-LakeStr *str_make(void)
+LakeStr *lk_str_make(void)
 {
-    return str_from_c("");
+    return lk_str_from_c("");
 }
 
-LakeInt *str_len(LakeStr *str)
+LakeInt *lk_str_len(LakeStr *str)
 {
-    return int_from_c(str->n);
+    return int_from_c(STR_N(str));
 }
 
-LakeStr *str_copy(LakeStr *str)
+LakeStr *lk_str_copy(LakeStr *str)
 {
-    return str_from_c(str->s);
+    return lk_str_from_c(STR_S(str));
 }
 
-char *str_val(LakeStr *str)
+char *lk_str_val(LakeStr *str)
 {
-    return g_strdup(str->s);
+    return strndup(STR_S(str), STR_N(str));
 }
 
-bool str_equal(LakeStr *a, LakeStr *b)
+bool lk_str_equal(LakeStr *a, LakeStr *b)
 {
-    size_t n = STR_N(a);
-    if (n != STR_N(b)) return FALSE;
-    return g_strcmp0(a->s, b->s) == 0;
+    if (STR_N(a) != STR_N(b)) return FALSE;
+    size_t n = MIN(STR_N(a), STR_N(b));
+    return strncmp(STR_S(a), STR_S(b), n) == 0;
 }
 
-LakeStr *str_to_str(LakeStr *str)
+LakeStr *lk_str_to_str(LakeStr *str)
 {
-    return str_copy(str);
+    return lk_str_copy(str);
 }

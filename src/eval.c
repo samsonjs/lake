@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -200,7 +199,7 @@ typedef LakeVal *(*handler)(LakeCtx *, Env *, LakeList *);
 
 static void define_handler(LakeCtx *ctx, char *name, handler fn)
 {
-    g_hash_table_insert(ctx->special_form_handlers, sym_intern(ctx, name), (void *)fn);
+    lk_hash_put(ctx->special_form_handlers, name, (void *)fn);
 }
 
 void init_special_form_handlers(LakeCtx *ctx)
@@ -224,13 +223,12 @@ bool is_special_form(LakeCtx *ctx, LakeList *expr)
 {
     LakeVal *head = LIST_VAL(expr, 0);
     if (!lk_is_type(TYPE_SYM, head)) return FALSE;
-    GList *special_form_names = g_hash_table_get_keys(ctx->special_form_handlers);
-    return !!g_list_find(special_form_names, SYM(head));
+    return lk_hash_has(ctx->special_form_handlers, SYM(head)->s);
 }
 
 static special_form_handler get_special_form_handler(LakeCtx *ctx, LakeSym *name)
 {
-    return (special_form_handler)g_hash_table_lookup(ctx->special_form_handlers, name);
+    return (special_form_handler)lk_hash_get(ctx->special_form_handlers, name->s);
 }
 
 static LakeVal *eval_special_form(LakeCtx *ctx, Env *env, LakeList *expr)

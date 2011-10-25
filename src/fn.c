@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdlib.h>
 #include "common.h"
 #include "env.h"
@@ -16,52 +15,51 @@
 
 static LakeFn *fn_alloc(void)
 {
-	LakeFn *fn = g_malloc(sizeof(LakeFn));
-	VAL(fn)->type = TYPE_FN;
-	VAL(fn)->size = sizeof(LakeFn);
-	return fn;
+  LakeFn *fn = malloc(sizeof(LakeFn));
+  VAL(fn)->type = TYPE_FN;
+  VAL(fn)->size = sizeof(LakeFn);
+  return fn;
 }
 
 LakeFn *fn_make(LakeList *params, LakeSym *varargs, LakeList *body, Env *closure)
 {
     LakeFn *fn = fn_alloc();
-	fn->params = params;
-	fn->varargs = varargs;
-	fn->body = body;
-	fn->closure = closure;
-	return fn;
+  fn->params = params;
+  fn->varargs = varargs;
+  fn->body = body;
+  fn->closure = closure;
+  return fn;
 }
 
 char *fn_repr(LakeFn *fn)
 {
-	GString *s = g_string_new("(lambda ");
-	char *s2;
-	if (LIST_N(fn->params) && fn->varargs) {
-        LakeDottedList *params = dlist_make(fn->params, VAL(fn->varargs));
-        s2 = dlist_repr(params);
-        g_string_append(s, s2);
-        free(s2);
-	}
-	else if (fn->varargs) {
-        s2 = lake_repr(fn->varargs);
-        g_string_append(s, s2);
-        free(s2);
-    }
-    else {
-        s2 = lake_repr(fn->params);
-        g_string_append(s, s2);
-        free(s2);
-	}
-    g_string_append(s, " ");
-    int i;
-    for (i = 0; i < LIST_N(fn->body); ++i) {
-		s2 = lake_repr(LIST_VAL(fn->body, i));
-		g_string_append(s, s2);
-		g_free(s2);
-		if (i != LIST_N(fn->body) - 1) g_string_append(s, " ");
-    }
-	g_string_append(s, ")");
-	gchar *repr = s->str;
-	g_string_free(s, FALSE); /* don't free char data */
-	return repr;
+  char *s = malloc(8);
+  s[0] = '\0';
+  s = lk_str_append(s, "(lambda ");
+  char *s2;
+  if (LIST_N(fn->params) && fn->varargs) {
+    LakeDottedList *params = dlist_make(fn->params, VAL(fn->varargs));
+    s2 = dlist_repr(params);
+    s = lk_str_append(s, s2);
+    free(s2);
+  }
+  else if (fn->varargs) {
+    s2 = lake_repr(fn->varargs);
+    s = lk_str_append(s, s2);
+    free(s2);
+  }
+  else {
+    s2 = lake_repr(fn->params);
+    s = lk_str_append(s, s2);
+    free(s2);
+  }
+  s = lk_str_append(s, " ");
+  int i;
+  for (i = 0; i < LIST_N(fn->body); ++i) {
+    s2 = lake_repr(LIST_VAL(fn->body, i));
+    s = lk_str_append(s, s2);
+    free(s2);
+    if (i != LIST_N(fn->body) - 1) s = lk_str_append(s, " ");
+  }
+  return lk_str_append(s, ")");
 }

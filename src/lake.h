@@ -8,9 +8,8 @@
   */
 
 #ifndef _LAKE_LAKE_H
-#define _LAKE_LAKE_H 1
+#define _LAKE_LAKE_H
 
-#include <glib.h>
 #include <stdlib.h>
 #include "common.h"
 
@@ -54,8 +53,8 @@ struct lake_sym {
 typedef struct lake_sym LakeSym;
 
 struct lake_bool {
-	LakeVal base;
-	bool val;
+  LakeVal base;
+  bool val;
 };
 typedef struct lake_bool LakeBool;
 
@@ -90,19 +89,20 @@ typedef struct lake_list LakeList;
 #define LIST_VAL(list, i) (i >= 0 && i < list->n ? list->vals[i] : NULL)
 
 struct lake_dlist {
-	LakeVal base;
-	LakeList *head;
-	LakeVal *tail;
+  LakeVal base;
+  LakeList *head;
+  LakeVal *tail;
 };
 typedef struct lake_dlist LakeDottedList;
 
+#include "hash.h"
 #include "env.h"
 
 /* Execution context */
 struct lake_ctx {
     Env *toplevel;
-    GHashTable *symbols;
-    GHashTable *special_form_handlers;
+    lk_hash_t *symbols;
+    lk_hash_t *special_form_handlers;
     LakeBool *T;
     LakeBool *F;
 };
@@ -111,10 +111,10 @@ typedef struct lake_ctx LakeCtx;
 typedef LakeVal *(*lake_prim)(LakeCtx *ctx, LakeList *args);
 
 struct lake_primitive {
-	LakeVal base;
-	char *name;
+  LakeVal base;
+  char *name;
     int arity;
-	lake_prim fn;
+  lake_prim fn;
 };
 typedef struct lake_primitive LakePrimitive;
 
@@ -123,11 +123,11 @@ typedef struct lake_primitive LakePrimitive;
 
 
 struct lake_fn {
-	LakeVal base;
-	LakeList *params;
-	LakeSym *varargs;
-	LakeList *body;
-	Env *closure;
+  LakeVal base;
+  LakeList *params;
+  LakeSym *varargs;
+  LakeList *body;
+  Env *closure;
 };
 typedef struct lake_fn LakeFn;
 
@@ -160,6 +160,7 @@ char *lake_repr(void *val);
 #define DIE(...) do { ERR(__VA_ARGS__); exit(1); } while(0)
 #define OOM() DIE("%s:%d out of memory", __FILE__, __LINE__)
 
+#include "bool.h"
 #include "sym.h"
 #include "int.h"
 #include "str.h"

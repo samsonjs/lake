@@ -7,7 +7,7 @@ liblake:
 repl:
 	cd src && make repl
 
-clean:
+clean: test_clean
 	cd src && make clean
 	-rm -f lake
 

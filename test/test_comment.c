@@ -23,7 +23,7 @@ static char *test_comment_make(void)
     LakeComment *comment = comment_make(text);
     lt_assert("type is not TYPE_COMM", lk_is_type(TYPE_COMM, comment));
     lt_assert("value size is incorrect", lk_val_size(comment) == sizeof(LakeComment));
-    lt_assert("comment text is incorrect", str_equal(text, COMM_TEXT(comment)));
+    lt_assert("comment text is incorrect", lk_str_equal(text, COMM_TEXT(comment)));
     return 0;
 }
 
@@ -33,7 +33,7 @@ static char *test_comment_from_c(void)
     LakeComment *comment = comment_from_c(TEXT);
     lt_assert("type is not TYPE_COMM", lk_is_type(TYPE_COMM, comment));
     lt_assert("value size is incorrect", lk_val_size(comment) == sizeof(LakeComment));
-    lt_assert("comment text is incorrect", str_equal(text, COMM_TEXT(comment)));
+    lt_assert("comment text is incorrect", lk_str_equal(text, COMM_TEXT(comment)));
     return 0;
 }
 
@@ -60,7 +60,7 @@ static char *test_comment_equal(void)
 
 void setup(void)
 {
-    text = str_from_c(TEXT);
+    text = lk_str_from_c(TEXT);
 }
 
 int main(int argc, char const *argv[])

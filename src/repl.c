@@ -11,7 +11,6 @@
   */
 
 #include <errno.h>
-#include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
@@ -49,11 +48,11 @@ static LakeVal *prompt_read(LakeCtx *ctx, Env *env, char *prompt)
         }
         return NULL;
     }
-	/* trim the newline if any */
-	buf[strcspn(buf, "\n")] = '\0';
+  /* trim the newline if any */
+  buf[strcspn(buf, "\n")] = '\0';
 
-	/* parse list expressions */
-	if (first_char(buf) == '(') {
+  /* parse list expressions */
+  if (first_char(buf) == '(') {
         return parse_expr(ctx, buf, strlen(buf));
     }
 
@@ -108,13 +107,13 @@ static char *read_file(char const *filename)
         size_t n = size;
         size_t i = 0;
         size_t read;
-        char *s = g_malloc(n);
+        char *s = malloc(n);
         
         while (!feof(fp) && !ferror(fp)) {
             read = fread(buf, 1, size, fp);
             if (i + read > n) {
                 n += size;
-                if (!(s = g_realloc(s, n))) OOM();
+                if (!(s = realloc(s, n))) OOM();
             }
             memcpy(s + i, buf, read);
             i += read;
@@ -140,10 +139,10 @@ int main (int argc, char const *argv[])
     LakeCtx *ctx = lake_init();
 
     /* create and bind args */
-    LakeVal **argVals = g_malloc(argc * sizeof(LakeVal *));
+    LakeVal **argVals = malloc(argc * sizeof(LakeVal *));
     int i;
     for (i = 0; i < argc; ++i) {
-        argVals[i] = VAL(str_from_c((char *)argv[i]));
+        argVals[i] = VAL(lk_str_from_c((char *)argv[i]));
     }
     LakeList *args = list_from_array(argc, argVals);
     free(argVals);

@@ -14,6 +14,8 @@
 #include "lake.h"
 #include "str.h"
 #include "sym.h"
+#include "eval.h"
+#include "parse.h"
 
 static LakeCtx *lake;
 
@@ -78,7 +80,7 @@ static char *test_lake_equal(void)
 {
     LakeInt *i = int_from_c(42);
     LakeInt *j = int_from_c(42);
-    LakeStr *arthur = str_from_c("arthur");
+    LakeStr *arthur = lk_str_from_c("arthur");
 
     // values with different types are never equal
     lt_assert("values with different types are equal", !_equal(i, arthur));
@@ -114,14 +116,14 @@ static char *test_lake_equal(void)
     lt_assert("int is not equal to itself", _equal(i, i));
 
     // strings are compared by value
-    LakeStr *arthur2 = str_from_c("arthur");
-    LakeStr *zaphod = str_from_c("zaphod");
+    LakeStr *arthur2 = lk_str_from_c("arthur");
+    LakeStr *zaphod = lk_str_from_c("zaphod");
     lt_assert("string is not equal to itself", _equal(arthur, arthur));
     lt_assert("string is not equal to itself", _equal(arthur, arthur2));
     lt_assert("different strings are equal", !_equal(arthur, zaphod));
 
     // lists are compared by value
-    #define S(s) VAL(str_from_c(s))
+    #define S(s) VAL(lk_str_from_c(s))
     LakeList *fruits = list_make();
     list_append(fruits, S("mango"));
     list_append(fruits, S("pear"));
@@ -166,7 +168,24 @@ static char *test_lake_equal(void)
 /* char *lake_repr(LakeVal *val) */
 static char *test_lake_repr(void)
 {
-    /* TODO */
+    lt_assert("repr of NULL is not (null)",
+              strncmp(lake_repr(NULL), "(null)", 6) == 0);
+    lt_assert("repr of unknown value is not (unknown)",
+              strncmp(lake_repr(NULL), "(null)", 6) == 0);
+
+    // In every other case reading the the string returned by lake_repr should
+    // result in a value equal to the original passed to lake_repr.
+    LakeList *vals = list_make();
+    list_append(vals, VAL(sym_intern(lake, "symbol")));
+    list_append(vals, VAL(lk_str_from_c("string")));
+    list_append(vals, VAL(lk_bool_from_int(lake, TRUE)));
+    list_append(vals, VAL(int_from_c(42)));
+    list_append(vals, VAL(vals));
+    list_append(vals, VAL(dlist_make(vals, VAL(int_from_c(4919)))));
+    list_append(vals, eval(lake, lake->toplevel, parse_expr(lake, "null?", 5)));
+    list_append(vals, eval(lake, lake->toplevel, parse_expr(lake, "(lambda xs xs)", 14)));
+    list_append(vals, VAL(comment_from_c("this is a comment")));
+
     return 0;
 }
 

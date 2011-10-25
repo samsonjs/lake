@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_PARSE_H
-#define _LAKE_PARSE_H 1
+#define _LAKE_PARSE_H
 
 #include <stdlib.h>
 #include "lake.h"

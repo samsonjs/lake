@@ -7,7 +7,7 @@
   *
   */
 
-#include <glib.h>
+#include <string.h>
 #include "bool.h"
 #include "common.h"
 #include "lake.h"
@@ -44,7 +44,7 @@ LakeBool *lk_bool_from_int(LakeCtx *ctx, int n)
 
 char *lk_bool_repr(LakeBool *b)
 {
-    return g_strdup(lk_bool_val(b) ? "#t" : "#f");
+    return strdup(lk_bool_val(b) ? "#t" : "#f");
 }
 
 LakeVal *lk_bool_and(LakeCtx *ctx, LakeVal *x, LakeVal *y)

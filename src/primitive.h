@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_PRIMITIVE_H
-#define _LAKE_PRIMITIVE_H 1
+#define _LAKE_PRIMITIVE_H
 
 #include "env.h"
 #include "lake.h"

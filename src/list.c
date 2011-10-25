@@ -7,7 +7,6 @@
   *
   */
 
-#include <glib.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,7 +22,7 @@
 
 static LakeList *list_alloc(void)
 {
-    LakeList *list = g_malloc(sizeof(LakeList));
+    LakeList *list = malloc(sizeof(LakeList));
     VAL(list)->type = TYPE_LIST;
     VAL(list)->size = sizeof(LakeList);
     return list;
@@ -31,10 +30,10 @@ static LakeList *list_alloc(void)
 
 void list_free(LakeList *list)
 {
-	/* TODO: proper memory management ... refcounting? */
-	if (list) {
-		g_free(list);
-	}
+  /* TODO: proper memory management ... refcounting? */
+  if (list) {
+    free(list);
+  }
 }
 
 LakeList *list_make(void)
@@ -64,7 +63,7 @@ LakeList *list_make_with_capacity(size_t cap)
     LakeList *list = list_alloc();
     list->cap = cap;
     list->n = 0;
-    list->vals = g_malloc(cap * sizeof(LakeVal *));
+    list->vals = malloc(cap * sizeof(LakeVal *));
     return list;
 }
 
@@ -89,13 +88,13 @@ LakeList *list_copy(LakeList *list)
 static void list_grow(LakeList *list)
 {
     list->cap *= 2;
-    list->vals = g_realloc(list->vals, list->cap * sizeof(LakeVal *));
+    list->vals = realloc(list->vals, list->cap * sizeof(LakeVal *));
     if (!list->vals) OOM();
 }
 
 LakeVal *list_set(LakeList *list, size_t i, LakeVal *val)
 {
-    if (i >= 0 && i < list->n) {
+    if (i < list->n) {
         list->vals[i] = val;
     }
     return NULL;
@@ -121,45 +120,45 @@ LakeVal *list_append(LakeList *list, LakeVal *val)
 
 LakeVal *list_shift(LakeList *list)
 {
-	LakeVal *head = NULL;
-	if (list->n > 0) {
-		head = list->vals[0];
-		size_t i;
-		size_t n = list->n;
-		for (i = 1; i < n; ++i) {
-			list->vals[i - 1] = list->vals[i];
-		}
-		list->n--;
-	}
-	return head;
+  LakeVal *head = NULL;
+  if (list->n > 0) {
+    head = list->vals[0];
+    size_t i;
+    size_t n = list->n;
+    for (i = 1; i < n; ++i) {
+      list->vals[i - 1] = list->vals[i];
+    }
+    list->n--;
+  }
+  return head;
 }
 
 LakeVal *list_unshift(LakeList *list, LakeVal *val)
 {
-	if (list->n == 0) {
+  if (list->n == 0) {
         list_append(list, val);
     }
     else {
         if (list->n >= list->cap) {
             list_grow(list);
         }
-		size_t i = list->n++;
-		do {
-			list->vals[i] = list->vals[i - 1];
+    size_t i = list->n++;
+    do {
+      list->vals[i] = list->vals[i - 1];
         } while (i--);
         list->vals[0] = val;
-	}
-	return NULL;
+  }
+  return NULL;
 }
 
 LakeVal *list_pop(LakeList *list)
 {
-	LakeVal *tail = NULL;
-	if (list->n > 0) {
-		tail = list->vals[list->n - 1];
-		list->n--;
-	}
-	return tail;
+  LakeVal *tail = NULL;
+  if (list->n > 0) {
+    tail = list->vals[list->n - 1];
+    list->n--;
+  }
+  return tail;
 }
 
 bool list_equal(LakeList *a, LakeList *b)
@@ -176,32 +175,31 @@ bool list_equal(LakeList *a, LakeList *b)
 
 LakeStr *list_to_str(LakeList *list)
 {
-	char *s = list_repr(list);
-	LakeStr *str = str_from_c(s);
-	g_free(s);
-    return str;
+  char *s = list_repr(list);
+  LakeStr *str = lk_str_from_c(s);
+  free(s);
+  return str;
 }
 
 char *list_repr(LakeList *list)
 {
-	GString *s = g_string_new("(");
-    int i;
-	char *s2;
-    LakeVal *val;
-    for (i = 0; i < LIST_N(list); ++i) {
-        val = LIST_VAL(list, i);
-        if (val == VAL(list)) {
-            s2 = g_strdup("[Circular]");
-        }
-        else {
-		    s2 = lake_repr(val);
-	    }
-		g_string_append(s, s2);
-		g_free(s2);
-		if (i != LIST_N(list) - 1) g_string_append(s, " ");
+  char *s = malloc(2);
+  s[0] = '(';
+  s[1] = '\0';
+  int i;
+  char *s2;
+  LakeVal *val;
+  for (i = 0; i < LIST_N(list); ++i) {
+    val = LIST_VAL(list, i);
+    if (val == VAL(list)) {
+      s2 = strdup("[Circular]");
     }
-	g_string_append(s, ")");
-	gchar *repr = s->str;
-	g_string_free(s, FALSE); /* don't free char data */
-	return repr;
+    else {
+      s2 = lake_repr(val);
+    }
+    s = lk_str_append(s, s2);
+    free(s2);
+    if (i != LIST_N(list) - 1) s = lk_str_append(s, " ");
+  }
+  return lk_str_append(s, ")");
 }

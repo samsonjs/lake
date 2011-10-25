@@ -7,7 +7,7 @@
   *
   */
 
-#include <glib.h>
+#include <string.h>
 #include "common.h"
 #include "comment.h"
 #include "lake.h"
@@ -15,30 +15,30 @@
 
 static LakeComment *comment_alloc(void)
 {
-	LakeComment *comment = g_malloc(sizeof(LakeComment));
-	VAL(comment)->type = TYPE_COMM;
-	VAL(comment)->size = sizeof(LakeComment);
-	return comment;
+  LakeComment *comment = malloc(sizeof(LakeComment));
+  VAL(comment)->type = TYPE_COMM;
+  VAL(comment)->size = sizeof(LakeComment);
+  return comment;
 }
 
 LakeComment *comment_make(LakeStr *text)
 {
-	LakeComment *comment = comment_alloc();
-	comment->text = text;
-	return comment;
+  LakeComment *comment = comment_alloc();
+  comment->text = text;
+  return comment;
 }
 
 LakeComment *comment_from_c(char *text)
 {
-    return comment_make(str_from_c(text));
+  return comment_make(lk_str_from_c(text));
 }
 
 char *comment_repr(LakeComment *comment)
 {
-	return g_strdup(STR_S(comment->text));
+  return strndup(STR_S(comment->text), STR_N(comment->text));
 }
 
 bool comment_equal(LakeComment *a, LakeComment *b)
 {
-    return str_equal(COMM_TEXT(a), COMM_TEXT(b));
+  return lk_str_equal(COMM_TEXT(a), COMM_TEXT(b));
 }

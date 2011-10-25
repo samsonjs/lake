@@ -8,7 +8,7 @@
   */
 
 #ifndef _LAKE_DLIST_H
-#define _LAKE_DLIST_H 1
+#define _LAKE_DLIST_H
 
 #include "common.h"
 #include "lake.h"

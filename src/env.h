@@ -8,14 +8,14 @@
   */
 
 #ifndef _LAKE_ENV_H
-#define _LAKE_ENV_H 1
+#define _LAKE_ENV_H
 
-#include <glib.h>
 #include "common.h"
+#include "hash.h"
 
 struct env {
     struct env *parent;
-    GHashTable *bindings;
+    lk_hash_t *bindings;
 };
 typedef struct env Env;
 

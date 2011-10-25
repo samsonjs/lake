@@ -8,7 +8,9 @@
   */
 
 #ifndef _LAKE_COMMON_H
-#define _LAKE_COMMON_H 1
+#define _LAKE_COMMON_H
+
+#include <stddef.h>
 
 typedef int bool;
 
@@ -19,5 +21,7 @@ typedef int bool;
 #ifndef FALSE
 #define FALSE 0
 #endif
+
+char *lk_str_append(char *s1, char *s2);
 
 #endif
