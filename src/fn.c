@@ -23,7 +23,7 @@ static LakeFn *fn_alloc(void)
 
 LakeFn *fn_make(LakeList *params, LakeSym *varargs, LakeList *body, Env *closure)
 {
-    LakeFn *fn = fn_alloc();
+  LakeFn *fn = fn_alloc();
   fn->params = params;
   fn->varargs = varargs;
   fn->body = body;

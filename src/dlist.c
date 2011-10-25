@@ -29,12 +29,12 @@ LakeDottedList *dlist_make(LakeList *head, LakeVal *tail)
 
 LakeList *dlist_head(LakeDottedList *dlist)
 {
-    return dlist->head;
+  return dlist->head;
 }
 
 LakeVal *dlist_tail(LakeDottedList *dlist)
 {
-    return dlist->tail;
+  return dlist->tail;
 }
 
 char *dlist_repr(LakeDottedList *dlist)
@@ -66,9 +66,9 @@ char *dlist_repr(LakeDottedList *dlist)
 
 bool dlist_equal(LakeDottedList *a, LakeDottedList *b)
 {
-    LakeVal *headA = VAL(dlist_head(a));
-    LakeVal *tailA = dlist_tail(a);
-    LakeVal *headB = VAL(dlist_head(b));
-    LakeVal *tailB = dlist_tail(b);
-    return lake_equal(headA, headB) && lake_equal(tailA, tailB);
+  LakeVal *headA = VAL(dlist_head(a));
+  LakeVal *tailA = dlist_tail(a);
+  LakeVal *headB = VAL(dlist_head(b));
+  LakeVal *tailB = dlist_tail(b);
+  return lake_equal(headA, headB) && lake_equal(tailA, tailB);
 }

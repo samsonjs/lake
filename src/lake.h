@@ -39,16 +39,16 @@ typedef int LakeType;
 #define COMM(x) ((LakeComment *)x)
 
 struct lake_val {
-    LakeType type;
-    size_t size;
+  LakeType type;
+  size_t size;
 };
 typedef struct lake_val LakeVal;
 
 struct lake_sym {
-    LakeVal base;
-    size_t n;
-    char *s;
-    unsigned long hash;
+  LakeVal base;
+  size_t n;
+  char *s;
+  unsigned long hash;
 };
 typedef struct lake_sym LakeSym;
 
@@ -59,17 +59,17 @@ struct lake_bool {
 typedef struct lake_bool LakeBool;
 
 struct lake_int {
-    LakeVal base;
-    int val;
+  LakeVal base;
+  int val;
 };
 typedef struct lake_int LakeInt;
 
 #define INT_VAL(x) (x->val)
 
 struct lake_str {
-    LakeVal base;
-    size_t n;
-    char *s;
+  LakeVal base;
+  size_t n;
+  char *s;
 };
 typedef struct lake_str LakeStr;
 
@@ -77,10 +77,10 @@ typedef struct lake_str LakeStr;
 #define STR_S(str) (str->s)
 
 struct lake_list {
-    LakeVal base;
-    size_t cap;
-    size_t n;
-    LakeVal **vals;
+  LakeVal base;
+  size_t cap;
+  size_t n;
+  LakeVal **vals;
 };
 typedef struct lake_list LakeList;
 
@@ -100,11 +100,11 @@ typedef struct lake_dlist LakeDottedList;
 
 /* Execution context */
 struct lake_ctx {
-    Env *toplevel;
-    lk_hash_t *symbols;
-    lk_hash_t *special_form_handlers;
-    LakeBool *T;
-    LakeBool *F;
+  Env *toplevel;
+  lk_hash_t *symbols;
+  lk_hash_t *special_form_handlers;
+  LakeBool *T;
+  LakeBool *F;
 };
 typedef struct lake_ctx LakeCtx;
 
@@ -113,7 +113,7 @@ typedef LakeVal *(*lake_prim)(LakeCtx *ctx, LakeList *args);
 struct lake_primitive {
   LakeVal base;
   char *name;
-    int arity;
+  int arity;
   lake_prim fn;
 };
 typedef struct lake_primitive LakePrimitive;
@@ -134,8 +134,8 @@ typedef struct lake_fn LakeFn;
 #define CALLABLE(x) (lk_is_type(TYPE_FN, x) || lk_is_type(TYPE_PRIM, x))
 
 struct lake_comment {
-    LakeVal base;
-    LakeStr *text;
+  LakeVal base;
+  LakeStr *text;
 };
 typedef struct lake_comment LakeComment;
 

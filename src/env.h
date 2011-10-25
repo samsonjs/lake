@@ -14,8 +14,8 @@
 #include "hash.h"
 
 struct env {
-    struct env *parent;
-    lk_hash_t *bindings;
+  struct env *parent;
+  lk_hash_t *bindings;
 };
 typedef struct env Env;
 

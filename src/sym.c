@@ -33,41 +33,41 @@ static uint32_t str_hash(const char *s)
 
 static LakeSym *sym_alloc(void)
 {
-    LakeSym *sym = malloc(sizeof(LakeSym));
-    VAL(sym)->type = TYPE_SYM;
-    VAL(sym)->size = sizeof(LakeSym);
-    return sym;
+  LakeSym *sym = malloc(sizeof(LakeSym));
+  VAL(sym)->type = TYPE_SYM;
+  VAL(sym)->size = sizeof(LakeSym);
+  return sym;
 }
 
 LakeSym *sym_intern(LakeCtx *ctx, char *s)
 {
-    LakeSym *sym = lk_hash_get(ctx->symbols, s);
-    if (!sym) {
-        sym = sym_alloc();
-        sym->n = strlen(s);
-        sym->s = strndup(s, sym->n);
-        sym->hash = str_hash(s);
-        lk_hash_put(ctx->symbols, sym->s, sym);
+  LakeSym *sym = lk_hash_get(ctx->symbols, s);
+  if (!sym) {
+    sym = sym_alloc();
+    sym->n = strlen(s);
+    sym->s = strndup(s, sym->n);
+    sym->hash = str_hash(s);
+    lk_hash_put(ctx->symbols, sym->s, sym);
   }
-    return sym;
+  return sym;
 }
 
 LakeStr *sym_to_str(LakeSym *sym)
 {
-    return lk_str_from_c(sym->s);
+  return lk_str_from_c(sym->s);
 }
 
 LakeSym *sym_from_str(LakeCtx *ctx, LakeStr *str)
 {
-    return sym_intern(ctx, str->s);
+  return sym_intern(ctx, str->s);
 }
 
 char *sym_repr(LakeSym *sym)
 {
-    return strndup(sym->s, sym->n);
+  return strndup(sym->s, sym->n);
 }
 
 unsigned long sym_val(LakeSym *sym)
 {
-    return sym->hash;
+  return sym->hash;
 }
