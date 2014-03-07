@@ -10,9 +10,10 @@ Lake Scheme uses RSR5 as a guideline but does not strictly adhere. Specifically 
 Compiling & Running
 ===================
 
-Portable C99, only dep is glib, nothing to configure, no documentation!
+Portable C99, no dependencies, nothing to configure, no documentation!
 
-Install glib 2.x using your package manager, for me it's either `brew install glib` or `sudo aptitude install libglib2.0-dev`. You'll also need some version of gcc and GNU make.
+You'll need some version LLVM for clang, and GNU make. Compiles with GCC too if you prefer, just
+change the Makefile.
 
 Once you have all that you can build the repl:
 
@@ -131,8 +132,6 @@ A naked expression with one value evaluates to the single value it contains so t
 TODO
 ====
 
-* write or find a nice small hash table and ditch glib
-* get rid of most macros
 * finish tests
 
 Lake still needs:
@@ -159,6 +158,6 @@ Contributors
 License
 =======
 
-Copyright 2011 Sami Samhuri <sami.samhuri@gmail.com>
+&copy; 2011 Sami Samhuri <sami@samhuri.net>
 
-MIT licensed, see the [included LICENSE file](blob/master/LICENSE)
+[MIT licensed](http://sjs.mit-license.org)
