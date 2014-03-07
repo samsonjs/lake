@@ -49,10 +49,10 @@ char *prim_repr(LakePrimitive *prim)
 static LakeVal *_car(LakeCtx *ctx, LakeList *args)
 {
   LakeList *list = LIST(LIST_VAL(args, 0));
-  if (lk_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
+  if (lake_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
     return LIST_VAL(list, 0);
   }
-  if (lk_is_type(TYPE_DLIST, list)) {
+  if (lake_is_type(TYPE_DLIST, list)) {
     return VAL(dlist_head(DLIST(list)));
   }
   ERR("not a pair: %s", lake_repr(list));
@@ -62,12 +62,12 @@ static LakeVal *_car(LakeCtx *ctx, LakeList *args)
 static LakeVal *_cdr(LakeCtx *ctx, LakeList *args)
 {
   LakeList *list = LIST(LIST_VAL(args, 0));
-  if (lk_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
+  if (lake_is_type(TYPE_LIST, list) && LIST_N(list) > 0) {
     LakeList *cdr = list_copy(list);
     list_shift(cdr);
     return VAL(cdr);
   }
-  if (lk_is_type(TYPE_DLIST, list)) {
+  if (lake_is_type(TYPE_DLIST, list)) {
     return dlist_tail(DLIST(list));
   }
   ERR("not a pair: %s", lake_repr(list));
@@ -84,14 +84,14 @@ static LakeVal *_cons(LakeCtx *ctx, LakeList *args)
 static LakeVal *_nullP(LakeCtx *ctx, LakeList *args)
 {
   LakeVal *val = list_shift(args);
-  LakeBool *is_null = lk_bool_from_int(ctx, lk_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) == 0);
+  LakeBool *is_null = lake_bool_from_int(ctx, lake_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) == 0);
   return VAL(is_null);
 }
 
 static LakeVal *_pairP(LakeCtx *ctx, LakeList *args)
 {
   LakeVal *val = list_shift(args);
-  LakeBool *is_pair = lk_bool_from_int(ctx, lk_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) > 0);
+  LakeBool *is_pair = lake_bool_from_int(ctx, lake_is_type(TYPE_LIST, val) && LIST_N(LIST(val)) > 0);
   return VAL(is_pair);
 }
 
@@ -99,25 +99,25 @@ static LakeVal *_isP(LakeCtx *ctx, LakeList *args)
 {
   LakeVal *a = LIST_VAL(args, 0);
   LakeVal *b = LIST_VAL(args, 1);
-  return VAL(lk_bool_from_int(ctx, lake_is(a, b)));
+  return VAL(lake_bool_from_int(ctx, lake_is(a, b)));
 }
 
 static LakeVal *_equalP(LakeCtx *ctx, LakeList *args)
 {
   LakeVal *a = LIST_VAL(args, 0);
   LakeVal *b = LIST_VAL(args, 1);
-  return VAL(lk_bool_from_int(ctx, lake_equal(a, b)));
+  return VAL(lake_bool_from_int(ctx, lake_equal(a, b)));
 }
 
 static LakeVal *_not(LakeCtx *ctx, LakeList *args)
 {
   LakeVal *val = list_shift(args);
-  LakeBool *not = lk_bool_from_int(ctx, lk_is_false(ctx, val));
+  LakeBool *not = lake_bool_from_int(ctx, lake_is_false(ctx, val));
   return VAL(not);
 }
 
 #define ENSURE_INT(x, i) do {                                           \
-if (!lk_is_type(TYPE_INT, x)) {                                         \
+if (!lake_is_type(TYPE_INT, x)) {                                         \
   ERR("argument %zu is not an integer: %s", i, lake_repr(x)); \
   return NULL;                                                \
   }                                                               \
@@ -221,7 +221,7 @@ static LakeVal *_int_eq(LakeCtx *ctx, LakeList *args)
     }
     prev = INT_VAL(INT(v));
   }
-  return VAL(lk_bool_from_int(ctx, result));
+  return VAL(lake_bool_from_int(ctx, result));
 }
 
 static LakeVal *_int_lt(LakeCtx *ctx, LakeList *args)
@@ -242,7 +242,7 @@ static LakeVal *_int_lt(LakeCtx *ctx, LakeList *args)
       prev = INT_VAL(INT(v));
     }
   }
-  return VAL(lk_bool_from_int(ctx, result));
+  return VAL(lake_bool_from_int(ctx, result));
 }
 
 static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
@@ -263,13 +263,13 @@ static LakeVal *_int_gt(LakeCtx *ctx, LakeList *args)
       prev = INT_VAL(INT(v));
     }
   }
-  return VAL(lk_bool_from_int(ctx, result));
+  return VAL(lake_bool_from_int(ctx, result));
 }
 
 static LakeVal *_set_carB(LakeCtx *ctx, LakeList *args)
 {
   LakeList *list = LIST(LIST_VAL(args, 0));
-  if (lk_is_type(TYPE_LIST, list)) {
+  if (lake_is_type(TYPE_LIST, list)) {
     LakeVal *new_car = LIST_VAL(args, 1);
     if (LIST_N(list) == 0) {
       list_append(list, new_car);
@@ -300,7 +300,7 @@ static LakeVal *_display(LakeCtx *ctx, LakeList *args)
 #define DEFINE_PREDICATE(name, type)                                            \
 static LakeVal *_## name ##P(LakeCtx *ctx, LakeList *args)                  \
 {                                                                           \
-  return VAL(lk_bool_from_int(ctx, lk_is_type(type, LIST_VAL(args, 0)))); \
+  return VAL(lake_bool_from_int(ctx, lake_is_type(type, LIST_VAL(args, 0)))); \
 }
 
 DEFINE_PREDICATE(symbol, TYPE_SYM)

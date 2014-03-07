@@ -35,31 +35,31 @@ char *fn_repr(LakeFn *fn)
 {
   char *s = malloc(8);
   s[0] = '\0';
-  s = lk_str_append(s, "(lambda ");
+  s = lake_str_append(s, "(lambda ");
   char *s2;
   if (LIST_N(fn->params) && fn->varargs) {
     LakeDottedList *params = dlist_make(fn->params, VAL(fn->varargs));
     s2 = dlist_repr(params);
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
   }
   else if (fn->varargs) {
     s2 = lake_repr(fn->varargs);
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
   }
   else {
     s2 = lake_repr(fn->params);
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
   }
-  s = lk_str_append(s, " ");
+  s = lake_str_append(s, " ");
   int i;
   for (i = 0; i < LIST_N(fn->body); ++i) {
     s2 = lake_repr(LIST_VAL(fn->body, i));
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
-    if (i != LIST_N(fn->body) - 1) s = lk_str_append(s, " ");
+    if (i != LIST_N(fn->body) - 1) s = lake_str_append(s, " ");
   }
-  return lk_str_append(s, ")");
+  return lake_str_append(s, ")");
 }

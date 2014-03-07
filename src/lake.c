@@ -21,12 +21,12 @@
 #include "primitive.h"
 #include "str.h"
 
-int lk_val_size(void *x)
+int lake_val_size(void *x)
 {
   return VAL(x)->size;
 }
 
-int lk_is_type(LakeType t, void *x)
+int lake_is_type(LakeType t, void *x)
 {
   return VAL(x)->type == t;
 }
@@ -45,7 +45,7 @@ char *lake_repr(void *expr)
       break;
 
     case TYPE_BOOL:
-      s = lk_bool_repr(BOOL(e));
+      s = lake_bool_repr(BOOL(e));
       break;
 
     case TYPE_INT:
@@ -91,17 +91,17 @@ char *lake_repr(void *expr)
   return s;
 }
 
-bool lk_is_nil(LakeVal *x)
+bool lake_is_nil(LakeVal *x)
 {
-  return lk_is_type(TYPE_LIST, x) && LIST_N(LIST(x)) == 0;
+  return lake_is_type(TYPE_LIST, x) && LIST_N(LIST(x)) == 0;
 }
 
 bool lake_is(LakeVal *a, LakeVal *b)
 {
-  if (lk_is_type(TYPE_INT, a) && lk_is_type(TYPE_INT, b)) {
+  if (lake_is_type(TYPE_INT, a) && lake_is_type(TYPE_INT, b)) {
     return INT_VAL(INT(a)) == INT_VAL(INT(b));
   }
-  if (lk_is_nil(a) && lk_is_nil(b)) return TRUE;
+  if (lake_is_nil(a) && lake_is_nil(b)) return TRUE;
   return a == b;
 }
 
@@ -131,7 +131,7 @@ bool lake_equal(LakeVal *a, LakeVal *b)
       return INT_VAL(INT(a)) == INT_VAL(INT(b));
 
     case TYPE_STR:
-      return lk_str_equal(STR(a), STR(b));
+      return lake_str_equal(STR(a), STR(b));
 
     case TYPE_LIST:
       return list_equal(LIST(a), LIST(b));
@@ -161,8 +161,8 @@ LakeCtx *lake_init(void)
 {
   LakeCtx *ctx = malloc(sizeof(LakeCtx));
   ctx->toplevel = env_make(NULL);
-  ctx->symbols = lk_hash_make();
-  ctx->special_form_handlers = lk_hash_make();
+  ctx->symbols = lake_hash_make();
+  ctx->special_form_handlers = lake_hash_make();
   ctx->T = bool_make(TRUE);
   ctx->F = bool_make(FALSE);
   bind_primitives(ctx);

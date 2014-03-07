@@ -18,19 +18,19 @@ Env *env_make(Env *parent)
 {
   Env *env = malloc(sizeof(Env));
   env->parent = parent;
-  env->bindings = lk_hash_make();
+  env->bindings = lake_hash_make();
   return env;
 }
 
 Env *env_is_defined(Env *env, LakeSym *key)
 {
-  if (lk_hash_get(env->bindings, key->s) != NULL) return env;
+  if (lake_hash_get(env->bindings, key->s) != NULL) return env;
   return env->parent ? env_is_defined(env->parent, key) : NULL;
 }
 
 static void env_put(Env *env, LakeSym *key, LakeVal *val)
 {
-  lk_hash_put(env->bindings, key->s, val);
+  lake_hash_put(env->bindings, key->s, val);
 }
 
 LakeVal *env_define(Env *env, LakeSym *key, LakeVal *val)
@@ -51,7 +51,7 @@ LakeVal *env_set(Env *env, LakeSym *key, LakeVal *val)
 
 LakeVal *env_get(Env *env, LakeSym *key)
 {
-  LakeVal *val = lk_hash_get(env->bindings, key->s);
+  LakeVal *val = lake_hash_get(env->bindings, key->s);
   if (!val && env->parent) {
     val = env_get(env->parent, key);
   }

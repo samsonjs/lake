@@ -30,7 +30,7 @@ LakeComment *comment_make(LakeStr *text)
 
 LakeComment *comment_from_c(char *text)
 {
-  return comment_make(lk_str_from_c(text));
+  return comment_make(lake_str_from_c(text));
 }
 
 char *comment_repr(LakeComment *comment)
@@ -40,5 +40,5 @@ char *comment_repr(LakeComment *comment)
 
 bool comment_equal(LakeComment *a, LakeComment *b)
 {
-  return lk_str_equal(COMM_TEXT(a), COMM_TEXT(b));
+  return lake_str_equal(COMM_TEXT(a), COMM_TEXT(b));
 }

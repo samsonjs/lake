@@ -1,4 +1,4 @@
-/** 
+/**
   * test_int.c
   * Lake Scheme
   *
@@ -11,6 +11,20 @@
 #include "int.h"
 #include "laketest.h"
 #include "lake.h"
+
+static char *test_int_make(void);
+static char *test_int_from_c(void);
+static char *test_int_repr(void);
+
+int main(int argc, char const *argv[])
+{
+    return !lt_run_tests("Integers", (test_fn[]){
+        test_int_make,
+        test_int_from_c,
+        test_int_repr,
+        NULL
+    });
+}
 
 /* LakeInt *int_make(void) */
 static char *test_int_make(void)
@@ -42,22 +56,12 @@ static char *test_int_repr(void)
 
     i = int_from_c(-42);
     lt_assert("int_repr is wrong", strcmp(int_repr(i), "-42") == 0);
-    
+
     i = int_from_c(2147483647);
     lt_assert("int_repr is wrong", strcmp(int_repr(i), "2147483647") == 0);
 
     i = int_from_c(2147483648);
     lt_assert("int_repr is wrong", strcmp(int_repr(i), "-2147483648") == 0);
-    
-    return 0;
-}
 
-int main(int argc, char const *argv[])
-{
-    return !lt_run_tests("Integers", (test_fn[]){
-        test_int_make,
-        test_int_from_c,
-        test_int_repr,
-        NULL
-    });
+    return 0;
 }

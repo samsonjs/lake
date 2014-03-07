@@ -1,4 +1,4 @@
-/** 
+/**
   * test_fn.c
   * Lake Scheme
   *
@@ -13,6 +13,18 @@
 #include "eval.h"
 #include "lake.h"
 #include "parse.h"
+
+static char *test_fn_make(void);
+static char *test_fn_repr(void);
+
+int main(int argc, char const *argv[])
+{
+    return !lt_run_tests("Functions", (test_fn[]){
+        test_fn_make,
+        test_fn_repr,
+        NULL
+    });
+}
 
 /* LakeFn *fn_make(LakeList *params, LakeSym *varargs, LakeList *body, Env *closure) */
 static char *test_fn_make(void)
@@ -59,13 +71,4 @@ static char *test_fn_repr(void)
               strncmp(SILLY_REPR, fn_repr(silly_fn), strlen(SILLY_REPR)) == 0);
 
     return 0;
-}
-
-int main(int argc, char const *argv[])
-{
-    return !lt_run_tests("Functions", (test_fn[]){
-        test_fn_make,
-        test_fn_repr,
-        NULL
-    });
 }

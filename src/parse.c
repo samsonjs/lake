@@ -284,7 +284,7 @@ static LakeVal *parse_str(Ctx *ctx)
   }
   s[i] = '\0';
   ch(ctx, '"');
-  LakeStr *str = lk_str_from_c(s);
+  LakeStr *str = lake_str_from_c(s);
   free(s);
   return VAL(str);
 }

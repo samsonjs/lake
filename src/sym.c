@@ -41,20 +41,20 @@ static LakeSym *sym_alloc(void)
 
 LakeSym *sym_intern(LakeCtx *ctx, char *s)
 {
-  LakeSym *sym = lk_hash_get(ctx->symbols, s);
+  LakeSym *sym = lake_hash_get(ctx->symbols, s);
   if (!sym) {
     sym = sym_alloc();
     sym->n = strlen(s);
     sym->s = strndup(s, sym->n);
     sym->hash = str_hash(s);
-    lk_hash_put(ctx->symbols, sym->s, sym);
+    lake_hash_put(ctx->symbols, sym->s, sym);
   }
   return sym;
 }
 
 LakeStr *sym_to_str(LakeSym *sym)
 {
-  return lk_str_from_c(sym->s);
+  return lake_str_from_c(sym->s);
 }
 
 LakeSym *sym_from_str(LakeCtx *ctx, LakeStr *str)

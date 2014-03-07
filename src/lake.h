@@ -1,4 +1,4 @@
-/** 
+/**
   * lake.h
   * Lake Scheme
   *
@@ -101,8 +101,8 @@ typedef struct lake_dlist LakeDottedList;
 /* Execution context */
 struct lake_ctx {
   Env *toplevel;
-  lk_hash_t *symbols;
-  lk_hash_t *special_form_handlers;
+  lake_hash_t *symbols;
+  lake_hash_t *special_form_handlers;
   LakeBool *T;
   LakeBool *F;
 };
@@ -131,7 +131,7 @@ struct lake_fn {
 };
 typedef struct lake_fn LakeFn;
 
-#define CALLABLE(x) (lk_is_type(TYPE_FN, x) || lk_is_type(TYPE_PRIM, x))
+#define CALLABLE(x) (lake_is_type(TYPE_FN, x) || lake_is_type(TYPE_PRIM, x))
 
 struct lake_comment {
   LakeVal base;
@@ -142,9 +142,9 @@ typedef struct lake_comment LakeComment;
 #define COMM_TEXT(x) (x->text)
 
 LakeCtx *lake_init(void);
-int lk_val_size(void *x);
-int lk_is_type(LakeType t, void *x);
-bool lk_is_nil(LakeVal *x);
+int lake_val_size(void *x);
+int lake_is_type(LakeType t, void *x);
+bool lake_is_nil(LakeVal *x);
 bool lake_is(LakeVal *a, LakeVal *b);
 bool lake_equal(LakeVal *a, LakeVal *b);
 char *lake_repr(void *val);

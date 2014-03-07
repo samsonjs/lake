@@ -1,4 +1,4 @@
-/** 
+/**
   * hash.c
   * Lake Scheme
   *
@@ -12,18 +12,18 @@
 
 #include "hash.h"
 
-void lk_hash_put(khash_t(value) *h, char *key, void *val) {
+void lake_hash_put(khash_t(value) *h, char *key, void *val) {
   int ret;
   khiter_t k = kh_put(value, h, key, &ret);
   kh_value(h, k) = val;
 }
 
-void *lk_hash_get(khash_t(value) *h, char *key) {
+void *lake_hash_get(khash_t(value) *h, char *key) {
   khiter_t k = kh_get(value, h, key);
   return k == kh_end(h) ? NULL : kh_value(h, k);
 }
 
-bool lk_hash_has(khash_t(value) *h, char *key) {
+bool lake_hash_has(khash_t(value) *h, char *key) {
   khiter_t k = kh_get(value, h, key);
   return kh_exist(h, k);
 }

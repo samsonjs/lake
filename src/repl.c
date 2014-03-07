@@ -142,7 +142,7 @@ int main (int argc, char const *argv[])
   LakeVal **argVals = malloc(argc * sizeof(LakeVal *));
   int i;
   for (i = 0; i < argc; ++i) {
-    argVals[i] = VAL(lk_str_from_c((char *)argv[i]));
+    argVals[i] = VAL(lake_str_from_c((char *)argv[i]));
   }
   LakeList *args = list_from_array(argc, argVals);
   free(argVals);

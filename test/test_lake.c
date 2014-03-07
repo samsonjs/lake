@@ -1,4 +1,4 @@
-/** 
+/**
   * test_lake.c
   * Lake Scheme
   *
@@ -17,7 +17,32 @@
 #include "eval.h"
 #include "parse.h"
 
+void setup(void);
+static char *test_lake_version(void);
+static char *test_lake_init(void);
+static char *test_lake_is(void);
+static char *test_lake_equal(void);
+static char *test_lake_repr(void);
+
 static LakeCtx *lake;
+
+int main(int argc, char const *argv[])
+{
+    setup();
+    return !lt_run_tests("Lake", (test_fn[]){
+        test_lake_version,
+        test_lake_init,
+        test_lake_is,
+        test_lake_equal,
+        test_lake_repr,
+        NULL
+    });
+}
+
+void setup(void)
+{
+    lake = lake_init();
+}
 
 /* #define LAKE_VERSION "0.1" */
 static char *test_lake_version(void)
@@ -36,10 +61,10 @@ static char *test_lake_init(void)
               NULL != lake->special_form_handlers);
     lt_assert("T is null", NULL != lake->T);
     lt_assert("F is null", NULL != lake->F);
-    lt_assert("T is not a boolean", lk_is_type(TYPE_BOOL, lake->T));
-    lt_assert("F is not a boolean", lk_is_type(TYPE_BOOL, lake->F));
-    lt_assert("value of T is zero", lk_bool_val(lake->T));
-    lt_assert("value of F is non-zero", !lk_bool_val(lake->F));
+    lt_assert("T is not a boolean", lake_is_type(TYPE_BOOL, lake->T));
+    lt_assert("F is not a boolean", lake_is_type(TYPE_BOOL, lake->F));
+    lt_assert("value of T is zero", lake_bool_val(lake->T));
+    lt_assert("value of F is non-zero", !lake_bool_val(lake->F));
     return 0;
 }
 
@@ -52,7 +77,7 @@ static bool _is(void *a, void *b)
 static char *test_lake_is(void)
 {
     LakeInt *i = int_from_c(42);
-    
+
     // ints are compared by value
     lt_assert("ints with equal values are not the same", _is(i, int_from_c(42)));
 
@@ -80,7 +105,7 @@ static char *test_lake_equal(void)
 {
     LakeInt *i = int_from_c(42);
     LakeInt *j = int_from_c(42);
-    LakeStr *arthur = lk_str_from_c("arthur");
+    LakeStr *arthur = lake_str_from_c("arthur");
 
     // values with different types are never equal
     lt_assert("values with different types are equal", !_equal(i, arthur));
@@ -116,25 +141,25 @@ static char *test_lake_equal(void)
     lt_assert("int is not equal to itself", _equal(i, i));
 
     // strings are compared by value
-    LakeStr *arthur2 = lk_str_from_c("arthur");
-    LakeStr *zaphod = lk_str_from_c("zaphod");
+    LakeStr *arthur2 = lake_str_from_c("arthur");
+    LakeStr *zaphod = lake_str_from_c("zaphod");
     lt_assert("string is not equal to itself", _equal(arthur, arthur));
     lt_assert("string is not equal to itself", _equal(arthur, arthur2));
     lt_assert("different strings are equal", !_equal(arthur, zaphod));
 
     // lists are compared by value
-    #define S(s) VAL(lk_str_from_c(s))
+    #define S(s) VAL(lake_str_from_c(s))
     LakeList *fruits = list_make();
     list_append(fruits, S("mango"));
     list_append(fruits, S("pear"));
     list_append(fruits, S("pineapple"));
-    
+
     LakeList *ninjas = list_make();
     list_append(ninjas, S("donatello"));
     list_append(ninjas, S("leonardo"));
     list_append(ninjas, S("michelangelo"));
     list_append(ninjas, S("raphael"));
-    
+
     lt_assert("list is not equal to itself", _equal(fruits, fruits));
     lt_assert("different lists are equal", !_equal(fruits, ninjas));
 
@@ -177,8 +202,8 @@ static char *test_lake_repr(void)
     // result in a value equal to the original passed to lake_repr.
     LakeList *vals = list_make();
     list_append(vals, VAL(sym_intern(lake, "symbol")));
-    list_append(vals, VAL(lk_str_from_c("string")));
-    list_append(vals, VAL(lk_bool_from_int(lake, TRUE)));
+    list_append(vals, VAL(lake_str_from_c("string")));
+    list_append(vals, VAL(lake_bool_from_int(lake, TRUE)));
     list_append(vals, VAL(int_from_c(42)));
     list_append(vals, VAL(vals));
     list_append(vals, VAL(dlist_make(vals, VAL(int_from_c(4919)))));
@@ -187,22 +212,4 @@ static char *test_lake_repr(void)
     list_append(vals, VAL(comment_from_c("this is a comment")));
 
     return 0;
-}
-
-void setup(void)
-{
-    lake = lake_init();
-}
-
-int main(int argc, char const *argv[])
-{
-    setup();
-    return !lt_run_tests("Lake", (test_fn[]){
-        test_lake_version,
-        test_lake_init,
-        test_lake_is,
-        test_lake_equal,
-        test_lake_repr,
-        NULL
-    });
 }

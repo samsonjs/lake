@@ -1,4 +1,4 @@
-/** 
+/**
   * test_dlist.c
   * Lake Scheme
   *
@@ -13,16 +13,39 @@
 #include "lake.h"
 #include "list.h"
 
+void setup(void);
+static char *test_dlist_make(void);
+static char *test_dlist_repr(void);
+static char *test_dlist_equal(void);
+
 static LakeList *head;
 static LakeVal *tail;
 static LakeDottedList *dlist;
 static char *REPR = "(() . ())";
 
+int main(int argc, char const *argv[])
+{
+    setup();
+    return !lt_run_tests("Dotted Lists", (test_fn[]){
+        test_dlist_make,
+        test_dlist_repr,
+        test_dlist_equal,
+        NULL
+    });
+}
+
+void setup(void)
+{
+    head = list_make();
+    tail = VAL(list_make());
+    dlist = dlist_make(head, tail);
+}
+
 /* LakeDottedList *dlist_make(LakeList *head, LakeVal *tail) */
 static char *test_dlist_make(void)
 {
-    lt_assert("type is not TYPE_DLIST", lk_is_type(TYPE_DLIST, dlist));
-    lt_assert("value size is incorrect", lk_val_size(dlist) == sizeof(LakeDottedList));
+    lt_assert("type is not TYPE_DLIST", lake_is_type(TYPE_DLIST, dlist));
+    lt_assert("value size is incorrect", lake_val_size(dlist) == sizeof(LakeDottedList));
     lt_assert("head value is incorrect",
               lake_equal(VAL(head), VAL(dlist_head(dlist))));
     lt_assert("tail value is incorrect", lake_equal(tail, dlist_tail(dlist)));
@@ -47,7 +70,7 @@ static char *test_dlist_repr(void)
     list_append(list, VAL(s_eggs));
     LakeDottedList *dlist2 = dlist_make(list, VAL(s_spam));
     lt_assert("", strncmp(dlist_repr(dlist2), REPR2, strlen(REPR2)) == 0);
-    
+
     return 0;
 }
 
@@ -66,22 +89,3 @@ static char *test_dlist_equal(void)
     lt_assert("dlist a == diff_tail", !dlist_equal(a, diff_tail));
     return 0;
 }
-
-static void setup(void)
-{
-    head = list_make();
-    tail = VAL(list_make());
-    dlist = dlist_make(head, tail);
-}
-
-int main(int argc, char const *argv[])
-{
-    setup();
-    return !lt_run_tests("Dotted Lists", (test_fn[]){
-        test_dlist_make,
-        test_dlist_repr,
-        test_dlist_equal,
-        NULL
-    });
-}
-

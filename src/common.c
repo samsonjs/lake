@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char *lk_str_append(char *s1, char *s2)
+char *lake_str_append(char *s1, char *s2)
 {
   size_t n2 = strlen(s2);
   s1 = realloc(s1, strlen(s1) + n2 + 1);

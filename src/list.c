@@ -46,7 +46,7 @@ LakeList *list_make(void)
 LakeList *list_cons(LakeVal *car, LakeVal *cdr)
 {
   LakeList *list;
-  if (lk_is_type(TYPE_LIST, cdr)) {
+  if (lake_is_type(TYPE_LIST, cdr)) {
     list = LIST(cdr);
     list_unshift(list, car);
   }
@@ -176,7 +176,7 @@ bool list_equal(LakeList *a, LakeList *b)
 LakeStr *list_to_str(LakeList *list)
 {
   char *s = list_repr(list);
-  LakeStr *str = lk_str_from_c(s);
+  LakeStr *str = lake_str_from_c(s);
   free(s);
   return str;
 }
@@ -197,9 +197,9 @@ char *list_repr(LakeList *list)
     else {
       s2 = lake_repr(val);
     }
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
-    if (i != LIST_N(list) - 1) s = lk_str_append(s, " ");
+    if (i != LIST_N(list) - 1) s = lake_str_append(s, " ");
   }
-  return lk_str_append(s, ")");
+  return lake_str_append(s, ")");
 }

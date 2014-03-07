@@ -47,21 +47,21 @@ char *dlist_repr(LakeDottedList *dlist)
   if (dlist->head && LIST_N(dlist->head)) {
     for (i = 0; i < LIST_N(dlist->head); ++i) {
       s2 = lake_repr(LIST_VAL(dlist->head, i));
-      s = lk_str_append(s, s2);
+      s = lake_str_append(s, s2);
       free(s2);
-      if (i != LIST_N(dlist->head) - 1) s = lk_str_append(s, " ");
+      if (i != LIST_N(dlist->head) - 1) s = lake_str_append(s, " ");
     }
   }
   else if (dlist->head) {
     s2 = lake_repr(dlist->head);
-    s = lk_str_append(s, s2);
+    s = lake_str_append(s, s2);
     free(s2);
   }
-  s = lk_str_append(s, " . ");
+  s = lake_str_append(s, " . ");
   s2 = lake_repr(dlist->tail);
-  s = lk_str_append(s, s2);
+  s = lake_str_append(s, s2);
   free(s2);
-  return lk_str_append(s, ")");
+  return lake_str_append(s, ")");
 }
 
 bool dlist_equal(LakeDottedList *a, LakeDottedList *b)

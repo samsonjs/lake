@@ -15,7 +15,7 @@
 
 struct env {
   struct env *parent;
-  lk_hash_t *bindings;
+  lake_hash_t *bindings;
 };
 typedef struct env Env;
 

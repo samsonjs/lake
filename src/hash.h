@@ -1,4 +1,4 @@
-/** 
+/**
   * hash.h
   * Lake Scheme
   *
@@ -18,13 +18,13 @@
 
 KHASH_MAP_INIT_STR(value, void *);
 
-typedef khash_t(value) lk_hash_t;
+typedef khash_t(value) lake_hash_t;
 
-#define lk_hash_make() kh_init(value)
-#define lk_hash_free(h) kh_destroy(value, h)
+#define lake_hash_make() kh_init(value)
+#define lake_hash_free(h) kh_destroy(value, h)
 
-bool lk_hash_has(khash_t(value) *h, char *key);
-void lk_hash_put(khash_t(value) *h, char *key, void *val);
-void *lk_hash_get(khash_t(value) *h, char *key);
+bool lake_hash_has(khash_t(value) *h, char *key);
+void lake_hash_put(khash_t(value) *h, char *key, void *val);
+void *lake_hash_get(khash_t(value) *h, char *key);
 
 #endif

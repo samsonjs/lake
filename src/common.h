@@ -22,6 +22,6 @@ typedef int bool;
 #define FALSE 0
 #endif
 
-char *lk_str_append(char *s1, char *s2);
+char *lake_str_append(char *s1, char *s2);
 
 #endif

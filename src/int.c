@@ -43,7 +43,7 @@ char *int_repr(LakeInt *i)
 LakeStr *int_to_str(LakeInt *i)
 {
   char *s = int_repr(i);
-  LakeStr *str = lk_str_from_c(s);
+  LakeStr *str = lake_str_from_c(s);
   free(s);
   return str;
 }
