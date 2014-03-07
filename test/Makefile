@@ -10,6 +10,10 @@ TESTS = test_comment   \
 	test_lake      \
 	test_list
 
+	# test_parse     \
+	# test_primitive \
+	# test_str       \
+	# test_sym
 
 all: $(TESTS)
 
@@ -48,6 +52,31 @@ test_int: laketest.o test_int.o
 test_lake: laketest.o test_lake.o
 	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
 	@./test_lake
+	@echo
+
+test_list: laketest.o test_list.o
+	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
+	@./test_list
+	@echo
+
+test_parse: laketest.o test_parse.o
+	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
+	@./test_parse
+	@echo
+
+test_primitive: laketest.o test_primitive.o
+	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
+	@./test_primitive
+	@echo
+
+test_str: laketest.o test_str.o
+	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
+	@./test_str
+	@echo
+
+test_sym: laketest.o test_sym.o
+	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
+	@./test_sym
 	@echo
 
 clean:
