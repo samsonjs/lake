@@ -4,3 +4,4 @@ test/*
 !test/*.[ch]
 !test/Makefile
 !test/Readme.md
+.tm_properties
