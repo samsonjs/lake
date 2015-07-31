@@ -31,7 +31,7 @@ test_dlist: laketest.o test_dlist.o
 
 test_env: laketest.o test_env.o
 	$(CC) $(CFLAGS) $^ $(OBJS) -o $@
-	@./test_eval
+	@./test_env
 	@echo
 
 test_eval: laketest.o test_eval.o
