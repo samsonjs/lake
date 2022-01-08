@@ -127,7 +127,7 @@ One final thing to note is an experiment called *naked calls* (or expressions). 
     > empty?
     (lambda (x) (or (null? x) (is? x 0) (equal? x "")))
 
-A naked expression with one value evaluates to the single value it contains so that typing in an atomic expression doesn't produce strange results. Due to this behaviour one caveat is that if you want to invoke a function without arguments you cannot use a naked list. When evaluating code from a file naked lists are not parsed at all.
+A naked expression with one value evaluates to the single value it contains so that typing in an atomic expression doesn't produce strange results. Due to this behaviour one caveat is that if you want to invoke a function without arguments you cannot use a naked list. When evaluating code from a file naked lists are not parsed at all and will result in syntax errors.
 
 TODO
 ====
