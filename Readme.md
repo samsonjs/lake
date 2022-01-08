@@ -1,4 +1,4 @@
-<p align=center><img src=https://github.com/samsonjs/lake/raw/master/lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
+<p align=center><img src=https://github.com/samsonjs/lake/raw/main/lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
 
 Lake Scheme
 ===========
