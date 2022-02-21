@@ -44,7 +44,7 @@ If you want to build a static library:
 
     $ make liblake
 
-The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](lake/blob/main/src/lake.h#L101-109) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
+The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](https://github.com/samsonjs/lake/blob/main/src/lake.h#L101-L109) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
 
 Tests
 =====
