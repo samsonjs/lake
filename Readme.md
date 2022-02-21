@@ -12,7 +12,7 @@ Compiling & Running
 
 Portable C99, no dependencies, nothing to configure, no documentation!
 
-You'll need some version LLVM for clang, and GNU make. Compiles with GCC too if you prefer, just
+You'll need some version of LLVM for clang, and GNU make. Compiles with zig or GCC too if you prefer, just
 change the Makefile.
 
 Once you have all that you can build the repl:
@@ -44,7 +44,7 @@ If you want to build a static library:
 
     $ make liblake
 
-The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](lake/blob/master/src/lake.h#L101-109) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
+The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](lake/blob/main/src/lake.h#L101-109) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
 
 Tests
 =====
