@@ -49,7 +49,8 @@ char *lake_repr(void *expr)
 
     case TYPE_STR:
     {
-        size_t n = strlen(STR_S(STR(e))) + 2;
+        // +3 for surrounding quotes and null terminator
+        size_t n = strlen(STR_S(STR(e))) + 3;
         s = malloc(n);
         /* TODO: quote the string */
         snprintf(s, n, "\"%s\"", STR_S(STR(e)));
