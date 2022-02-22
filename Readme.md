@@ -1,16 +1,14 @@
-<p align=center><img src=https://github.com/samsonjs/lake/raw/main/lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
-
 [![example workflow](https://github.com/samsonjs/lake/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/samsonjs/lake/actions)
 
-Lake Scheme
-===========
+# Lake Scheme
 
-A quick and dirty scheme written in C, for fun and to use while reading The Little Schemer. Very quick and dirty, a weekend hack gone awry.
+<p align=center><img src=https://github.com/samsonjs/lake/raw/main/lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
+
+A quick and dirty scheme written in C, for fun and to use while reading The Little Schemer. Very quick and dirty. A weekend hack gone awry.
 
 Lake Scheme uses RSR5 as a guideline but does not strictly adhere. Specifically some of the standard naming is confusing so it has been clarified. Other things have been changed just to make life in the repl more palatable.
 
-Compiling & Running
-===================
+## Compiling & Running
 
 Portable C99, no dependencies, nothing to configure, no documentation!
 
@@ -48,15 +46,15 @@ If you want to build a static library:
 
 The binary will be in `build/liblake.a` and you may do with it as you like. Lake creates no global variables and has no shared state. Everything is neatly wrapped up in a [`LakeCtx`](https://github.com/samsonjs/lake/blob/main/src/lake.h#L101-L109) so theoretically you can run multiple interpreters in the same process. I haven't tried it yet but it should work.
 
-Tests
-=====
+## Tests
 
 There are a few tests right now and more are on the way. Run them like so:
 
     $ make test
 
-Special Forms
-=============
+## Language
+
+### Special Forms
 
 Lake's special forms are:
 
@@ -92,8 +90,7 @@ And an illustrative repl session:
 
 Woah, we even managed to define a useful function without using any primitives!
 
-Primitives
-==========
+### Primitives
 
 There are primitives though. So few they can be easily named, and they are named thusly:
 
@@ -116,8 +113,7 @@ Deviating from RSR5 `eq?` is called `is?` in Lake Scheme, which I find much clea
 
 If you like you can write `()` instead of `'()` for nil.
 
-Naked Calls
-===========
+### Naked Calls
 
 One final thing to note is an experiment called *naked calls* (or expressions). These are only valid at the top level in the repl and are just lists without parens, like so:
 
@@ -131,8 +127,7 @@ One final thing to note is an experiment called *naked calls* (or expressions). 
 
 A naked expression with one value evaluates to the single value it contains so that typing in an atomic expression doesn't produce strange results. Due to this behaviour one caveat is that if you want to invoke a function without arguments you cannot use a naked list. When evaluating code from a file naked lists are not parsed at all and will result in syntax errors.
 
-TODO
-====
+## To-do
 
 * finish tests
 
@@ -152,13 +147,11 @@ Lake still needs:
 
 There's enough here to start reading so I'm going to see where the book takes me. Other than that as much of the language as possible should be moved from C-land into Scheme-land, like the repl. The present functionality should require less C than there currently is.
 
-Contributors
-============
+## Contributors
 
 [Sami Samhuri](http://samhuri.net) ([@_sjs](https://twitter.com/_sjs))
 
-License
-=======
+## License
 
 &copy; 2011 Sami Samhuri <sami@samhuri.net>
 
