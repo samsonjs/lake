@@ -28,5 +28,5 @@ void *lake_hash_get(khash_t(LakeVal) * h, char *key)
 bool lake_hash_has(khash_t(LakeVal) * h, char *key)
 {
     khiter_t k = kh_get(LakeVal, h, key);
-    return kh_exist(h, k);
+    return k != kh_end(h) && kh_exist(h, k);
 }
