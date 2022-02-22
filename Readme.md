@@ -1,6 +1,6 @@
 <p align=center><img src=https://github.com/samsonjs/lake/raw/main/lake.jpg width=640 height=428 alt="Shawnigan Lake"></p>
 
-![example workflow](https://github.com/samsonjs/lake/actions/workflows/c-cpp.yml/badge.svg)
+[![example workflow](https://github.com/samsonjs/lake/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/samsonjs/lake/actions)
 
 Lake Scheme
 ===========
