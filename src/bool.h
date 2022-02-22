@@ -1,11 +1,11 @@
-/** 
-  * bool.h
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * bool.h
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #ifndef _LAKE_BOOL_H
 #define _LAKE_BOOL_H

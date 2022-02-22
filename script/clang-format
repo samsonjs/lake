@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+for file in src/**/*.[ch] test/**/*.[ch]; do
+    clang-format -i "$file"
+done

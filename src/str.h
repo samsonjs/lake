@@ -1,11 +1,11 @@
-/** 
-  * str.h
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * str.h
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #ifndef _LAKE_STRING_H
 #define _LAKE_STRING_H

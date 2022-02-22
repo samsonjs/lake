@@ -1,11 +1,11 @@
-/** 
-  * env.h
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * env.h
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #ifndef _LAKE_ENV_H
 #define _LAKE_ENV_H
@@ -13,9 +13,10 @@
 #include "common.h"
 #include "hash.h"
 
-struct env {
-  struct env *parent;
-  lake_hash_t *bindings;
+struct env
+{
+    struct env *parent;
+    lake_hash_t *bindings;
 };
 typedef struct env Env;
 

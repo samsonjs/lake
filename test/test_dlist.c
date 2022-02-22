@@ -1,17 +1,17 @@
 /**
-  * test_dlist.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+ * test_dlist.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
-#include <string.h>
 #include "common.h"
-#include "laketest.h"
 #include "lake.h"
+#include "laketest.h"
 #include "list.h"
+#include <string.h>
 
 void setup(void);
 static char *test_dlist_make(void);
@@ -26,12 +26,9 @@ static char *REPR = "(() . ())";
 int main(int argc, char const *argv[])
 {
     setup();
-    return !lt_run_tests("Dotted Lists", (test_fn[]){
-        test_dlist_make,
-        test_dlist_repr,
-        test_dlist_equal,
-        NULL
-    });
+    return !lt_run_tests(
+        "Dotted Lists",
+        (test_fn[]){test_dlist_make, test_dlist_repr, test_dlist_equal, NULL});
 }
 
 void setup(void)
@@ -45,7 +42,8 @@ void setup(void)
 static char *test_dlist_make(void)
 {
     lt_assert("type is not TYPE_DLIST", lake_is_type(TYPE_DLIST, dlist));
-    lt_assert("value size is incorrect", lake_val_size(dlist) == sizeof(LakeDottedList));
+    lt_assert("value size is incorrect",
+              lake_val_size(dlist) == sizeof(LakeDottedList));
     lt_assert("head value is incorrect",
               lake_equal(VAL(head), VAL(dlist_head(dlist))));
     lt_assert("tail value is incorrect", lake_equal(tail, dlist_tail(dlist)));
@@ -55,7 +53,8 @@ static char *test_dlist_make(void)
 /* char *dlist_repr(LakeDottedList *dlist) */
 static char *test_dlist_repr(void)
 {
-    lt_assert("dlist_repr is incorrect", strncmp(dlist_repr(dlist), REPR, strlen(REPR)) == 0);
+    lt_assert("dlist_repr is incorrect",
+              strncmp(dlist_repr(dlist), REPR, strlen(REPR)) == 0);
 
     char *REPR2 = "(spam eggs bacon spam eggs . spam)";
     LakeCtx *lake = lake_init();

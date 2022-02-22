@@ -1,16 +1,16 @@
 /**
-  * test_int.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+ * test_int.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
-#include <string.h>
 #include "int.h"
-#include "laketest.h"
 #include "lake.h"
+#include "laketest.h"
+#include <string.h>
 
 static char *test_int_make(void);
 static char *test_int_from_c(void);
@@ -18,12 +18,8 @@ static char *test_int_repr(void);
 
 int main(int argc, char const *argv[])
 {
-    return !lt_run_tests("Integers", (test_fn[]){
-        test_int_make,
-        test_int_from_c,
-        test_int_repr,
-        NULL
-    });
+    return !lt_run_tests("Integers", (test_fn[]){test_int_make, test_int_from_c,
+                                                 test_int_repr, NULL});
 }
 
 /* LakeInt *int_make(void) */

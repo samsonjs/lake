@@ -1,22 +1,22 @@
-/** 
-  * laketest.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  * Based on MinUnit: http://www.jera.com/techinfo/jtns/jtn002.html
-  * 
-  */
+/**
+ * laketest.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ * Based on MinUnit: http://www.jera.com/techinfo/jtns/jtn002.html
+ *
+ */
 
+#include "lake.h"
+#include "eval.h"
+#include "laketest.h"
+#include "parse.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "eval.h"
-#include "lake.h"
-#include "laketest.h"
-#include "parse.h"
 
 static int captured = 0;
 
@@ -29,7 +29,7 @@ static void capture_output(void)
     close(2);
     int newfd = dup(fd);
     close(fd);
-    
+
     fd = open("./tmp", O_WRONLY);
     close(1);
     newfd = dup(fd);
@@ -40,7 +40,7 @@ void restore_output(void)
 {
     if (!captured) return;
     captured = 0;
-    
+
     freopen("/dev/tty", "a", stdout);
     freopen("/dev/tty", "a", stderr);
     unlink("./tmp");
@@ -54,16 +54,19 @@ int lt_run_tests(char *title, test_fn *tests)
     test_fn test;
     printf("-- %s --\n", title);
     capture_output();
-    while ((test = *(tests++))) {
+    while ((test = *(tests++)))
+    {
         if ((message = test())) break;
         n_tests++;
     }
     restore_output();
     pass = message == 0;
-    if (pass) {
+    if (pass)
+    {
         fprintf(stderr, "PASS: %d test%s\n", n_tests, n_tests == 1 ? "" : "s");
     }
-    else {
+    else
+    {
         fprintf(stderr, "FAIL: %s\n", message);
     }
     return pass;

@@ -1,15 +1,15 @@
-/** 
-  * test_str.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * test_str.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #include "common.h"
-#include "laketest.h"
 #include "lake.h"
+#include "laketest.h"
 
 /* LakeStr *lake_str_make(void) */
 /* void lake_str_free(LakeStr *str) */

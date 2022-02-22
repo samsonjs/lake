@@ -1,19 +1,19 @@
-/** 
-  * list.h
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * list.h
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #ifndef _LAKE_LIST_H
 #define _LAKE_LIST_H
 
-#include <stdlib.h>
 #include "common.h"
 #include "lake.h"
 #include "str.h"
+#include <stdlib.h>
 
 LakeList *list_make(void);
 LakeList *list_cons(LakeVal *car, LakeVal *cdr);

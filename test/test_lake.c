@@ -1,21 +1,21 @@
 /**
-  * test_lake.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+ * test_lake.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
-#include <string.h>
-#include "laketest.h"
 #include "bool.h"
+#include "eval.h"
 #include "int.h"
 #include "lake.h"
+#include "laketest.h"
+#include "parse.h"
 #include "str.h"
 #include "sym.h"
-#include "eval.h"
-#include "parse.h"
+#include <string.h>
 
 void setup(void);
 static char *test_lake_version(void);
@@ -29,20 +29,12 @@ static LakeCtx *lake;
 int main(int argc, char const *argv[])
 {
     setup();
-    return !lt_run_tests("Lake", (test_fn[]){
-        test_lake_version,
-        test_lake_init,
-        test_lake_is,
-        test_lake_equal,
-        test_lake_repr,
-        NULL
-    });
+    return !lt_run_tests("Lake", (test_fn[]){test_lake_version, test_lake_init,
+                                             test_lake_is, test_lake_equal,
+                                             test_lake_repr, NULL});
 }
 
-void setup(void)
-{
-    lake = lake_init();
-}
+void setup(void) { lake = lake_init(); }
 
 /* #define LAKE_VERSION "0.1" */
 static char *test_lake_version(void)
@@ -68,10 +60,7 @@ static char *test_lake_init(void)
     return 0;
 }
 
-static bool _is(void *a, void *b)
-{
-    return lake_is(VAL(a), VAL(b));
-}
+static bool _is(void *a, void *b) { return lake_is(VAL(a), VAL(b)); }
 
 /* bool lake_is(LakeVal *a, LakeVal *b) */
 static char *test_lake_is(void)
@@ -79,7 +68,8 @@ static char *test_lake_is(void)
     LakeInt *i = int_from_c(42);
 
     // ints are compared by value
-    lt_assert("ints with equal values are not the same", _is(i, int_from_c(42)));
+    lt_assert("ints with equal values are not the same",
+              _is(i, int_from_c(42)));
 
     // nil is compared by value
     lt_assert("null values are not the same", _is(list_make(), list_make()));
@@ -95,10 +85,7 @@ static char *test_lake_is(void)
     return 0;
 }
 
-static bool _equal(void *a, void *b)
-{
-    return lake_equal(VAL(a), VAL(b));
-}
+static bool _equal(void *a, void *b) { return lake_equal(VAL(a), VAL(b)); }
 
 /* bool lake_equal(LakeVal *a, LakeVal *b) */
 static char *test_lake_equal(void)
@@ -128,7 +115,8 @@ static char *test_lake_equal(void)
     LakePrimitive *pair = PRIM(lt_eval(lake, "pair?"));
     lt_assert("primitive is not equal to itself", _equal(null, null));
     lt_assert("primitive is not equal to itself", _equal(null, null2));
-    lt_assert("different primitives are equal to each other", !_equal(null, pair));
+    lt_assert("different primitives are equal to each other",
+              !_equal(null, pair));
 
     // functions are compared by reference
     LakeFn *inc = FN(lt_eval(lake, "(lambda (x) (+ x 1))"));
@@ -147,8 +135,8 @@ static char *test_lake_equal(void)
     lt_assert("string is not equal to itself", _equal(arthur, arthur2));
     lt_assert("different strings are equal", !_equal(arthur, zaphod));
 
-    // lists are compared by value
-    #define S(s) VAL(lake_str_from_c(s))
+// lists are compared by value
+#define S(s) VAL(lake_str_from_c(s))
     LakeList *fruits = list_make();
     list_append(fruits, S("mango"));
     list_append(fruits, S("pear"));
@@ -164,8 +152,9 @@ static char *test_lake_equal(void)
     lt_assert("different lists are equal", !_equal(fruits, ninjas));
 
     LakeList *fruits_copy = list_copy(fruits);
-    lt_assert("copy of list is not equal to original", _equal(fruits, fruits_copy));
-    #undef S
+    lt_assert("copy of list is not equal to original",
+              _equal(fruits, fruits_copy));
+#undef S
 
     // dotted lists are compared by value
     LakeDottedList *destruction = dlist_make(fruits, VAL(ninjas));
@@ -208,7 +197,8 @@ static char *test_lake_repr(void)
     list_append(vals, VAL(vals));
     list_append(vals, VAL(dlist_make(vals, VAL(int_from_c(4919)))));
     list_append(vals, eval(lake, lake->toplevel, parse_expr(lake, "null?", 5)));
-    list_append(vals, eval(lake, lake->toplevel, parse_expr(lake, "(lambda xs xs)", 14)));
+    list_append(vals, eval(lake, lake->toplevel,
+                           parse_expr(lake, "(lambda xs xs)", 14)));
     list_append(vals, VAL(comment_from_c("this is a comment")));
 
     return 0;

@@ -18,4 +18,7 @@ test:
 test_clean:
 	cd test && make clean
 
-.PHONY: all clean test test_clean
+format:
+	script/clang-format
+
+.PHONY: all clean test test_clean format

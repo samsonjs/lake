@@ -1,16 +1,16 @@
 /**
-  * test_env.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+ * test_env.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #include "common.h"
-#include "laketest.h"
 #include "env.h"
 #include "lake.h"
+#include "laketest.h"
 
 void setup(void);
 static char *test_env_make(void);
@@ -31,14 +31,9 @@ static LakeSym *s_undef;
 int main(int argc, char const *argv[])
 {
     setup();
-    return !lt_run_tests("Environment", (test_fn[]){
-        test_env_make,
-        test_env_define,
-        test_env_set,
-        test_env_get,
-        test_env_is_defined,
-        NULL
-    });
+    return !lt_run_tests(
+        "Environment", (test_fn[]){test_env_make, test_env_define, test_env_set,
+                                   test_env_get, test_env_is_defined, NULL});
 }
 
 void setup(void)
@@ -59,7 +54,8 @@ static char *test_env_make(void)
     lt_assert("toplevel->bindings is NULL", toplevel->bindings != NULL);
 
     lt_assert("firstlevel is NULL", firstlevel != NULL);
-    lt_assert("firstlevel->parent is not toplevel", firstlevel->parent == toplevel);
+    lt_assert("firstlevel->parent is not toplevel",
+              firstlevel->parent == toplevel);
 
     return 0;
 }

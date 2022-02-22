@@ -1,11 +1,11 @@
-/** 
-  * common.h
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+/**
+ * common.h
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
 #ifndef _LAKE_COMMON_H
 #define _LAKE_COMMON_H

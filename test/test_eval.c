@@ -1,16 +1,16 @@
 /**
-  * test_eval.c
-  * Lake Scheme
-  *
-  * Copyright 2011 Sami Samhuri
-  * MIT License
-  *
-  */
+ * test_eval.c
+ * Lake Scheme
+ *
+ * Copyright 2011 Sami Samhuri
+ * MIT License
+ *
+ */
 
-#include "laketest.h"
 #include "env.h"
 #include "eval.h"
 #include "lake.h"
+#include "laketest.h"
 #include "parse.h"
 
 void setup(void);
@@ -31,13 +31,9 @@ static LakePrimitive *p_cdr;
 int main(int argc, char const *argv[])
 {
     setup();
-    return !lt_run_tests("Eval & Apply", (test_fn[]){
-        test_eval,
-        test_eval_exprs,
-        test_eval_exprs1,
-        test_apply,
-        NULL
-    });
+    return !lt_run_tests("Eval & Apply",
+                         (test_fn[]){test_eval, test_eval_exprs,
+                                     test_eval_exprs1, test_apply, NULL});
 }
 
 void setup(void)
@@ -125,10 +121,12 @@ static char *test_eval(void)
     LakeSym *l_bound_sym = isP;
     LakeSym *l_unbound_sym = sym_intern(lake, "sex");
     lt_assert("bound symbol is? evaluated to null", NULL != EVAL(l_bound_sym));
-    lt_assert("unbound symbol evaluated to non-null", NULL == EVAL(l_unbound_sym));
+    lt_assert("unbound symbol evaluated to non-null",
+              NULL == EVAL(l_unbound_sym));
 
     LakeList *l_call = list_make();
-    lt_assert("empty list (nil) did not self evaluate", VAL(l_call) == EVAL(l_call));
+    lt_assert("empty list (nil) did not self evaluate",
+              VAL(l_call) == EVAL(l_call));
 
     LakeDottedList *l_dlist = dlist_make(list_make(), VAL(l_int));
     lt_assert("dotted-list evaluated to non-null", NULL == EVAL(l_dlist));
@@ -137,7 +135,8 @@ static char *test_eval(void)
     LakeSym *s_x = sym_intern(lake, "x");
     list_append(l_call, VAL(s_x));
     list_append(l_call, VAL(l_int));
-    lt_assert("define special form evaluated to non-null", NULL == EVAL(l_call));
+    lt_assert("define special form evaluated to non-null",
+              NULL == EVAL(l_call));
     lt_assert("define bound an incorrect value", VAL(l_int) == EVAL(s_x));
     list_free(l_call);
 
@@ -145,7 +144,8 @@ static char *test_eval(void)
     list_append(l_call, VAL(isP));
     list_append(l_call, VAL(s_x));
     list_append(l_call, VAL(l_int));
-    lt_assert("primitive evaluated incorrectly", lake_is_true(lake, EVAL(l_call)));
+    lt_assert("primitive evaluated incorrectly",
+              lake_is_true(lake, EVAL(l_call)));
     list_free(l_call);
 
     return 0;
@@ -175,7 +175,6 @@ static char *test_apply(void)
               NULL == apply(lake, fnVal, args));
     list_free(args);
 
-
     /* var args primitive */
     fnVal = EVAL(sym_intern(lake, "+"));
     args = list_make();
@@ -191,7 +190,6 @@ static char *test_apply(void)
     lt_assert("failed to call var args primitive (+ 1 2 3)",
               6 == INT_VAL(INT(apply(lake, fnVal, args))));
     list_free(args);
-
 
     /* set up a scheme function with fixed args */
     eval(lake, lake->toplevel,
@@ -211,7 +209,6 @@ static char *test_apply(void)
     list_append(args, VAL(int_from_c(0)));
     lt_assert("function applied incorrectly", NULL == apply(lake, fnVal, args));
     list_free(args);
-
 
     /* set up a scheme function with only var args */
     eval(lake, lake->toplevel,
@@ -233,7 +230,6 @@ static char *test_apply(void)
     lt_assert("var args function applied incorrectly",
               NULL != apply(lake, fnVal, args));
     list_free(args);
-
 
     /* set up a scheme function with fixed and var args */
     eval(lake, lake->toplevel,
@@ -261,7 +257,6 @@ static char *test_apply(void)
     lt_assert("var args function applied incorrectly",
               NULL != apply(lake, fnVal, args));
     list_free(args);
-
 
     /* non-function in head position */
     lt_assert("apply with non-function returned non-null",
