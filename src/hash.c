@@ -12,21 +12,21 @@
 
 #include "hash.h"
 
-void lake_hash_put(khash_t(value) * h, char *key, void *val)
+void lake_hash_put(khash_t(LakeVal) * h, char *key, void *val)
 {
     int ret;
-    khiter_t k = kh_put(value, h, key, &ret);
+    khiter_t k = kh_put(LakeVal, h, key, &ret);
     kh_value(h, k) = val;
 }
 
-void *lake_hash_get(khash_t(value) * h, char *key)
+void *lake_hash_get(khash_t(LakeVal) * h, char *key)
 {
-    khiter_t k = kh_get(value, h, key);
+    khiter_t k = kh_get(LakeVal, h, key);
     return k == kh_end(h) ? NULL : kh_value(h, k);
 }
 
-bool lake_hash_has(khash_t(value) * h, char *key)
+bool lake_hash_has(khash_t(LakeVal) * h, char *key)
 {
-    khiter_t k = kh_get(value, h, key);
+    khiter_t k = kh_get(LakeVal, h, key);
     return kh_exist(h, k);
 }

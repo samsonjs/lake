@@ -56,7 +56,7 @@ static char *test_int_repr(void)
     i = int_from_c(2147483647);
     lt_assert("int_repr is wrong", strcmp(int_repr(i), "2147483647") == 0);
 
-    i = int_from_c(2147483648);
+    i = int_from_c((unsigned int)2147483648);
     lt_assert("int_repr is wrong", strcmp(int_repr(i), "-2147483648") == 0);
 
     return 0;
